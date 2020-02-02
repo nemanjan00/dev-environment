@@ -7,8 +7,12 @@ RUN pacman -Syu --noconfirm git base-devel curl
 # Install shell
 RUN pacman -Syu --noconfirm zsh
 RUN chsh -s /usr/bin/zsh root
+
+RUN git clone https://github.com/zplug/zplug.git ~/.zplug
 RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
 RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
+
+RUN zsh -c "source ~/.zshrc ; TERM=xterm-256color zplug install"
 
 # Install langage version manager
 RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.6

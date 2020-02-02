@@ -34,6 +34,10 @@ RUN curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubu
 # Install plugins inside of vim
 RUN nvim +PlugInstall +q +q
 
+# Coc
+RUN ln -s ~/.config/nvim/coc ~/.config/coc
+RUN zsh -c "cd ~/.config/coc/extensions ; yarn"
+
 # Install tmux stuff
 RUN pacman -Syu --noconfirm tmux
 

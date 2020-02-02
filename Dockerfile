@@ -6,6 +6,9 @@ RUN pacman -Syu --noconfirm git base-devel curl
 
 # Install shell
 RUN pacman -Syu --noconfirm zsh
+RUN chsh -s /usr/bin/zsh root
+RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
+RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 
 # Install node
 RUN pacman -Syu --noconfirm nodejs yarn

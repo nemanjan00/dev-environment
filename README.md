@@ -4,10 +4,17 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [Run it](#run-it)
 * [Components](#components)
 * [Author](#author)
 
 <!-- vim-markdown-toc -->
+
+## Run it
+
+```bash
+docker run -ti nemanjan00/dev
+```
 
 ## Components
 

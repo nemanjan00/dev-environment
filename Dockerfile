@@ -46,6 +46,9 @@ RUN git clone https://github.com/gpakosz/.tmux.git ~/.tmux
 RUN ln -s -f .tmux/.tmux.conf ~/.tmux.conf
 RUN cp ~/.tmux/.tmux.conf.local ~/
 
+# Add some common stuff
+RUN pacman -Syu --noconfirm htop the_silver_searcher fzf
+
 # Prepare work area
 RUN mkdir /work
 

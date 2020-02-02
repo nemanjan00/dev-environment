@@ -4,6 +4,9 @@ MAINTAINER nemanjan00 nemanjan00@gmail.com
 # Install dependencies for building stuff
 RUN pacman -Syu --noconfirm git base-devel curl
 
+# Install shell
+RUN pacman -Syu --noconfirm zsh
+
 # Install node
 RUN pacman -Syu --noconfirm nodejs yarn
 

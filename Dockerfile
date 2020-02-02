@@ -42,3 +42,5 @@ RUN mkdir /work
 
 WORKDIR /work
 
+CMD ["tmux"]
+

@@ -28,10 +28,10 @@ RUN pacman -Syu --noconfirm python-pynvim neovim
 # Download my dotfiles
 RUN git clone https://github.com/nemanjan00/vim.git ~/.config/nvim
 
-# Install plug
+# Install plug manager for vim
 RUN curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# Install plugins
+# Install plugins inside of vim
 RUN nvim +PlugInstall +q +q
 
 # Install tmux stuff

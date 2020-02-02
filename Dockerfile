@@ -10,6 +10,11 @@ RUN chsh -s /usr/bin/zsh root
 RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
 RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 
+# Install langage version manager
+RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.6
+RUN echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.zshrc
+RUN echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.zshrc
+
 # Install node
 RUN pacman -Syu --noconfirm nodejs yarn
 

@@ -64,7 +64,7 @@ RUN cp ~/.tmux/.tmux.conf.local ~/
 
 # Add some common stuff
 USER 0
-RUN pacman -Syu --noconfirm htop the_silver_searcher fzf
+RUN pacman -Syu --noconfirm htop the_silver_searcher fzf jq
 
 # Prepare work area
 USER 1000

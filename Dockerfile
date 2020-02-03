@@ -24,6 +24,9 @@ RUN git clone https://github.com/zplug/zplug.git ~/.zplug
 RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
 RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 
+COPY ./zplug /tmp/zplug
+RUN patch ~/.zplug/base/core/add.zsh /tmp/zplug/patch/pipe_fix.diff
+
 RUN zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
 
 # Install langage version manager
@@ -40,9 +43,7 @@ RUN pacman -Syu --noconfirm python-pynvim neovim
 
 # Download my dotfiles
 USER 1000
-COPY ./zplug /tmp/zplug
 RUN git clone https://github.com/nemanjan00/vim.git ~/.config/nvim
-RUN patch ~/.zplug/base/core/add.zsh /tmp/zplug/patch/pipe_fix.diff
 
 # Install plug manager for vim
 RUN curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

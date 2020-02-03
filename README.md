@@ -1,5 +1,7 @@
 # dev-environment
 
+[![Build Status](https://travis-ci.org/nemanjan00/dev-environment.svg?branch=master)](https://travis-ci.org/nemanjan00/dev-environment)
+
 ## Table of contents
 
 <!-- vim-markdown-toc GFM -->

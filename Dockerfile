@@ -14,6 +14,9 @@ RUN groupadd -g 1000 user
 RUN useradd -r -u 1000 -g 1000 -s /usr/bin/zsh user
 RUN usermod -d /work -m user
 
+# Cmake
+RUN pacman -Syu --noconfirm clang cmake
+
 # Prepare home for user
 RUN mkdir /work
 RUN chown 1000:1000 /work
@@ -21,6 +24,7 @@ WORKDIR /work
 
 USER 1000
 
+# Cquery
 RUN git clone https://aur.archlinux.org/cquery.git /tmp/cquery
 WORKDIR /tmp/cquery
 RUN makepkg
@@ -34,9 +38,6 @@ RUN pacman -Syu --noconfirm nodejs yarn
 
 # Add some common stuff
 RUN pacman -Syu --noconfirm htop the_silver_searcher fzf jq
-
-# Cquery
-RUN pacman -Syu --noconfirm clang cmake
 
 # Ctags
 RUN pacman -Syu --noconfirm ctags

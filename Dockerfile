@@ -19,8 +19,44 @@ RUN mkdir /work
 RUN chown 1000:1000 /work
 WORKDIR /work
 
-# Setup zsh and plugins
 USER 1000
+
+RUN git clone https://aur.archlinux.org/cquery.git /tmp/cquery
+WORKDIR /tmp/cquery
+RUN makepkg
+USER 0
+
+RUN pacman -U --noconfirm ./*.pkg.*
+
+# Install node
+USER 0
+RUN pacman -Syu --noconfirm nodejs yarn
+
+# Add some common stuff
+RUN pacman -Syu --noconfirm htop the_silver_searcher fzf jq
+
+# Cquery
+RUN pacman -Syu --noconfirm clang cmake
+
+# Ctags
+RUN pacman -Syu --noconfirm ctags
+
+# Install neovim stuff
+RUN pacman -Syu --noconfirm python-pynvim neovim
+
+# Install tmux stuff
+RUN pacman -Syu --noconfirm tmux
+
+# Install language version manager
+USER 1000
+RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.6
+RUN echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.zshrc
+RUN echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.zshrc
+
+# Disable cache
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/skipcache
+
+# Setup zsh and plugins
 RUN git clone https://github.com/zplug/zplug.git ~/.zplug
 RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
 RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
@@ -29,18 +65,6 @@ COPY ./zplug /tmp/zplug
 RUN patch ~/.zplug/base/core/add.zsh /tmp/zplug/patch/pipe_fix.diff
 
 RUN zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
-
-# Install langage version manager
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.6
-RUN echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.zshrc
-RUN echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.zshrc
-
-# Install node
-USER 0
-RUN pacman -Syu --noconfirm nodejs yarn
-
-# Install neovim stuff
-RUN pacman -Syu --noconfirm python-pynvim neovim
 
 # Download my dotfiles
 USER 1000
@@ -58,33 +82,10 @@ RUN nvim +PlugInstall +q +q
 RUN ln -s ~/.config/nvim/coc ~/.config/coc
 RUN zsh -c "cd ~/.config/coc/extensions ; yarn"
 
-# Install tmux stuff
-USER 0
-RUN pacman -Syu --noconfirm tmux
-
 # Install .tmux
-USER 1000
 RUN git clone https://github.com/gpakosz/.tmux.git ~/.tmux
 RUN ln -s -f .tmux/.tmux.conf ~/.tmux.conf
 RUN cp ~/.tmux/.tmux.conf.local ~/
-
-# Add some common stuff
-USER 0
-RUN pacman -Syu --noconfirm htop the_silver_searcher fzf jq
-
-# Cquery
-RUN pacman -Syu --noconfirm clang cmake
-
-USER 1000
-
-RUN git clone https://aur.archlinux.org/cquery.git /tmp/cquery
-WORKDIR /tmp/cquery
-RUN makepkg
-USER 0
-RUN pacman -U --noconfirm ./*.pkg.*
-
-# Ctags
-RUN pacman -Syu --noconfirm ctags
 
 # Prepare work area
 USER 1000

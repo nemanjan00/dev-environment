@@ -1,0 +1,10 @@
+--- init.vim	2020-02-02 19:57:43.290660763 +0100
++++ init1.vim	2020-02-03 02:58:51.589966823 +0100
+@@ -33,7 +33,6 @@
+ 	Plug 'bkad/camelcasemotion' " Make Vim understand camelcase
+ 	Plug 'dhruvasagar/vim-table-mode'
+ 	Plug 'liuchengxu/vista.vim'
+-	Plug 'wakatime/vim-wakatime'
+ 	Plug 'AndrewRadev/splitjoin.vim'
+ 	Plug 'junegunn/gv.vim'
+ 	Plug 'vimwiki/vimwiki'

@@ -1,6 +1,7 @@
 # dev-environment
 
 [![Build Status](https://travis-ci.org/nemanjan00/dev-environment.svg?branch=master)](https://travis-ci.org/nemanjan00/dev-environment)
+[![Docker hub](https://images.microbadger.com/badges/image/nemanjan00/dev.svg)](https://hub.docker.com/repository/docker/nemanjan00/dev)
 
 ![Screenshot](https://github.com/nemanjan00/dev-environment/blob/master/screenshot/nvim.png?raw=true)
 

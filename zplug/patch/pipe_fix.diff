@@ -1,0 +1,13 @@
+diff --git a/base/core/add.zsh b/base/core/add.zsh
+index 76adc7f..46e2846 100644
+--- a/base/core/add.zsh
++++ b/base/core/add.zsh
+@@ -6,7 +6,7 @@ __zplug::core::add::to_zplugs()
+     local -a re_tags
+ 
+     # DEPRECATED: pipe
+-    if [[ -p /dev/stdin ]]; then
++    if [[ ! $ZPLUG_PIPE_FIX="true" && -p /dev/stdin ]]; then
+         __zplug::core::migration::pipe
+         return $status
+     fi

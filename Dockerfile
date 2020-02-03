@@ -19,6 +19,7 @@ RUN mkdir /work
 RUN chown 1000:1000 /work
 WORKDIR /work
 
+# Setup zsh and plugins
 USER 1000
 RUN git clone https://github.com/zplug/zplug.git ~/.zplug
 RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh

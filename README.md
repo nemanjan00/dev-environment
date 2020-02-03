@@ -6,12 +6,19 @@
 
 <!-- vim-markdown-toc GFM -->
 
+* [Build it](#build-it)
 * [Run it](#run-it)
 * [Opening project inside of it](#opening-project-inside-of-it)
 * [Components](#components)
 * [Author](#author)
 
 <!-- vim-markdown-toc -->
+
+## Build it
+
+```bash
+docker build -t nemanjan00/dev .
+```
 
 ## Run it
 

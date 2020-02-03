@@ -70,8 +70,20 @@ RUN cp ~/.tmux/.tmux.conf.local ~/
 USER 0
 RUN pacman -Syu --noconfirm htop the_silver_searcher fzf jq
 
+# Cquery
+RUN pacman -Syu --noconfirm clang cmake
+
+USER 1000
+
+RUN git clone https://aur.archlinux.org/cquery.git /tmp/cquery
+WORKDIR /tmp/cquery
+RUN makepkg
+USER 0
+RUN pacman -U --noconfirm ./*.pkg.*
+
 # Prepare work area
 USER 1000
+WORKDIR /work
 
 CMD ["tmux"]
 

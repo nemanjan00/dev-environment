@@ -1,0 +1,5 @@
+services:
+  - docker
+
+install:
+  - docker build -t dev .

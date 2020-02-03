@@ -24,7 +24,7 @@ RUN git clone https://github.com/zplug/zplug.git ~/.zplug
 RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
 RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 
-RUN zsh -ic "TERM=xterm-256color zplug install"
+RUN zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
 
 # Install langage version manager
 RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.6

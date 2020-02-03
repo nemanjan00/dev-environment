@@ -81,6 +81,9 @@ RUN makepkg
 USER 0
 RUN pacman -U --noconfirm ./*.pkg.*
 
+# Ctags
+RUN pacman -Syu --noconfirm ctags
+
 # Prepare work area
 USER 1000
 WORKDIR /work

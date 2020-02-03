@@ -10,8 +10,9 @@ RUN pacman -Syu --noconfirm git base-devel curl
 RUN pacman -Syu --noconfirm zsh
 
 # Create user
+RUN groupadd -g 1000 user
 RUN useradd -r -u 1000 -g 1000 -s /usr/bin/zsh user
-RUN usermod -d /work -m username
+RUN usermod -d /work -m user
 
 # Prepare home for user
 RUN mkdir /work

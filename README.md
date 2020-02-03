@@ -2,7 +2,12 @@
 
 [![Build Status](https://travis-ci.org/nemanjan00/dev-environment.svg?branch=master)](https://travis-ci.org/nemanjan00/dev-environment)
 
+![Screenshot](https://github.com/nemanjan00/dev-environment/blob/master/screenshot/nvim.png?raw=true)
+
 My docker-based dev environment.
+
+I am Vim person, but, my setup is not quite git clone, so, I have decided to
+build docker based IDE, for editing actual code on servers. 
 
 ## Table of contents
 

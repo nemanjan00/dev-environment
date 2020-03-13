@@ -38,7 +38,7 @@ docker run -ti nemanjan00/dev
 ## Opening project inside of it
 
 ```bash
-docker run -ti -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; tmux"
+docker run -ti -eTERM=xterm-256color -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; tmux"
 ```
 
 ## Components

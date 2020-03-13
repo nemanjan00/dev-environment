@@ -70,8 +70,6 @@ RUN zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
 # Download my dotfiles
 USER 1000
 RUN git clone https://github.com/nemanjan00/vim.git ~/.config/nvim
-COPY ./vim /tmp/vim
-RUN patch ~/.config/nvim/init.vim /tmp/vim/patch/no-waka.diff
 
 # Install plug manager for vim
 RUN curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

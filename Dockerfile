@@ -1,4 +1,4 @@
-FROM archlinux/base
+FROM archlinux
 MAINTAINER nemanjan00 nemanjan00@gmail.com
 
 USER 0
@@ -55,7 +55,7 @@ RUN echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.zshrc
 RUN echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.zshrc
 
 # Disable cache
-ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/skipcache
+#ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/skipcache
 
 # Setup zsh and plugins
 RUN git clone https://github.com/zplug/zplug.git ~/.zplug

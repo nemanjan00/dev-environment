@@ -24,20 +24,12 @@ WORKDIR /work
 
 USER 1000
 
-# Cquery
-RUN git clone https://aur.archlinux.org/cquery.git /tmp/cquery
-WORKDIR /tmp/cquery
-RUN makepkg
-USER 0
-
-RUN pacman -U --noconfirm ./*.pkg.*
-
 # Install node
 USER 0
 RUN pacman -Syu --noconfirm nodejs yarn
 
 # Add some common stuff
-RUN pacman -Syu --noconfirm htop the_silver_searcher fzf jq
+RUN pacman -Syu --noconfirm htop ripgrep fzf jq
 
 # Ctags
 RUN pacman -Syu --noconfirm ctags
@@ -59,11 +51,12 @@ RUN echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.zshrc
 
 # Setup zsh and plugins
 RUN git clone https://github.com/zplug/zplug.git ~/.zplug
-RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
-RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 
 COPY ./zplug /tmp/zplug
 RUN patch ~/.zplug/base/core/add.zsh /tmp/zplug/patch/pipe_fix.diff
+
+RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
+RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 
 RUN zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
 

@@ -68,7 +68,7 @@ RUN git clone https://github.com/nemanjan00/vim.git ~/.config/nvim
 RUN curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # Install plugins inside of vim
-RUN nvim +PlugInstall +q +q
+RUN nvim +PlugInstall +qall
 
 # Coc
 RUN ln -s ~/.config/nvim/coc ~/.config/coc

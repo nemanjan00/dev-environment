@@ -1,4 +1,4 @@
-FROM archlinux
+FROM archlinux:base-devel
 MAINTAINER nemanjan00 nemanjan00@gmail.com
 
 USER 0

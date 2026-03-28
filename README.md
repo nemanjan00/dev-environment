@@ -42,35 +42,30 @@ docker run -ti -eTERM=xterm-256color -v$(pwd):/work/project nemanjan00/dev zsh -
 
 ## Components
 
-* [vim](https://www.vim.org/) with [my config](https://github.com/nemanjan00/vim)
+* [Neovim](https://neovim.io/) with [my config](https://github.com/nemanjan00/vim) and [coc.nvim](https://github.com/neoclide/coc.nvim) for LSP
+* [zsh](https://www.zsh.org/) with [zplug](https://github.com/zplug/zplug) and [my config](https://github.com/nemanjan00/zsh)
+* [tmux](https://github.com/tmux/tmux) with [gpakosz/.tmux](https://github.com/gpakosz/.tmux)
+* [asdf](https://asdf-vm.com/) version manager
+* [fzf](https://github.com/junegunn/fzf) fuzzy finder
+* [ripgrep](https://github.com/BurntSushi/ripgrep) fast search
+* [jq](https://jqlang.github.io/jq/) JSON processor
+* [ctags](https://ctags.io/) code indexing
 
 ## Supported languages
 
 * CSS
-
 * Dockerfile
-
 * HTML (with emmet support)
-
 * JS (eslint and tsserver)
-
-* JSon
-
+* JSON
 * PHP
-
 * Python
-
 * Bash
-
 * SQL
-
 * VimL
-
 * XML
-
-* Yaml
-
-* Much more
+* YAML
+* Much more (via coc.nvim extensions)
 
 ## Author
 

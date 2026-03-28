@@ -96,7 +96,7 @@ ANTHROPIC_API_KEY=sk-... CLAUDE_CONFIG_DIR=~/.claude ./vm/run.sh /path/to/projec
 vagrant destroy
 ```
 
-If `~/.claude` exists, the run script mounts it automatically into the container. This gives Claude access to your settings, memory, and custom slash commands inside the VM.
+Set `CLAUDE_CONFIG_DIR` to mount your Claude config (settings, memory, custom commands) into the VM.
 
 The VM boots Alpine Linux with Docker, pulls the dev image from Docker Hub, and runs the container with the Docker socket mounted. Claude can spin up additional containers as needed, fully isolated from the host.
 

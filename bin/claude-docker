@@ -1,0 +1,25 @@
+#!/bin/bash
+set -euo pipefail
+
+PROJECT_DIR="$(pwd)"
+DOCKER_ARGS="-ti -e TERM=xterm-256color"
+
+# Mount project
+DOCKER_ARGS="$DOCKER_ARGS -v $PROJECT_DIR:/work/project"
+
+# Auth: API key
+if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -e ANTHROPIC_API_KEY"
+fi
+
+# Auth: OAuth credentials
+if [ -f "${HOME}/.claude.json" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude.json:/work/.claude.json"
+fi
+
+# Claude config directory (settings, memory, commands)
+if [ -d "${HOME}/.claude" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude:/work/.claude"
+fi
+
+exec docker run $DOCKER_ARGS nemanjan00/dev zsh -ic "cd project ; tmux new-session 'claude $*'"

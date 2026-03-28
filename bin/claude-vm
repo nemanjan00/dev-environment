@@ -1,0 +1,41 @@
+#!/bin/bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PROJECT_DIR="$(pwd)"
+
+cd "$SCRIPT_DIR"
+
+# Export project dir for Vagrant
+export PROJECT_DIR
+
+# Mount Claude config if available
+if [ -d "${HOME}/.claude" ]; then
+  export CLAUDE_CONFIG_DIR="${HOME}/.claude"
+fi
+
+vagrant up
+
+# Copy OAuth credentials into VM if available
+if [ -f "${HOME}/.claude.json" ]; then
+  vagrant ssh -c "cat > /tmp/.claude.json" < "${HOME}/.claude.json"
+fi
+
+# Build docker run command
+DOCKER_ARGS="-ti -e TERM=xterm-256color"
+DOCKER_ARGS="$DOCKER_ARGS -v /project:/work/project"
+DOCKER_ARGS="$DOCKER_ARGS -v /var/run/docker.sock:/var/run/docker.sock"
+
+if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY"
+fi
+
+if [ -d "${HOME}/.claude" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v /claude-config:/work/.claude"
+fi
+
+if [ -f "${HOME}/.claude.json" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v /tmp/.claude.json:/work/.claude.json"
+fi
+
+vagrant ssh -c "docker run $DOCKER_ARGS nemanjan00/dev zsh -ic 'cd project ; tmux new-session \"claude $*\"'"

@@ -17,6 +17,9 @@ build docker based IDE, for editing actual code on servers.
 * [Run it](#run-it)
 * [Opening project inside of it](#opening-project-inside-of-it)
 * [Claude Code](#claude-code)
+  * [Authentication](#authentication)
+  * [What gets mounted](#what-gets-mounted)
+  * [Manual Docker usage](#manual-docker-usage)
 * [VM isolation](#vm-isolation)
 * [Components](#components)
 * [Supported languages](#supported-languages)
@@ -47,37 +50,56 @@ docker run -ti -eTERM=xterm-256color -v$(pwd):/work/project nemanjan00/dev zsh -
 
 ## Claude Code
 
-Claude Code is pre-installed. You can authenticate with an API key or OAuth login:
+Claude Code is pre-installed. The quickest way to get started is with the CLI scripts:
 
 ```bash
-# With API key
-docker run -ti -e ANTHROPIC_API_KEY -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; claude"
+# Direct Docker — simple, no VM overhead
+bin/claude-docker
 
-# With OAuth credentials (~/.claude.json from `claude login`)
-docker run -ti -v~/.claude.json:/work/.claude.json \
-  -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; claude"
-
-# Mount your Claude config (settings, memory, etc.)
-docker run -ti -e ANTHROPIC_API_KEY \
-  -v$(pwd):/work/project \
-  -v~/.claude:/work/.claude \
-  nemanjan00/dev zsh -ic "cd project ; claude"
+# VM-isolated — Claude gets its own Docker daemon, fully sandboxed
+bin/claude-vm
 ```
 
-The container ships with a default `~/.claude/CLAUDE.md` that documents the environment for Claude. When you mount your own `~/.claude`, you can add your own settings, custom skills, and memory files.
+Both scripts auto-detect and mount `~/.claude.json` (OAuth), `~/.claude/` (config), and `~/.gitconfig` into the container. Claude runs with `--dangerously-skip-permissions` since the environment is sandboxed.
 
-### What you can mount
+### Authentication
+
+```bash
+# API key (works with both scripts)
+ANTHROPIC_API_KEY=sk-... bin/claude-docker
+
+# OAuth — just run `claude login` on the host first, then:
+bin/claude-docker  # ~/.claude.json is mounted automatically
+```
+
+### What gets mounted
 
 | Host path | Container path | Purpose |
 |-----------|---------------|---------|
 | `~/.claude.json` | `/work/.claude.json` | OAuth credentials (from `claude login`) |
 | `~/.claude` | `/work/.claude` | Full Claude config (settings, memory, CLAUDE.md) |
-| `~/.claude/settings.json` | `/work/.claude/settings.json` | Just your settings |
-| `~/.claude/commands/` | `/work/.claude/commands/` | Custom slash commands |
+| `~/.gitconfig` | `/work/.gitconfig` | Git identity and settings (read-only) |
+
+The container ships with a default `~/.claude/CLAUDE.md` that documents the environment for Claude. When you mount your own `~/.claude`, you can add your own settings, custom skills, and memory files.
+
+### Manual Docker usage
+
+```bash
+# Minimal
+docker run -ti -e ANTHROPIC_API_KEY -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; claude"
+
+# Full setup
+docker run -ti -e ANTHROPIC_API_KEY \
+  -v$(pwd):/work/project \
+  -v~/.claude:/work/.claude \
+  -v~/.claude.json:/work/.claude.json \
+  -v~/.gitconfig:/work/.gitconfig:ro \
+  nemanjan00/dev zsh -ic "cd project ; claude"
+```
 
 ## VM isolation
 
-For full isolation (e.g. giving Claude access to Docker), run the dev container inside a lightweight VM using Vagrant + libvirt.
+For full isolation (e.g. giving Claude access to Docker), use `bin/claude-vm` to run the dev container inside a lightweight VM via Vagrant + libvirt. Each invocation creates an ephemeral VM that is destroyed on exit.
 
 ### Prerequisites
 
@@ -90,25 +112,20 @@ vagrant plugin install vagrant-libvirt
 ### Usage
 
 ```bash
+# Run from your project directory — it gets mounted into the VM
+cd /path/to/project
+/path/to/dev-environment/bin/claude-vm
+
 # With API key
-ANTHROPIC_API_KEY=sk-... ./vm/run.sh /path/to/project
+ANTHROPIC_API_KEY=sk-... bin/claude-vm
 
-# With OAuth credentials
-CLAUDE_AUTH=~/.claude.json ./vm/run.sh /path/to/project
-
-# With Claude config directory
-CLAUDE_CONFIG_DIR=~/.claude ./vm/run.sh /path/to/project
-
-# Stop the VM
-./vm/stop.sh
-
-# Destroy the VM entirely
-vagrant destroy
+# Alternative entry point with more env var control
+CLAUDE_AUTH=~/.claude.json CLAUDE_CONFIG_DIR=~/.claude ./vm/run.sh /path/to/project
 ```
 
-Set `CLAUDE_CONFIG_DIR` to mount your Claude config (settings, memory, custom commands) into the VM.
+VMs are ephemeral — each `claude-vm` invocation gets a unique VM ID and cleans up on exit (including Ctrl-C). Multiple instances can run in parallel.
 
-The VM boots Alpine Linux with Docker, pulls the dev image from Docker Hub, and runs the container with the Docker socket mounted. Claude can spin up additional containers as needed, fully isolated from the host.
+The container inside the VM has access to the VM's Docker socket (with correct group permissions via `--group-add`), so Claude can spin up additional containers as needed, fully isolated from the host.
 
 ### How it works
 
@@ -117,12 +134,13 @@ Host (your machine)
 └── Vagrant/libvirt VM (Alpine Linux, 4GB RAM, 2 vCPUs)
     ├── Docker daemon
     └── dev container (this image)
-        ├── Claude Code
+        ├── Claude Code (--dangerously-skip-permissions)
+        ├── Docker CLI → VM's Docker socket
         ├── Neovim, tmux, zsh
-        └── /var/run/docker.sock → VM's Docker
+        └── Project files (virtiofs mount)
 ```
 
-Project files are mounted into the VM via virtiofs (native libvirt filesystem passthrough), so changes are reflected in both directions. The dev container has access to the VM's Docker socket, so Claude can create sibling containers but cannot affect the host.
+Project files are mounted into the VM via virtiofs (native libvirt filesystem passthrough), so changes are reflected in both directions. The dev container cannot affect the host.
 
 ### Troubleshooting
 

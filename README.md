@@ -17,6 +17,7 @@ build docker based IDE, for editing actual code on servers.
 * [Run it](#run-it)
 * [Opening project inside of it](#opening-project-inside-of-it)
 * [Claude Code](#claude-code)
+* [VM isolation](#vm-isolation)
 * [Components](#components)
 * [Supported languages](#supported-languages)
 * [Author](#author)
@@ -65,6 +66,55 @@ The container ships with a default `~/.claude/CLAUDE.md` that documents the envi
 | `~/.claude` | `/work/.claude` | Full Claude config (settings, memory, CLAUDE.md) |
 | `~/.claude/settings.json` | `/work/.claude/settings.json` | Just your settings |
 | `~/.claude/commands/` | `/work/.claude/commands/` | Custom slash commands |
+
+## VM isolation
+
+For full isolation (e.g. giving Claude access to Docker), run the dev container inside a lightweight VM using Vagrant + libvirt.
+
+### Prerequisites
+
+```bash
+# Arch Linux
+pacman -S vagrant libvirt qemu-full qemu-img
+vagrant plugin install vagrant-libvirt
+```
+
+### Setup (one-time, needs sudo)
+
+```bash
+# Creates a libvirt network with DNS disabled (avoids port 53 conflicts)
+sudo ./vm/setup.sh
+```
+
+### Usage
+
+```bash
+# Start VM and open a project inside it
+# Claude gets Docker socket access inside the VM
+ANTHROPIC_API_KEY=sk-... ./vm/run.sh /path/to/project
+
+# Stop the VM
+./vm/stop.sh
+
+# Destroy the VM entirely
+vagrant destroy
+```
+
+The VM boots Alpine Linux with Docker, pulls the dev image from Docker Hub, and runs the container with the Docker socket mounted. Claude can spin up additional containers as needed, fully isolated from the host.
+
+### How it works
+
+```
+Host (your machine)
+└── Vagrant/libvirt VM (Alpine Linux, 4GB RAM, 2 vCPUs)
+    ├── Docker daemon
+    └── dev container (this image)
+        ├── Claude Code
+        ├── Neovim, tmux, zsh
+        └── /var/run/docker.sock → VM's Docker
+```
+
+Project files are mounted into the VM via virtiofs (native libvirt filesystem passthrough), so changes are reflected in both directions. The dev container has access to the VM's Docker socket, so Claude can create sibling containers but cannot affect the host.
 
 ## Components
 

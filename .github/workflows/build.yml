@@ -12,4 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Docker image
-        run: docker build -t dev .
+        run: docker build -t nemanjan00/dev .
+      - name: Push to Docker Hub
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
+          docker push nemanjan00/dev

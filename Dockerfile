@@ -31,8 +31,9 @@ RUN curl -fsSL https://github.com/asdf-vm/asdf/releases/download/v0.18.1/asdf-v0
     mv /tmp/asdf ~/.local/bin/asdf
 ENV PATH="/work/.local/bin:/work/.asdf/shims:${PATH}"
 
-# Install Node.js via asdf
+# Install Node.js and Python via asdf
 RUN asdf plugin add nodejs && asdf install nodejs latest && asdf set --home nodejs latest
+RUN asdf plugin add python && asdf install python latest && asdf set --home python latest
 
 # Disable cache
 #ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/skipcache

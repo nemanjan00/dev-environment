@@ -133,7 +133,7 @@ If `vagrant up` fails with `dnsmasq: failed to create listening socket ... Addre
 * [Neovim](https://neovim.io/) with [my config](https://github.com/nemanjan00/vim) and [coc.nvim](https://github.com/neoclide/coc.nvim) for LSP
 * [zsh](https://www.zsh.org/) with [zplug](https://github.com/zplug/zplug) and [my config](https://github.com/nemanjan00/zsh)
 * [tmux](https://github.com/tmux/tmux) with [gpakosz/.tmux](https://github.com/gpakosz/.tmux)
-* [asdf](https://asdf-vm.com/) version manager
+* [asdf](https://asdf-vm.com/) version manager (Node.js, Python pre-installed)
 * [fzf](https://github.com/junegunn/fzf) fuzzy finder
 * [ripgrep](https://github.com/BurntSushi/ripgrep) fast search
 * [jq](https://jqlang.github.io/jq/) JSON processor

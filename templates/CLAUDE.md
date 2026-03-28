@@ -15,6 +15,7 @@ This is a Docker-based development environment running Arch Linux.
 - **System packages**: installed via `pacman` (requires root — not available in this container)
 - **Language versions**: managed via [asdf](https://asdf-vm.com/) v0.18.1 (Go binary at `~/.local/bin/asdf`)
   - Node.js is installed via asdf. Use `asdf install nodejs <version>` and `asdf set nodejs <version>` to switch.
+  - Python is installed via asdf. Use `asdf install python <version>` and `asdf set python <version>` to switch. `pip` is available.
   - Add new languages with `asdf plugin add <name>` then `asdf install <name> <version>`.
 - **Node.js packages**: install globally with `npm install -g <package>` (no root needed, managed by asdf)
 

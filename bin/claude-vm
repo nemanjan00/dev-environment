@@ -39,7 +39,7 @@ fi
 
 # Build docker run command
 DOCKER_ARGS="-ti -e TERM=xterm-256color"
-DOCKER_ARGS="$DOCKER_ARGS -v /var/run/docker.sock:/var/run/docker.sock"
+DOCKER_ARGS="$DOCKER_ARGS -v /var/run/docker.sock:/var/run/docker.sock --group-add \$(stat -c '%g' /var/run/docker.sock)"
 
 # Mount project — use /vagrant if PROJECT_DIR is the same as SCRIPT_DIR
 if [ "$(realpath "$PROJECT_DIR")" = "$(realpath "$SCRIPT_DIR")" ]; then
@@ -64,4 +64,4 @@ if [ -f "${HOME}/.gitconfig" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v /tmp/.gitconfig:/work/.gitconfig:ro"
 fi
 
-vagrant ssh -c "docker run $DOCKER_ARGS nemanjan00/dev zsh -ic 'cd project ; tmux new-session \"claude $*\"'"
+vagrant ssh -c "docker run $DOCKER_ARGS nemanjan00/dev zsh -ic 'cd project ; tmux new-session \"claude --dangerously-skip-permissions $*\"'"

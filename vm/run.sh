@@ -37,7 +37,7 @@ fi
 # Build docker run command
 DOCKER_ARGS="-ti -e TERM=xterm-256color"
 DOCKER_ARGS="$DOCKER_ARGS ${ANTHROPIC_API_KEY:+-e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY}"
-DOCKER_ARGS="$DOCKER_ARGS -v /var/run/docker.sock:/var/run/docker.sock"
+DOCKER_ARGS="$DOCKER_ARGS -v /var/run/docker.sock:/var/run/docker.sock --group-add \$(stat -c '%g' /var/run/docker.sock)"
 
 # Mount project — use /vagrant if PROJECT_DIR is the same as SCRIPT_DIR
 if [ "$(realpath "$PROJECT_DIR")" = "$(realpath "$SCRIPT_DIR")" ]; then

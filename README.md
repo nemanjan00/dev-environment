@@ -28,6 +28,9 @@ build docker based IDE, for editing actual code on servers.
 
 ```bash
 docker build -t nemanjan00/dev .
+
+# With custom UID/GID (to match your host user)
+docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev .
 ```
 
 ## Run it

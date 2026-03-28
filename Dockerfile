@@ -1,6 +1,9 @@
 FROM archlinux:base-devel
 LABEL maintainer="nemanjan00 nemanjan00@gmail.com"
 
+ARG UID=1000
+ARG GID=1000
+
 USER 0
 
 # Install all system packages
@@ -14,14 +17,14 @@ RUN pacman -Syu --noconfirm \
     tmux
 
 # Create user with home at /work
-RUN groupadd -g 1000 user && \
-    useradd -u 1000 -g 1000 -s /usr/bin/zsh -d /work user && \
+RUN groupadd -g $GID user && \
+    useradd -u $UID -g $GID -s /usr/bin/zsh -d /work user && \
     mkdir /work && \
-    chown 1000:1000 /work
+    chown $UID:$GID /work
 WORKDIR /work
 
 # Install asdf version manager
-USER 1000
+USER $UID
 ENV ASDF_DATA_DIR=/work/.asdf
 RUN curl -fsSL https://github.com/asdf-vm/asdf/releases/download/v0.18.1/asdf-v0.18.1-linux-amd64.tar.gz | tar xz -C /tmp && \
     mkdir -p ~/.local/bin && \
@@ -46,7 +49,7 @@ RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 RUN zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
 
 # Download my dotfiles
-USER 1000
+USER $UID
 RUN git clone https://github.com/nemanjan00/vim.git ~/.config/nvim
 
 # Install plug manager for vim
@@ -70,7 +73,7 @@ RUN mkdir -p ~/.claude
 COPY templates/CLAUDE.md /work/.claude/CLAUDE.md
 
 # Prepare work area
-USER 1000
+USER $UID
 WORKDIR /work
 
 CMD ["tmux"]

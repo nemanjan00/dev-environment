@@ -9,8 +9,6 @@ Vagrant.configure("2") do |config|
     v.memory = 4096
     v.cpus = 2
     v.memorybacking :access, :mode => "shared"
-    v.management_network_name = "vagrant-dev"
-    v.management_network_address = "192.168.123.0/24"
   end
 
   # Share project directory into the VM (virtiofs — native libvirt mount)

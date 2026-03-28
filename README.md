@@ -79,13 +79,6 @@ pacman -S vagrant libvirt qemu-full qemu-img
 vagrant plugin install vagrant-libvirt
 ```
 
-### Setup (one-time, needs sudo)
-
-```bash
-# Creates a libvirt network with DNS disabled (avoids port 53 conflicts)
-sudo ./vm/setup.sh
-```
-
 ### Usage
 
 ```bash
@@ -115,6 +108,10 @@ Host (your machine)
 ```
 
 Project files are mounted into the VM via virtiofs (native libvirt filesystem passthrough), so changes are reflected in both directions. The dev container has access to the VM's Docker socket, so Claude can create sibling containers but cannot affect the host.
+
+### Troubleshooting
+
+If `vagrant up` fails with `dnsmasq: failed to create listening socket ... Address already in use`, you have something bound on port 53 that conflicts with libvirt's DHCP. Run `sudo ./vm/setup.sh` to create a custom network with DNS disabled.
 
 ## Components
 

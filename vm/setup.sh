@@ -1,9 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
-# Create a libvirt network with DNS disabled (avoids port 53 conflicts)
-# Only DHCP runs — no dnsmasq DNS listener
+# Create a libvirt network with DNS disabled (avoids port 53 conflicts).
+# Run this with sudo if vagrant up fails with dnsmasq address-in-use errors.
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 NETWORK_NAME="vagrant-dev"
 
 if virsh net-info "$NETWORK_NAME" &>/dev/null; then
@@ -30,4 +31,9 @@ EOF
 
 virsh net-start "$NETWORK_NAME"
 virsh net-autostart "$NETWORK_NAME"
+
 echo "Network '$NETWORK_NAME' created and started."
+echo ""
+echo "Add the following to the libvirt provider block in Vagrantfile:"
+echo '    v.management_network_name = "vagrant-dev"'
+echo '    v.management_network_address = "192.168.123.0/24"'

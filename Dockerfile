@@ -1,44 +1,25 @@
 FROM archlinux:base-devel
-MAINTAINER nemanjan00 nemanjan00@gmail.com
+LABEL maintainer="nemanjan00 nemanjan00@gmail.com"
 
 USER 0
 
-# Install dependencies for building stuff
-RUN pacman -Syu --noconfirm git base-devel curl
+# Install all system packages
+RUN pacman -Syu --noconfirm \
+    git base-devel curl \
+    zsh \
+    clang cmake \
+    nodejs yarn \
+    htop ripgrep fzf jq \
+    ctags \
+    python-pynvim neovim \
+    tmux
 
-# Install shell
-RUN pacman -Syu --noconfirm zsh
-
-# Create user
-RUN groupadd -g 1000 user
-RUN useradd -r -u 1000 -g 1000 -s /usr/bin/zsh user
-RUN usermod -d /work -m user
-
-# Cmake
-RUN pacman -Syu --noconfirm clang cmake
-
-# Prepare home for user
-RUN mkdir /work
-RUN chown 1000:1000 /work
+# Create user with home at /work
+RUN groupadd -g 1000 user && \
+    useradd -u 1000 -g 1000 -s /usr/bin/zsh -d /work user && \
+    mkdir /work && \
+    chown 1000:1000 /work
 WORKDIR /work
-
-USER 1000
-
-# Install node
-USER 0
-RUN pacman -Syu --noconfirm nodejs yarn
-
-# Add some common stuff
-RUN pacman -Syu --noconfirm htop ripgrep fzf jq
-
-# Ctags
-RUN pacman -Syu --noconfirm ctags
-
-# Install neovim stuff
-RUN pacman -Syu --noconfirm python-pynvim neovim
-
-# Install tmux stuff
-RUN pacman -Syu --noconfirm tmux
 
 # Install language version manager
 USER 1000

@@ -8,7 +8,6 @@ RUN pacman -Syu --noconfirm \
     git base-devel curl \
     zsh \
     clang cmake \
-    nodejs yarn \
     htop ripgrep fzf jq \
     ctags \
     python-pynvim neovim \
@@ -21,11 +20,16 @@ RUN groupadd -g 1000 user && \
     chown 1000:1000 /work
 WORKDIR /work
 
-# Install language version manager
+# Install asdf version manager
 USER 1000
-RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.6
-RUN echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.zshrc
-RUN echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.zshrc
+ENV ASDF_DATA_DIR=/work/.asdf
+RUN curl -fsSL https://github.com/asdf-vm/asdf/releases/download/v0.18.1/asdf-v0.18.1-linux-amd64.tar.gz | tar xz -C /tmp && \
+    mkdir -p ~/.local/bin && \
+    mv /tmp/asdf ~/.local/bin/asdf
+ENV PATH="/work/.local/bin:/work/.asdf/shims:${PATH}"
+
+# Install Node.js via asdf
+RUN asdf plugin add nodejs && asdf install nodejs latest && asdf set --home nodejs latest
 
 # Disable cache
 #ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/skipcache
@@ -53,12 +57,17 @@ RUN nvim +PlugInstall +qall
 
 # Coc
 RUN ln -s ~/.config/nvim/coc ~/.config/coc
-RUN zsh -c "cd ~/.config/coc/extensions ; yarn"
+RUN cd ~/.config/coc/extensions && npm install
 
 # Install .tmux
 RUN git clone https://github.com/gpakosz/.tmux.git ~/.tmux
 RUN ln -s -f .tmux/.tmux.conf ~/.tmux.conf
 RUN cp ~/.tmux/.tmux.conf.local ~/
+
+# Install Claude Code
+RUN npm install -g @anthropic-ai/claude-code
+RUN mkdir -p ~/.claude
+COPY templates/CLAUDE.md /work/.claude/CLAUDE.md
 
 # Prepare work area
 USER 1000

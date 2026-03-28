@@ -16,6 +16,7 @@ build docker based IDE, for editing actual code on servers.
 * [Build it](#build-it)
 * [Run it](#run-it)
 * [Opening project inside of it](#opening-project-inside-of-it)
+* [Claude Code](#claude-code)
 * [Components](#components)
 * [Supported languages](#supported-languages)
 * [Author](#author)
@@ -39,6 +40,31 @@ docker run -ti nemanjan00/dev
 ```bash
 docker run -ti -eTERM=xterm-256color -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; tmux"
 ```
+
+## Claude Code
+
+Claude Code is pre-installed. To use it, pass your API key and optionally mount your config:
+
+```bash
+# Minimal — just the API key
+docker run -ti -e ANTHROPIC_API_KEY -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; claude"
+
+# Mount your Claude config (settings, memory, etc.)
+docker run -ti -e ANTHROPIC_API_KEY \
+  -v$(pwd):/work/project \
+  -v~/.claude:/work/.claude \
+  nemanjan00/dev zsh -ic "cd project ; claude"
+```
+
+The container ships with a default `~/.claude/CLAUDE.md` that documents the environment for Claude. When you mount your own `~/.claude`, you can add your own settings, custom skills, and memory files.
+
+### What you can mount
+
+| Host path | Container path | Purpose |
+|-----------|---------------|---------|
+| `~/.claude` | `/work/.claude` | Full Claude config (settings, memory, CLAUDE.md) |
+| `~/.claude/settings.json` | `/work/.claude/settings.json` | Just your settings |
+| `~/.claude/commands/` | `/work/.claude/commands/` | Custom slash commands |
 
 ## Components
 

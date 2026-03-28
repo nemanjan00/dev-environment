@@ -4,10 +4,9 @@
 
 ![Screenshot](https://github.com/nemanjan00/dev-environment/blob/master/screenshot/nvim.png?raw=true)
 
-My docker-based dev environment.
+Docker-based dev environment for running Claude Code in a sandboxed container, with optional VM isolation via Vagrant/libvirt for safe Docker-in-Docker access.
 
-I am Vim person, but, my setup is not quite git clone, so, I have decided to
-build docker based IDE, for editing actual code on servers. 
+Also works as a standalone portable IDE with Neovim, tmux, zsh, and language tooling.
 
 ## Table of contents
 

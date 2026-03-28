@@ -14,7 +14,8 @@ RUN pacman -Syu --noconfirm \
     htop ripgrep fzf jq \
     ctags \
     python-pynvim neovim \
-    tmux
+    tmux \
+    docker
 
 # Create user with home at /work
 RUN groupadd -g $GID user && \

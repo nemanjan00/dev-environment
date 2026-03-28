@@ -21,6 +21,13 @@ fi
 
 vagrant up
 
+# Copy Claude OAuth credentials into VM if specified
+CLAUDE_AUTH="${CLAUDE_AUTH:-}"
+if [ -n "$CLAUDE_AUTH" ] && [ -f "$CLAUDE_AUTH" ]; then
+  echo "  Claude auth: $CLAUDE_AUTH"
+  vagrant ssh -c "cat > /tmp/.claude.json" < "$CLAUDE_AUTH"
+fi
+
 # Build docker run command
 DOCKER_ARGS="-ti -e TERM=xterm-256color"
 DOCKER_ARGS="$DOCKER_ARGS ${ANTHROPIC_API_KEY:+-e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY}"
@@ -29,6 +36,10 @@ DOCKER_ARGS="$DOCKER_ARGS -v /var/run/docker.sock:/var/run/docker.sock"
 
 if [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v /claude-config:/work/.claude"
+fi
+
+if [ -n "${CLAUDE_AUTH:-}" ] && [ -f "$CLAUDE_AUTH" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v /tmp/.claude.json:/work/.claude.json"
 fi
 
 vagrant ssh -c "docker run $DOCKER_ARGS nemanjan00/dev zsh -ic 'cd project ; tmux'"

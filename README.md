@@ -44,11 +44,15 @@ docker run -ti -eTERM=xterm-256color -v$(pwd):/work/project nemanjan00/dev zsh -
 
 ## Claude Code
 
-Claude Code is pre-installed. To use it, pass your API key and optionally mount your config:
+Claude Code is pre-installed. You can authenticate with an API key or OAuth login:
 
 ```bash
-# Minimal — just the API key
+# With API key
 docker run -ti -e ANTHROPIC_API_KEY -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; claude"
+
+# With OAuth credentials (~/.claude.json from `claude login`)
+docker run -ti -v~/.claude.json:/work/.claude.json \
+  -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; claude"
 
 # Mount your Claude config (settings, memory, etc.)
 docker run -ti -e ANTHROPIC_API_KEY \
@@ -63,6 +67,7 @@ The container ships with a default `~/.claude/CLAUDE.md` that documents the envi
 
 | Host path | Container path | Purpose |
 |-----------|---------------|---------|
+| `~/.claude.json` | `/work/.claude.json` | OAuth credentials (from `claude login`) |
 | `~/.claude` | `/work/.claude` | Full Claude config (settings, memory, CLAUDE.md) |
 | `~/.claude/settings.json` | `/work/.claude/settings.json` | Just your settings |
 | `~/.claude/commands/` | `/work/.claude/commands/` | Custom slash commands |
@@ -82,12 +87,14 @@ vagrant plugin install vagrant-libvirt
 ### Usage
 
 ```bash
-# Start VM and open a project inside it
-# Claude gets Docker socket access inside the VM
+# With API key
 ANTHROPIC_API_KEY=sk-... ./vm/run.sh /path/to/project
 
-# With custom Claude config directory
-ANTHROPIC_API_KEY=sk-... CLAUDE_CONFIG_DIR=~/.claude ./vm/run.sh /path/to/project
+# With OAuth credentials
+CLAUDE_AUTH=~/.claude.json ./vm/run.sh /path/to/project
+
+# With Claude config directory
+CLAUDE_CONFIG_DIR=~/.claude ./vm/run.sh /path/to/project
 
 # Stop the VM
 ./vm/stop.sh

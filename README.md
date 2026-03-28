@@ -117,10 +117,16 @@ cd /path/to/project
 
 # With API key
 ANTHROPIC_API_KEY=sk-... bin/claude-vm
-
-# Alternative entry point with more env var control
-CLAUDE_AUTH=~/.claude.json CLAUDE_CONFIG_DIR=~/.claude ./vm/run.sh /path/to/project
 ```
+
+By default, `claude-vm` auto-detects `~/.claude.json`, `~/.claude/`, and `~/.gitconfig`. You can override with env vars:
+
+| Env var | Default | Purpose |
+|---------|---------|---------|
+| `PROJECT_DIR` | `$(pwd)` | Project directory to mount |
+| `CLAUDE_CONFIG_DIR` | `~/.claude` | Claude config (settings, memory) |
+| `CLAUDE_AUTH` | `~/.claude.json` | OAuth credentials file |
+| `ANTHROPIC_API_KEY` | (none) | API key authentication |
 
 VMs are ephemeral — each `claude-vm` invocation gets a unique VM ID and cleans up on exit (including Ctrl-C). Multiple instances can run in parallel.
 
@@ -143,7 +149,7 @@ Project files are mounted into the VM via virtiofs (native libvirt filesystem pa
 
 ### Troubleshooting
 
-If `vagrant up` fails with `dnsmasq: failed to create listening socket ... Address already in use`, you have something bound on port 53 that conflicts with libvirt's DHCP. Run `sudo ./vm/setup.sh` to create a custom network with DNS disabled.
+If `vagrant up` fails with `dnsmasq: failed to create listening socket ... Address already in use`, you have something bound on port 53 that conflicts with libvirt's DHCP. Run `sudo bin/claude-vm-setup` to create a custom network with DNS disabled.
 
 ## Components
 

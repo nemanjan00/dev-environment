@@ -2,7 +2,9 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PROJECT_DIR="$(pwd)"
+
+# PROJECT_DIR: env var > current directory
+PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
 
 cd "$SCRIPT_DIR"
 
@@ -20,16 +22,25 @@ trap cleanup EXIT
 # Export project dir for Vagrant
 export PROJECT_DIR
 
-# Mount Claude config if available
-if [ -d "${HOME}/.claude" ]; then
-  export CLAUDE_CONFIG_DIR="${HOME}/.claude"
+# Claude config: env var > auto-detect ~/.claude
+if [ -z "${CLAUDE_CONFIG_DIR:-}" ] && [ -d "${HOME}/.claude" ]; then
+  CLAUDE_CONFIG_DIR="${HOME}/.claude"
+fi
+if [ -n "${CLAUDE_CONFIG_DIR:-}" ] && [ -d "$CLAUDE_CONFIG_DIR" ]; then
+  export CLAUDE_CONFIG_DIR
+fi
+
+# Claude auth: env var > auto-detect ~/.claude.json
+CLAUDE_AUTH="${CLAUDE_AUTH:-}"
+if [ -z "$CLAUDE_AUTH" ] && [ -f "${HOME}/.claude.json" ]; then
+  CLAUDE_AUTH="${HOME}/.claude.json"
 fi
 
 vagrant up
 
-# Copy OAuth credentials into VM if available
-if [ -f "${HOME}/.claude.json" ]; then
-  vagrant ssh -c "cat > /tmp/.claude.json" < "${HOME}/.claude.json"
+# Copy credentials into VM
+if [ -n "$CLAUDE_AUTH" ] && [ -f "$CLAUDE_AUTH" ]; then
+  vagrant ssh -c "cat > /tmp/.claude.json" < "$CLAUDE_AUTH"
 fi
 
 # Copy git config into VM if available
@@ -52,11 +63,11 @@ if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY"
 fi
 
-if [ -d "${HOME}/.claude" ]; then
+if [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v /claude-config:/work/.claude"
 fi
 
-if [ -f "${HOME}/.claude.json" ]; then
+if [ -n "$CLAUDE_AUTH" ] && [ -f "$CLAUDE_AUTH" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v /tmp/.claude.json:/work/.claude.json"
 fi
 

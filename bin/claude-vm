@@ -6,6 +6,17 @@ PROJECT_DIR="$(pwd)"
 
 cd "$SCRIPT_DIR"
 
+# Unique ID per invocation so multiple VMs can run in parallel
+export VM_ID="dev-$(head -c 4 /dev/urandom | xxd -p)"
+export VAGRANT_DOTFILE_PATH="/tmp/vagrant-${VM_ID}"
+
+# Ensure cleanup on exit (even on error or Ctrl-C)
+cleanup() {
+  vagrant destroy -f 2>/dev/null || true
+  rm -rf "$VAGRANT_DOTFILE_PATH"
+}
+trap cleanup EXIT
+
 # Export project dir for Vagrant
 export PROJECT_DIR
 

@@ -3,12 +3,15 @@
 
 Vagrant.configure("2") do |config|
   config.vm.box = "generic/alpine319"
-  config.vm.hostname = "dev"
+
+  vm_id = ENV['VM_ID'] || 'dev'
+  config.vm.hostname = vm_id
 
   config.vm.provider :libvirt do |v|
     v.memory = 4096
     v.cpus = 2
     v.memorybacking :access, :mode => "shared"
+    v.default_prefix = vm_id
   end
 
   # Share project directory into the VM (virtiofs — native libvirt mount)
@@ -45,11 +48,14 @@ Vagrant.configure("2") do |config|
 
     # Allow vagrant user to use Docker
     addgroup vagrant docker 2>/dev/null || true
+  SHELL
 
-    # Wait for Docker to be ready
+  config.vm.provision "shell", run: "always", inline: <<-SHELL
+    # Ensure Docker is running
+    service docker start
     while ! docker info > /dev/null 2>&1; do sleep 1; done
 
-    # Pull the dev environment image
+    # Always pull the latest dev environment image
     docker pull nemanjan00/dev
   SHELL
 end

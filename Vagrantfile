@@ -19,6 +19,11 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ENV['PROJECT_DIR'], "/project", type: "virtiofs"
   end
 
+  # Mount Claude config if it exists
+  if ENV['CLAUDE_CONFIG_DIR']
+    config.vm.synced_folder ENV['CLAUDE_CONFIG_DIR'], "/claude-config", type: "virtiofs"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
     # Use working Alpine mirrors
     echo "https://dl-cdn.alpinelinux.org/alpine/v3.19/main" > /etc/apk/repositories

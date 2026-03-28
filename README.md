@@ -86,12 +86,17 @@ vagrant plugin install vagrant-libvirt
 # Claude gets Docker socket access inside the VM
 ANTHROPIC_API_KEY=sk-... ./vm/run.sh /path/to/project
 
+# With custom Claude config directory
+ANTHROPIC_API_KEY=sk-... CLAUDE_CONFIG_DIR=~/.claude ./vm/run.sh /path/to/project
+
 # Stop the VM
 ./vm/stop.sh
 
 # Destroy the VM entirely
 vagrant destroy
 ```
+
+If `~/.claude` exists, the run script mounts it automatically into the container. This gives Claude access to your settings, memory, and custom slash commands inside the VM.
 
 The VM boots Alpine Linux with Docker, pulls the dev image from Docker Hub, and runs the container with the Docker socket mounted. Claude can spin up additional containers as needed, fully isolated from the host.
 

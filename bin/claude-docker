@@ -22,4 +22,9 @@ if [ -d "${HOME}/.claude" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude:/work/.claude"
 fi
 
+# Git config
+if [ -f "${HOME}/.gitconfig" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.gitconfig:/work/.gitconfig:ro"
+fi
+
 exec docker run $DOCKER_ARGS nemanjan00/dev zsh -ic "cd project ; tmux new-session 'claude $*'"

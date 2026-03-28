@@ -14,14 +14,22 @@ Vagrant.configure("2") do |config|
   # Share project directory into the VM (virtiofs — native libvirt mount)
   config.vm.synced_folder ".", "/vagrant", type: "virtiofs"
 
-  # Mount external project to work on
+  project_root = File.realpath(".")
+
+  # Mount external project to work on (skip if same as project root to avoid duplicate virtiofs target)
   if ENV['PROJECT_DIR']
-    config.vm.synced_folder ENV['PROJECT_DIR'], "/project", type: "virtiofs"
+    project_dir = File.realpath(ENV['PROJECT_DIR'])
+    if project_dir != project_root
+      config.vm.synced_folder ENV['PROJECT_DIR'], "/project", type: "virtiofs"
+    end
   end
 
-  # Mount Claude config if it exists
+  # Mount Claude config if it exists (skip if same as an already-mounted path)
   if ENV['CLAUDE_CONFIG_DIR']
-    config.vm.synced_folder ENV['CLAUDE_CONFIG_DIR'], "/claude-config", type: "virtiofs"
+    claude_dir = File.realpath(ENV['CLAUDE_CONFIG_DIR'])
+    if claude_dir != project_root && (!ENV['PROJECT_DIR'] || claude_dir != File.realpath(ENV['PROJECT_DIR']))
+      config.vm.synced_folder ENV['CLAUDE_CONFIG_DIR'], "/claude-config", type: "virtiofs"
+    end
   end
 
   config.vm.provision "shell", inline: <<-SHELL

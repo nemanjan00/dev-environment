@@ -28,11 +28,23 @@ if [ -n "$CLAUDE_AUTH" ] && [ -f "$CLAUDE_AUTH" ]; then
   vagrant ssh -c "cat > /tmp/.claude.json" < "$CLAUDE_AUTH"
 fi
 
+# Copy git config into VM if available
+if [ -f "${HOME}/.gitconfig" ]; then
+  echo "  Git config: ${HOME}/.gitconfig"
+  vagrant ssh -c "cat > /tmp/.gitconfig" < "${HOME}/.gitconfig"
+fi
+
 # Build docker run command
 DOCKER_ARGS="-ti -e TERM=xterm-256color"
 DOCKER_ARGS="$DOCKER_ARGS ${ANTHROPIC_API_KEY:+-e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY}"
-DOCKER_ARGS="$DOCKER_ARGS -v /project:/work/project"
 DOCKER_ARGS="$DOCKER_ARGS -v /var/run/docker.sock:/var/run/docker.sock"
+
+# Mount project — use /vagrant if PROJECT_DIR is the same as SCRIPT_DIR
+if [ "$(realpath "$PROJECT_DIR")" = "$(realpath "$SCRIPT_DIR")" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v /vagrant:/work/project"
+else
+  DOCKER_ARGS="$DOCKER_ARGS -v /project:/work/project"
+fi
 
 if [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v /claude-config:/work/.claude"
@@ -40,6 +52,10 @@ fi
 
 if [ -n "${CLAUDE_AUTH:-}" ] && [ -f "$CLAUDE_AUTH" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v /tmp/.claude.json:/work/.claude.json"
+fi
+
+if [ -f "${HOME}/.gitconfig" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v /tmp/.gitconfig:/work/.gitconfig:ro"
 fi
 
 vagrant ssh -c "docker run $DOCKER_ARGS nemanjan00/dev zsh -ic 'cd project ; tmux'"

@@ -11,7 +11,7 @@ RUN pacman -Syu --noconfirm \
     git base-devel curl \
     zsh \
     clang cmake \
-    htop ripgrep fzf jq \
+    htop ripgrep eza fzf jq \
     ctags \
     python-pynvim neovim \
     tmux \

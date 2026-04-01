@@ -86,7 +86,7 @@ The container ships with a default `~/.claude/CLAUDE.md` that documents the envi
 Frontend developers who need container ports (e.g. dev servers) accessible on the host can enable host networking:
 
 ```bash
-HOST_NETWORK=1 bin/claude-docker
+bin/claude-docker --host-network
 ```
 
 This passes `--network host` to Docker, so any ports the container listens on are directly available on localhost.

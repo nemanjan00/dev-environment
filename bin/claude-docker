@@ -27,4 +27,9 @@ if [ -f "${HOME}/.gitconfig" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.gitconfig:/work/.gitconfig:ro"
 fi
 
+# Host network (useful for frontend devs who need container ports on the host)
+if [ "${HOST_NETWORK:-}" = "1" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS --network host"
+fi
+
 exec docker run $DOCKER_ARGS nemanjan00/dev zsh -ic "cd project ; tmux new-session 'claude --dangerously-skip-permissions $*'"

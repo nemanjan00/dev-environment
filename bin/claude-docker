@@ -29,15 +29,23 @@ fi
 
 # Parse arguments
 CLAUDE_ARGS=""
-for arg in "$@"; do
-  case "$arg" in
+PROFILE="default"
+while [ $# -gt 0 ]; do
+  case "$1" in
     --host-network)
       DOCKER_ARGS="$DOCKER_ARGS --network host"
       ;;
+    --profile)
+      PROFILE="$2"
+      shift
+      ;;
     *)
-      CLAUDE_ARGS="$CLAUDE_ARGS $arg"
+      CLAUDE_ARGS="$CLAUDE_ARGS $1"
       ;;
   esac
+  shift
 done
 
-exec docker run $DOCKER_ARGS nemanjan00/dev zsh -ic "cd project ; tmux new-session 'claude --dangerously-skip-permissions $CLAUDE_ARGS'"
+IMAGE="nemanjan00/dev:${PROFILE}"
+
+exec docker run $DOCKER_ARGS "$IMAGE" zsh -ic "cd project ; tmux new-session 'claude --dangerously-skip-permissions $CLAUDE_ARGS'"

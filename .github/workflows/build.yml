@@ -11,10 +11,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build Docker image
-        run: docker build -t nemanjan00/dev .
+
+      - name: Build base image
+        run: docker build -t nemanjan00/dev:base .
+
+      - name: Build profile images
+        run: |
+          for profile in profiles/*/; do
+            name=$(basename "$profile")
+            echo "Building profile: $name"
+            docker build -t "nemanjan00/dev:${name}" "$profile"
+          done
+
       - name: Push to Docker Hub
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
-          docker push nemanjan00/dev
+          docker push nemanjan00/dev:base
+          for profile in profiles/*/; do
+            name=$(basename "$profile")
+            docker push "nemanjan00/dev:${name}"
+          done

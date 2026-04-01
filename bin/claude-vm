@@ -75,4 +75,23 @@ if [ -f "${HOME}/.gitconfig" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v /tmp/.gitconfig:/work/.gitconfig:ro"
 fi
 
-vagrant ssh -c "docker run $DOCKER_ARGS nemanjan00/dev zsh -ic 'cd project ; tmux new-session \"claude --dangerously-skip-permissions $*\"'"
+# Parse arguments
+PROFILE="default"
+CLAUDE_ARGS=""
+ORIG_ARGS=("$@")
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --profile)
+      PROFILE="$2"
+      shift
+      ;;
+    *)
+      CLAUDE_ARGS="$CLAUDE_ARGS $1"
+      ;;
+  esac
+  shift
+done
+
+IMAGE="nemanjan00/dev:${PROFILE}"
+
+vagrant ssh -c "docker run $DOCKER_ARGS $IMAGE zsh -ic 'cd project ; tmux new-session \"claude --dangerously-skip-permissions $CLAUDE_ARGS\"'"

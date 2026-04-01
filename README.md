@@ -13,6 +13,7 @@ Also works as a standalone portable IDE with Neovim, tmux, zsh, and language too
 <!-- vim-markdown-toc GFM -->
 
 * [Build it](#build-it)
+* [Profiles](#profiles)
 * [Run it](#run-it)
 * [Opening project inside of it](#opening-project-inside-of-it)
 * [Claude Code](#claude-code)
@@ -29,22 +30,58 @@ Also works as a standalone portable IDE with Neovim, tmux, zsh, and language too
 ## Build it
 
 ```bash
-docker build -t nemanjan00/dev .
+# Build base image
+docker build -t nemanjan00/dev:base .
 
-# With custom UID/GID (to match your host user)
-docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev .
+# Build a profile (default, reversing, etc.)
+docker build -t nemanjan00/dev:default profiles/default/
+docker build -t nemanjan00/dev:reversing profiles/reversing/
+
+# With custom UID/GID (to match your host user) — apply to the base image
+docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev:base .
 ```
+
+## Profiles
+
+The image is split into a base layer and profile-specific layers. The base image (`nemanjan00/dev:base`) contains the common dev environment (zsh, Neovim, tmux, Node.js, Python, Claude Code). Profiles extend it with domain-specific tools.
+
+| Profile | Tag | Description |
+|---------|-----|-------------|
+| `default` | `nemanjan00/dev:default` | Base environment, no extras |
+| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering: radare2, r2ghidra, r2mcp, apktool, binwalk |
+
+To use a profile with the CLI scripts:
+
+```bash
+bin/claude-docker --profile reversing
+
+bin/claude-vm --profile reversing
+```
+
+### Creating a new profile
+
+Add a directory under `profiles/` with a `Dockerfile` that extends the base image:
+
+```dockerfile
+FROM nemanjan00/dev:base
+
+USER 0
+RUN pacman -Syu --noconfirm your-packages-here
+USER 1000
+```
+
+CI automatically discovers and builds all profiles under `profiles/`.
 
 ## Run it
 
 ```bash
-docker run -ti nemanjan00/dev
+docker run -ti nemanjan00/dev:default
 ```
 
 ## Opening project inside of it
 
 ```bash
-docker run -ti -eTERM=xterm-256color -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; tmux"
+docker run -ti -eTERM=xterm-256color -v$(pwd):/work/project nemanjan00/dev:default zsh -ic "cd project ; tmux"
 ```
 
 ## Claude Code
@@ -95,7 +132,7 @@ This passes `--network host` to Docker, so any ports the container listens on ar
 
 ```bash
 # Minimal
-docker run -ti -e ANTHROPIC_API_KEY -v$(pwd):/work/project nemanjan00/dev zsh -ic "cd project ; claude"
+docker run -ti -e ANTHROPIC_API_KEY -v$(pwd):/work/project nemanjan00/dev:default zsh -ic "cd project ; claude"
 
 # Full setup
 docker run -ti -e ANTHROPIC_API_KEY \
@@ -103,7 +140,7 @@ docker run -ti -e ANTHROPIC_API_KEY \
   -v~/.claude:/work/.claude \
   -v~/.claude.json:/work/.claude.json \
   -v~/.gitconfig:/work/.gitconfig:ro \
-  nemanjan00/dev zsh -ic "cd project ; claude"
+  nemanjan00/dev:default zsh -ic "cd project ; claude"
 ```
 
 ## VM isolation

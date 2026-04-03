@@ -31,7 +31,7 @@ if [ -f "${HOME}/.gitconfig" ]; then
   INIT_CMDS="$INIT_CMDS ln -sf /tmp/claude-config/gitconfig /work/.gitconfig ;"
 fi
 
-DOCKER_ARGS="$DOCKER_ARGS -v $TMPDIR_CONFIG:/tmp/claude-config:ro"
+DOCKER_ARGS="$DOCKER_ARGS -v $TMPDIR_CONFIG:/tmp/claude-config"
 
 # Claude config directory (settings, memory, commands)
 if [ -d "${HOME}/.claude" ]; then
@@ -59,4 +59,10 @@ done
 
 IMAGE="nemanjan00/dev:${PROFILE}"
 
-exec docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions $CLAUDE_ARGS'"
+# Run container (no exec — we need to copy config back after exit)
+docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions $CLAUDE_ARGS'"
+
+# Persist updated OAuth credentials back to host
+if [ -f "$TMPDIR_CONFIG/claude.json" ]; then
+  cp "$TMPDIR_CONFIG/claude.json" "${HOME}/.claude.json"
+fi

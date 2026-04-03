@@ -10,6 +10,21 @@ This is a Docker-based development environment running Arch Linux.
 - **User**: unprivileged user (uid 1000), home at `/work`
 - **Projects**: mount to `/work/project`
 
+## Scripting Tools
+
+The following CLI tools are available for use in scripts and pipelines:
+
+- **jq** — JSON processor. Filter, transform, and extract data from JSON.
+- **jc** — Converts output of common commands (`ps`, `mount`, `ls`, `dig`, `git log`, etc.) to JSON. Use as `command | jc --command-name | jq ...`.
+- **miller** (`mlr`) — Like jq but for CSV, TSV, and tabular data. Use `mlr --csv filter '$col == "val"' file.csv`.
+- **ripgrep** (`rg`) — Fast recursive code search with regex support.
+- **fzf** — Fuzzy finder, scriptable with `--filter` for non-interactive use.
+- **tree** — Directory structure listing. Use `tree -J` for JSON output.
+- **curl** / **wget** — HTTP requests (curl for APIs, wget for file downloads).
+- **socat** — Multipurpose network relay for socket operations, port forwarding, and proxying.
+- **strace** — Trace system calls for debugging process failures. Use `strace -e trace=open,read cmd` to diagnose issues.
+- **eza** — Modern `ls` replacement with `--json` output support.
+
 ## Package Management
 
 - **System packages**: installed via `pacman` (requires root — not available in this container)

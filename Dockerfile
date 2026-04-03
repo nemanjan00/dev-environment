@@ -8,14 +8,15 @@ USER 0
 
 # Install all system packages
 RUN pacman -Syu --noconfirm \
-    git base-devel curl \
+    git base-devel curl wget \
     zsh \
     clang cmake \
-    htop ripgrep eza fzf jq unzip \
-    ctags \
+    htop ripgrep eza fzf jq jc unzip \
+    ctags strace tree \
     python-pynvim neovim \
     tmux \
-    docker
+    docker \
+    miller socat
 
 # Create user with home at /work
 RUN groupadd -g $GID user && \

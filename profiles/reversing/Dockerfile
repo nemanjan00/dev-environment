@@ -8,7 +8,8 @@ RUN pacman -Syu --noconfirm \
     radare2 \
     r2ghidra \
     python-r2pipe \
-    binwalk && \
+    binwalk \
+    python-jsbeautifier && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 
 # Install apktool from AUR
@@ -21,7 +22,7 @@ RUN git clone https://aur.archlinux.org/android-apktool.git /tmp/android-apktool
 # Install radare2 MCP plugin
 RUN r2pm -U && r2pm -ci r2mcp
 
-# Remove sudo access after build
+# Remove sudo after build
 USER 0
-RUN rm /etc/sudoers.d/user
+RUN rm /etc/sudoers.d/user && pacman -Rns --noconfirm sudo
 USER 1000

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 PROJECT_DIR="$(pwd)"
-DOCKER_ARGS="-ti -e TERM=xterm-256color"
+DOCKER_ARGS="-ti --pull always -e TERM=xterm-256color"
 
 # Mount project
 DOCKER_ARGS="$DOCKER_ARGS -v $PROJECT_DIR:/work/project"
@@ -12,19 +12,30 @@ if [ -n "${ANTHROPIC_API_KEY:-}" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -e ANTHROPIC_API_KEY"
 fi
 
+# Copy config files to a temp dir and mount that instead of individual files.
+# Single-file bind mounts break on macOS when the file is replaced (new inode).
+TMPDIR_CONFIG="$(mktemp -d /tmp/claude-docker.XXXXXX)"
+trap 'rm -rf "$TMPDIR_CONFIG"' EXIT
+
+INIT_CMDS=""
+
 # Auth: OAuth credentials
 if [ -f "${HOME}/.claude.json" ]; then
-  DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude.json:/work/.claude.json"
-fi
-
-# Claude config directory (settings, memory, commands)
-if [ -d "${HOME}/.claude" ]; then
-  DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude:/work/.claude"
+  cp "${HOME}/.claude.json" "$TMPDIR_CONFIG/claude.json"
+  INIT_CMDS="$INIT_CMDS ln -sf /tmp/claude-config/claude.json /work/.claude.json ;"
 fi
 
 # Git config
 if [ -f "${HOME}/.gitconfig" ]; then
-  DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.gitconfig:/work/.gitconfig:ro"
+  cp "${HOME}/.gitconfig" "$TMPDIR_CONFIG/gitconfig"
+  INIT_CMDS="$INIT_CMDS ln -sf /tmp/claude-config/gitconfig /work/.gitconfig ;"
+fi
+
+DOCKER_ARGS="$DOCKER_ARGS -v $TMPDIR_CONFIG:/tmp/claude-config:ro"
+
+# Claude config directory (settings, memory, commands)
+if [ -d "${HOME}/.claude" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude:/work/.claude"
 fi
 
 # Parse arguments
@@ -48,4 +59,4 @@ done
 
 IMAGE="nemanjan00/dev:${PROFILE}"
 
-exec docker run $DOCKER_ARGS "$IMAGE" zsh -ic "cd project ; tmux new-session 'claude --dangerously-skip-permissions $CLAUDE_ARGS'"
+exec docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions $CLAUDE_ARGS'"

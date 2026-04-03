@@ -70,7 +70,10 @@ RUN ln -s -f .tmux/.tmux.conf ~/.tmux.conf
 RUN cp ~/.tmux/.tmux.conf.local ~/
 
 # Install Claude Code
-RUN npm install -g @anthropic-ai/claude-code
+RUN npm install -g @anthropic-ai/claude-code && \
+    ln -sf "$(asdf which node)" /work/.local/bin/node && \
+    ln -sf "$(asdf which npm)" /work/.local/bin/npm && \
+    ln -sf "$(asdf which claude)" /work/.local/bin/claude
 RUN mkdir -p ~/.claude
 COPY templates/CLAUDE.md /work/.claude/CLAUDE.md
 

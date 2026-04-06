@@ -22,7 +22,7 @@ RUN git clone https://aur.archlinux.org/android-apktool.git /tmp/android-apktool
 # Install radare2 MCP plugin
 RUN r2pm -U && r2pm -ci r2mcp
 
-# Remove sudo after build
+# Remove passwordless sudo after build
 USER 0
-RUN rm /etc/sudoers.d/user && pacman -Rns --noconfirm sudo
+RUN rm /etc/sudoers.d/user
 USER 1000

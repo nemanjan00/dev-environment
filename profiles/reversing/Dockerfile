@@ -16,7 +16,11 @@ RUN pacman -Syu --noconfirm \
     sleuthkit \
     squashfs-tools \
     unrar \
-    python-jsbeautifier && \
+    python-jsbeautifier \
+    unshield \
+    capstone \
+    python-capstone \
+    python-pefile && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 
 # Install apktool from AUR

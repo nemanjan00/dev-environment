@@ -9,6 +9,13 @@ RUN pacman -Syu --noconfirm \
     r2ghidra \
     python-r2pipe \
     binwalk \
+    p7zip \
+    upx \
+    perl-image-exiftool \
+    yara \
+    sleuthkit \
+    squashfs-tools \
+    unrar \
     python-jsbeautifier && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 

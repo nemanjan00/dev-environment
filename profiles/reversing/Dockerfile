@@ -20,7 +20,12 @@ RUN pacman -Syu --noconfirm \
     unshield \
     capstone \
     python-capstone \
-    python-pefile && \
+    python-pefile \
+    dotnet-sdk \
+    msitools \
+    wine \
+    tio \
+    minicom && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 
 # Install apktool from AUR
@@ -29,6 +34,9 @@ RUN git clone https://aur.archlinux.org/android-apktool.git /tmp/android-apktool
     cd /tmp/android-apktool && \
     makepkg -si --noconfirm && \
     rm -rf /tmp/android-apktool
+
+# Install .NET decompiler (ilspycmd)
+RUN dotnet tool install -g ilspycmd
 
 # Install radare2 MCP plugin
 RUN r2pm -U && r2pm -ci r2mcp

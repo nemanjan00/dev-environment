@@ -24,7 +24,6 @@ RUN pacman -Syu --noconfirm \
     dotnet-sdk \
     msitools \
     wine \
-    tio \
     minicom && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 
@@ -34,6 +33,12 @@ RUN git clone https://aur.archlinux.org/android-apktool.git /tmp/android-apktool
     cd /tmp/android-apktool && \
     makepkg -si --noconfirm && \
     rm -rf /tmp/android-apktool
+
+# Install tio (serial port tool) from AUR
+RUN git clone https://aur.archlinux.org/tio.git /tmp/tio && \
+    cd /tmp/tio && \
+    makepkg -si --noconfirm && \
+    rm -rf /tmp/tio
 
 # Install .NET decompiler (ilspycmd)
 RUN dotnet tool install -g ilspycmd

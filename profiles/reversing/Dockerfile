@@ -24,27 +24,38 @@ RUN pacman -Syu --noconfirm \
     dotnet-sdk \
     msitools \
     wine \
-    minicom && \
+    minicom \
+    python-pycryptodome \
+    python-unicorn \
+    python-keystone \
+    foremost \
+    wireshark-cli \
+    volatility3 \
+    flashrom \
+    openocd \
+    sigrok-cli \
+    dtc \
+    python-pyserial && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 
-# Install apktool from AUR
+# Install AUR packages
 USER 1000
-RUN git clone https://aur.archlinux.org/android-apktool.git /tmp/android-apktool && \
-    cd /tmp/android-apktool && \
+RUN for pkg in android-apktool tio magika sasquatch python-lief python-angr; do \
+    git clone https://aur.archlinux.org/$pkg.git /tmp/$pkg && \
+    cd /tmp/$pkg && \
     makepkg -si --noconfirm && \
-    rm -rf /tmp/android-apktool
-
-# Install tio (serial port tool) from AUR
-RUN git clone https://aur.archlinux.org/tio.git /tmp/tio && \
-    cd /tmp/tio && \
-    makepkg -si --noconfirm && \
-    rm -rf /tmp/tio
+    rm -rf /tmp/$pkg; \
+    done
 
 # Install .NET decompiler (ilspycmd)
 RUN dotnet tool install -g ilspycmd
 
 # Install radare2 MCP plugin
 RUN r2pm -U && r2pm -ci r2mcp
+
+# Append profile context to base CLAUDE.md
+COPY CLAUDE.md /tmp/profile-claude.md
+RUN cat /tmp/profile-claude.md >> /work/CLAUDE.md
 
 # Remove passwordless sudo after build
 USER 0

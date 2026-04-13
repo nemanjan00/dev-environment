@@ -36,6 +36,7 @@ docker build -t nemanjan00/dev:base .
 # Build a profile (default, reversing, etc.)
 docker build -t nemanjan00/dev:default profiles/default/
 docker build -t nemanjan00/dev:reversing profiles/reversing/
+docker build -t nemanjan00/dev:embedded profiles/embedded/
 
 # With custom UID/GID (to match your host user) — apply to the base image
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev:base .
@@ -48,7 +49,8 @@ The image is split into a base layer and profile-specific layers. The base image
 | Profile | Tag | Description |
 |---------|-----|-------------|
 | `default` | `nemanjan00/dev:default` | Base environment, no extras |
-| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering: radare2, r2ghidra, r2mcp, apktool, binwalk |
+| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, binwalk, apktool, volatility3, angr, unicorn, keystone, magika, wireshark-cli, foremost |
+| `embedded` | `nemanjan00/dev:embedded` | Embedded development: arm-none-eabi toolchain, platformio, avrdude, esptool, openocd, stlink, sigrok-cli, flashrom |
 
 To use a profile with the CLI scripts:
 
@@ -116,7 +118,7 @@ bin/claude-docker  # ~/.claude.json is mounted automatically
 | `~/.claude` | `/work/.claude` | Full Claude config (settings, memory, CLAUDE.md) |
 | `~/.gitconfig` | `/work/.gitconfig` | Git identity and settings (read-only) |
 
-The container ships with a default `~/.claude/CLAUDE.md` that documents the environment for Claude. When you mount your own `~/.claude`, you can add your own settings, custom skills, and memory files.
+The container ships with a `/work/CLAUDE.md` that documents the environment for Claude. Profile images append profile-specific tool documentation to it. Since Claude Code walks up from the project directory, `/work/CLAUDE.md` is always loaded as an ancestor of `/work/project/`. Your project can still have its own `CLAUDE.md` — both will be read.
 
 ### Host network mode
 

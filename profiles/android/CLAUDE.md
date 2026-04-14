@@ -40,8 +40,10 @@ AOSP host tools still need some 32-bit libs. Enabled via `[multilib]` in `/etc/p
 
 ## Typical flow inside the container
 
+The source tree lives in `/work/project` (bind-mounted from the host cwd), so `cd` into your project directory on the host before launching the container — the checkout will persist there.
+
 ```sh
-mkdir -p ~/android/lineage && cd ~/android/lineage
+cd /work/project
 repo init -u https://github.com/LineageOS/android.git -b lineage-22.2 --git-lfs --no-clone-bundle
 repo sync
 source build/envsetup.sh
@@ -54,17 +56,10 @@ brunch <device>
 
 - Source tree + build output: **~300–400 GB** for recent LineageOS branches
 - Recommended RAM: **32 GB** for 18.1, **64 GB** for 21+
-- ccache: reserve 50 GB+ on `/work/.ccache`
+- ccache: reserve 50 GB+ on the host ccache directory
 
-## Persistence inside the container
+## ccache persistence
 
-The source tree and ccache live under `/work`, which is not mounted from the host by default — only `/work/project` is. For a real build, bind-mount a large host directory over the source location and ccache dir, e.g.:
+`bin/claude-docker --profile android` auto-mounts `~/.cache/android-ccache` on the host to `/work/.ccache` in the container, so ccache survives across container invocations. Run `ccache -M 50G` once on first launch to set the cache size.
 
-```bash
-docker run -ti \
-  -v ~/android/lineage:/work/android/lineage \
-  -v ~/.android-ccache:/work/.ccache \
-  nemanjan00/dev:android
-```
-
-Otherwise the 300+ GB tree is lost on container exit and ccache gives no speedup across runs.
+For manual `docker run`, add `-v ~/.cache/android-ccache:/work/.ccache` yourself.

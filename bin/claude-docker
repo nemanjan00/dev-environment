@@ -59,6 +59,14 @@ done
 
 IMAGE="nemanjan00/dev:${PROFILE}"
 
+# Profile-specific mounts
+if [ "$PROFILE" = "android" ]; then
+  # Persistent ccache — AOSP builds are unusable without it across runs
+  HOST_CCACHE="${HOME}/.cache/android-ccache"
+  mkdir -p "$HOST_CCACHE"
+  DOCKER_ARGS="$DOCKER_ARGS -v $HOST_CCACHE:/work/.ccache"
+fi
+
 # Run container (no exec — we need to copy config back after exit)
 docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions $CLAUDE_ARGS'"
 

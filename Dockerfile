@@ -76,7 +76,7 @@ RUN npm install -g @anthropic-ai/claude-code && \
     ln -sf "$(asdf which npm)" /work/.local/bin/npm && \
     ln -sf "$(asdf which claude)" /work/.local/bin/claude
 RUN mkdir -p ~/.claude
-COPY templates/CLAUDE.md /work/CLAUDE.md
+COPY --chown=$UID:$GID templates/CLAUDE.md /work/CLAUDE.md
 
 # Prepare work area
 USER $UID

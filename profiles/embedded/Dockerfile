@@ -20,7 +20,8 @@ RUN pacman -Syu --noconfirm \
     picocom \
     cmake
 
+USER 1000
+
 # Append profile context to base CLAUDE.md
 COPY CLAUDE.md /tmp/profile-claude.md
-USER 1000
 RUN cat /tmp/profile-claude.md >> /work/CLAUDE.md

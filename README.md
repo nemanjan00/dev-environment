@@ -37,6 +37,7 @@ docker build -t nemanjan00/dev:base .
 docker build -t nemanjan00/dev:default profiles/default/
 docker build -t nemanjan00/dev:reversing profiles/reversing/
 docker build -t nemanjan00/dev:embedded profiles/embedded/
+docker build -t nemanjan00/dev:android profiles/android/
 
 # With custom UID/GID (to match your host user) — apply to the base image
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev:base .

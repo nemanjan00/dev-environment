@@ -55,3 +55,16 @@ brunch <device>
 - Source tree + build output: **~300–400 GB** for recent LineageOS branches
 - Recommended RAM: **32 GB** for 18.1, **64 GB** for 21+
 - ccache: reserve 50 GB+ on `/work/.ccache`
+
+## Persistence inside the container
+
+The source tree and ccache live under `/work`, which is not mounted from the host by default — only `/work/project` is. For a real build, bind-mount a large host directory over the source location and ccache dir, e.g.:
+
+```bash
+docker run -ti \
+  -v ~/android/lineage:/work/android/lineage \
+  -v ~/.android-ccache:/work/.ccache \
+  nemanjan00/dev:android
+```
+
+Otherwise the 300+ GB tree is lost on container exit and ccache gives no speedup across runs.

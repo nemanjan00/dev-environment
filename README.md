@@ -76,6 +76,15 @@ USER 1000
 
 CI automatically discovers and builds all profiles under `profiles/`.
 
+If the profile needs extra bind mounts or env vars at runtime (e.g. a persistent ccache for Android builds), add an executable `docker-args.sh` in the profile directory. `bin/claude-docker` runs it when the profile is selected and appends its stdout to the `docker run` arguments:
+
+```bash
+#!/bin/bash
+# profiles/myprofile/docker-args.sh
+mkdir -p "$HOME/.cache/myprofile"
+echo "-v $HOME/.cache/myprofile:/work/.cache/myprofile"
+```
+
 ## Run it
 
 ```bash

@@ -60,6 +60,6 @@ brunch <device>
 
 ## ccache persistence
 
-`bin/claude-docker --profile android` auto-mounts `~/.cache/android-ccache` on the host to `/work/.ccache` in the container, so ccache survives across container invocations. Run `ccache -M 50G` once on first launch to set the cache size.
+The profile ships a `docker-args.sh` hook that `bin/claude-docker` picks up automatically. It bind-mounts `~/.cache/android-ccache` on the host to `/work/.ccache` in the container, so ccache survives across container invocations. Run `ccache -M 50G` once on first launch to set the cache size.
 
 For manual `docker run`, add `-v ~/.cache/android-ccache:/work/.ccache` yourself.

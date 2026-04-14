@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR="$(pwd)"
 DOCKER_ARGS="-ti --pull always -e TERM=xterm-256color"
 
@@ -59,12 +60,12 @@ done
 
 IMAGE="nemanjan00/dev:${PROFILE}"
 
-# Profile-specific mounts
-if [ "$PROFILE" = "android" ]; then
-  # Persistent ccache — AOSP builds are unusable without it across runs
-  HOST_CCACHE="${HOME}/.cache/android-ccache"
-  mkdir -p "$HOST_CCACHE"
-  DOCKER_ARGS="$DOCKER_ARGS -v $HOST_CCACHE:/work/.ccache"
+# Profile hook: if profiles/<name>/docker-args.sh exists and is executable,
+# run it and append its stdout to DOCKER_ARGS. Lets each profile declare
+# its own bind mounts / env vars without touching this script.
+PROFILE_HOOK="$SCRIPT_DIR/profiles/$PROFILE/docker-args.sh"
+if [ -x "$PROFILE_HOOK" ]; then
+  DOCKER_ARGS="$DOCKER_ARGS $("$PROFILE_HOOK")"
 fi
 
 # Run container (no exec — we need to copy config back after exit)

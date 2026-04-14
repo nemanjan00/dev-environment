@@ -49,7 +49,7 @@ The image is split into a base layer and profile-specific layers. The base image
 | Profile | Tag | Description |
 |---------|-----|-------------|
 | `default` | `nemanjan00/dev:default` | Base environment, no extras |
-| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, binwalk, apktool, volatility3, angr, unicorn, keystone, magika, wireshark-cli, foremost |
+| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, binwalk, apktool, volatility3, unicorn, keystone, magika, wireshark-cli, foremost |
 | `embedded` | `nemanjan00/dev:embedded` | Embedded development: arm-none-eabi toolchain, platformio, avrdude, esptool, openocd, stlink, sigrok-cli, flashrom |
 
 To use a profile with the CLI scripts:

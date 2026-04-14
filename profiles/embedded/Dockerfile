@@ -16,11 +16,13 @@ RUN pacman -Syu --noconfirm \
     dtc \
     flashrom \
     i2c-tools \
-    python-pyserial \
     picocom \
     cmake
 
 USER 1000
+
+# Install Python packages via pip (asdf Python)
+RUN pip install pyserial
 
 # Append profile context to base CLAUDE.md
 COPY CLAUDE.md /tmp/profile-claude.md

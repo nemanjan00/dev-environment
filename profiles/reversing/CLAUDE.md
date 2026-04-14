@@ -7,9 +7,9 @@
 - **capstone** / **python-capstone** — disassembly framework
 - **python-keystone** — assembler framework for patching binaries
 - **python-unicorn** — CPU emulation for unpacking/deobfuscation
-- **python-angr** — symbolic execution and binary analysis
-- **python-lief** — parse and modify ELF, PE, Mach-O binaries
-- **python-pefile** — PE file parsing
+- **angr** — symbolic execution and binary analysis
+- **lief** — parse and modify ELF, PE, Mach-O binaries
+- **pefile** — PE file parsing
 
 ## Forensics & File Analysis
 

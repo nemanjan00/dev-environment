@@ -7,7 +7,6 @@ RUN pacman -Syu --noconfirm \
     sudo \
     radare2 \
     r2ghidra \
-    python-r2pipe \
     binwalk \
     p7zip \
     upx \
@@ -16,26 +15,19 @@ RUN pacman -Syu --noconfirm \
     sleuthkit \
     squashfs-tools \
     unrar \
-    python-jsbeautifier \
     unshield \
     capstone \
-    python-capstone \
-    python-pefile \
     dotnet-sdk \
     msitools \
     wine \
     minicom \
-    python-pycryptodome \
-    python-unicorn \
-    python-keystone \
     foremost \
     wireshark-cli \
     volatility3 \
     flashrom \
     openocd \
     sigrok-cli \
-    dtc \
-    python-pyserial && \
+    dtc && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 
 # Install AUR packages
@@ -47,8 +39,9 @@ RUN for pkg in android-apktool tio magika sasquatch; do \
     cd /tmp && rm -rf /tmp/$pkg; \
     done
 
-# Install Python packages not available in repos
-RUN pip install --break-system-packages lief angr
+# Install Python packages via pip (asdf Python)
+RUN pip install r2pipe pefile capstone keystone-engine unicorn \
+    pyserial pycryptodome jsbeautifier lief angr
 
 # Install .NET decompiler (ilspycmd)
 RUN dotnet tool install -g ilspycmd

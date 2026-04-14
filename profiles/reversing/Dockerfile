@@ -44,7 +44,7 @@ RUN for pkg in android-apktool tio magika sasquatch python-lief python-angr; do 
     git clone https://aur.archlinux.org/$pkg.git /tmp/$pkg && \
     cd /tmp/$pkg && \
     makepkg -si --noconfirm && \
-    rm -rf /tmp/$pkg; \
+    cd /tmp && rm -rf /tmp/$pkg; \
     done
 
 # Install .NET decompiler (ilspycmd)

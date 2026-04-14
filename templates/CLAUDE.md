@@ -34,6 +34,8 @@ The following CLI tools are available for use in scripts and pipelines:
   - Add new languages with `asdf plugin add <name>` then `asdf install <name> <version>`.
 - **Node.js packages**: install globally with `npm install -g <package>` (no root needed, managed by asdf)
 
+You are in charge of managing asdf — install, switch, or remove language versions and plugins as needed without asking. The container is ephemeral, so nothing you change here persists on disk across rebuilds.
+
 ## Key Paths
 
 - `~/.config/nvim` — Neovim configuration

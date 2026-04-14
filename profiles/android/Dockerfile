@@ -17,6 +17,7 @@ RUN pacman -Syu --noconfirm \
     repo \
     android-tools \
     git-lfs \
+    openssh \
     bc \
     bison \
     flex \

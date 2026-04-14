@@ -40,12 +40,15 @@ RUN pacman -Syu --noconfirm \
 
 # Install AUR packages
 USER 1000
-RUN for pkg in android-apktool tio magika sasquatch python-lief python-angr; do \
+RUN for pkg in android-apktool tio magika sasquatch; do \
     git clone https://aur.archlinux.org/$pkg.git /tmp/$pkg && \
     cd /tmp/$pkg && \
     makepkg -si --noconfirm && \
     cd /tmp && rm -rf /tmp/$pkg; \
     done
+
+# Install Python packages not available in repos
+RUN pip install --break-system-packages lief angr
 
 # Install .NET decompiler (ilspycmd)
 RUN dotnet tool install -g ilspycmd

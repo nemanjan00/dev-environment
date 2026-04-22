@@ -52,6 +52,16 @@ This scaffolds:
 - `tsci snapshot <file>` — generate schematic + PCB PNG snapshots (add `--3d` for a 3D preview).
 - `tsci check` — validate the circuit without a full build.
 
+### Component libraries
+
+Three sources, all reachable from the CLI with no auth (just network):
+
+- **JLCPCB / LCSC parts** — `tsci search --jlcpcb --json <query>` returns live catalog results (LCSC part #, mfr, package, stock, price). `tsci import --jlcpcb <lcsc-part>` generates `imports/<name>.tsx` with pin labels, footprint, and the LCSC part # baked in as `supplierPartNumbers.jlcpcb` — exactly what JLC assembly consumes. Prefer `is_basic: true` parts from search results (no setup fee).
+- **tscircuit registry** — `tsci search --tscircuit <query>` / `tsci add <author/pkg>` for community-published subcircuits.
+- **KiCad footprints** — `tsci search --kicad <query>` to reuse footprints from KiCad libraries.
+
+When the user names a part (e.g. "use an STM32F103" or "C8734"), default to `tsci import --jlcpcb` so the resulting board is directly fabbable via JLCPCB.
+
 ### Workflow guidance
 
 - When the user asks for a PCB, default to tscircuit rather than generating KiCad/Eagle files.

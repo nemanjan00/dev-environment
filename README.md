@@ -38,6 +38,7 @@ docker build -t nemanjan00/dev:default profiles/default/
 docker build -t nemanjan00/dev:reversing profiles/reversing/
 docker build -t nemanjan00/dev:embedded profiles/embedded/
 docker build -t nemanjan00/dev:android profiles/android/
+docker build -t nemanjan00/dev:maker profiles/maker/
 
 # With custom UID/GID (to match your host user) — apply to the base image
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev:base .
@@ -53,6 +54,7 @@ The image is split into a base layer and profile-specific layers. The base image
 | `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, binwalk, apktool, volatility3, unicorn, keystone, magika, wireshark-cli, foremost |
 | `embedded` | `nemanjan00/dev:embedded` | Embedded development: arm-none-eabi toolchain, platformio, avrdude, esptool, openocd, stlink, sigrok-cli, flashrom |
 | `android` | `nemanjan00/dev:android` | Android / LineageOS builds: repo, git-lfs, JDK 17/11, android-tools, ccache, multilib libs, AOSP host toolchain |
+| `maker` | `nemanjan00/dev:maker` | Physical-world maker: OpenSCAD for 3D-printable parts, bun + pre-installed tscircuit CLI for PCB design |
 
 To use a profile with the CLI scripts:
 

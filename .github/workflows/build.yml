@@ -3,32 +3,50 @@ name: Build
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
+
+concurrency:
+  group: build
+  cancel-in-progress: false
+
+env:
+  IMAGE: nemanjan00/dev
 
 jobs:
-  build:
+  base:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Build base image
-        run: docker build -t nemanjan00/dev:base .
-
-      - name: Build profile images
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
+      - name: Build and push base
         run: |
-          for profile in profiles/*/; do
-            name=$(basename "$profile")
-            echo "Building profile: $name"
-            docker build -t "nemanjan00/dev:${name}" "$profile"
-          done
+          docker build -t $IMAGE:base .
+          docker push $IMAGE:base
 
-      - name: Push to Docker Hub
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+  profile:
+    needs: base
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [default, android, embedded, librarian, maker, reversing]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
+      - name: Build and push profile
         run: |
-          echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
-          docker push nemanjan00/dev:base
-          for profile in profiles/*/; do
-            name=$(basename "$profile")
-            docker push "nemanjan00/dev:${name}"
-          done
+          docker build -t $IMAGE:${{ matrix.profile }} profiles/${{ matrix.profile }}
+          docker push $IMAGE:${{ matrix.profile }}
+
+  analyst:
+    needs: profile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
+      - name: Build and push analyst
+        run: |
+          docker build -t $IMAGE:analyst profiles/analyst
+          docker push $IMAGE:analyst

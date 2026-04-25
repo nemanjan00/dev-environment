@@ -40,6 +40,7 @@ docker build -t nemanjan00/dev:embedded profiles/embedded/
 docker build -t nemanjan00/dev:android profiles/android/
 docker build -t nemanjan00/dev:maker profiles/maker/
 docker build -t nemanjan00/dev:analyst profiles/analyst/
+docker build -t nemanjan00/dev:librarian profiles/librarian/
 
 # With custom UID/GID (to match your host user) — apply to the base image
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev:base .
@@ -57,6 +58,7 @@ The image is split into a base layer and profile-specific layers. The base image
 | `android` | `nemanjan00/dev:android` | Android / LineageOS builds: repo, git-lfs, JDK 17/11, android-tools, ccache, multilib libs, AOSP host toolchain |
 | `maker` | `nemanjan00/dev:maker` | Physical-world maker: OpenSCAD for 3D-printable parts, bun + pre-installed tscircuit CLI for PCB design |
 | `analyst` | `nemanjan00/dev:analyst` | Data / infra analyst (extends `reversing`): aws-cli, s3cmd, rclone, psql, mariadb, sqlite, duckdb, valkey-cli, rabbitmq admin, lnav, httpie, protoc, dig |
+| `librarian` | `nemanjan00/dev:librarian` | Document & ebook reading: pandoc, poppler (pdftotext), mupdf-tools, qpdf, pdfgrep, catdoc, djvulibre, unrtf, tesseract OCR, glow, w3m |
 
 To use a profile with the CLI scripts:
 

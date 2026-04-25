@@ -49,7 +49,7 @@ RUN patch ~/.zplug/base/core/add.zsh /tmp/zplug/patch/pipe_fix.diff
 RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
 RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 
-RUN zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
+RUN timeout 30 zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
 
 # Download my dotfiles
 USER $UID

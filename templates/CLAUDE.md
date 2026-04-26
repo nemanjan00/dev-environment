@@ -34,6 +34,47 @@ The following CLI tools are available for use in scripts and pipelines:
   - Add new languages with `asdf plugin add <name>` then `asdf install <name> <version>`.
 - **Node.js packages**: install globally with `npm install -g <package>` (no root needed, managed by asdf)
 
+## MCP multiplexer (muxmcp)
+
+`muxmcp` is a generic stdio MCP proxy installed globally. It wraps **any** stdio MCP server and exposes it as a multi-instance service. Use it whenever the upstream server is single-session (only one document / binary / connection / project at a time) but you need to hold several open concurrently in one conversation. The wrapped server is opaque to muxmcp — it doesn't care what the server does.
+
+### Configuring an MCP server through muxmcp
+
+Point your MCP client at `muxmcp` and pass the wrapped command (and its args) after `--`:
+
+```json
+{
+  "mcpServers": {
+    "wrapped": {
+      "command": "muxmcp",
+      "args": ["--", "<upstream-server>", "<upstream-arg>", "..."]
+    }
+  }
+}
+```
+
+The proxy only advertises capabilities the wrapped server actually supports — wrapping a tools-only server yields a tools-only proxy.
+
+### Workflow
+
+1. **Spawn an instance per document/binary/session.** Call `spawn_instance` once per item. It returns `{instance_id: N}`. Record which ID maps to which item in your working notes — there is no built-in label.
+2. **Open the item in that instance.** Every upstream tool now takes a required `instance_id`. Call the wrapped server's open/load tool with `instance_id: N` to load into that instance.
+3. **Route every subsequent call.** Pass the right `instance_id` on every tool call — calls without it are rejected. Mixing IDs across calls is how you cross-reference (e.g. read a function from instance 1, then search for the same constant in instance 2).
+4. **Tear down when done.** Call `kill_instance(instance_id)` to free the child. Use `list_instances` to see what's live. If a child crashes the instance is gone — there is no auto-respawn; spawn a fresh one and re-open.
+
+### Resources and prompts
+
+- Resource URIs are rewritten as `mux://<instance_id>/<urlencoded-original>`. Pass the full `mux://...` URI to `resources/read` — muxmcp decodes and routes. Don't hand-construct upstream URIs.
+- Prompt names are rewritten as `i<instance_id>__<original>`. Use the rewritten name verbatim when calling `prompts/get`.
+- `resources/list`, `resources/templates/list`, and `prompts/list` aggregate across all live instances, so the same logical resource appears once per instance.
+
+### Tips
+
+- **Label instances in prose.** Right after `spawn_instance`, write a one-line note like "instance 3 = <name of the thing you opened>" so the mapping survives mid-session.
+- **One item per instance.** Don't reuse an instance for a different item — upstream state (analysis, cursor, auth, working dir) carries over and will mislead you. Kill and respawn.
+- **Per-instance work isn't shared.** Any heavy setup on instance 1 (indexing, analysis, auth handshake) doesn't help instance 2. Budget accordingly when opening many.
+- **Limitations:** no sampling, no resource subscriptions, no server-initiated logging, no crash recovery. If a tool call hangs, call `list_instances` to confirm the child died, then respawn.
+
 ## Persistence
 
 Only `/work/project` (the host cwd) and `/work/.claude` (your config/memory) persist across container runs — both are host bind-mounts. Everything else (installed packages, asdf languages, `~/.config/*`, shell/editor configs, files written outside `/work/project`) is ephemeral and vanishes on container exit.

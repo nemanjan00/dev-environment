@@ -70,11 +70,12 @@ RUN git clone https://github.com/gpakosz/.tmux.git ~/.tmux
 RUN ln -s -f .tmux/.tmux.conf ~/.tmux.conf
 RUN cp ~/.tmux/.tmux.conf.local ~/
 
-# Install Claude Code
-RUN npm install -g @anthropic-ai/claude-code && \
+# Install Claude Code and muxmcp (stdio MCP multiplexer)
+RUN npm install -g @anthropic-ai/claude-code muxmcp && \
     ln -sf "$(asdf which node)" /work/.local/bin/node && \
     ln -sf "$(asdf which npm)" /work/.local/bin/npm && \
-    ln -sf "$(asdf which claude)" /work/.local/bin/claude
+    ln -sf "$(asdf which claude)" /work/.local/bin/claude && \
+    ln -sf "$(asdf which muxmcp)" /work/.local/bin/muxmcp
 RUN mkdir -p ~/.claude
 COPY --chown=$UID:$GID templates/CLAUDE.md /work/CLAUDE.md
 

@@ -48,6 +48,7 @@ RUN dotnet tool install -g ilspycmd
 
 # Install radare2 MCP plugin
 RUN r2pm -U && r2pm -ci r2mcp
+ENV PATH="/work/.local/share/radare2/prefix/bin:${PATH}"
 
 # Append profile context to base CLAUDE.md
 COPY CLAUDE.md /tmp/profile-claude.md

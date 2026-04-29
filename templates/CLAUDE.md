@@ -75,6 +75,48 @@ The proxy only advertises capabilities the wrapped server actually supports — 
 - **Per-instance work isn't shared.** Any heavy setup on instance 1 (indexing, analysis, auth handshake) doesn't help instance 2. Budget accordingly when opening many.
 - **Limitations:** no sampling, no resource subscriptions, no server-initiated logging, no crash recovery. If a tool call hangs, call `list_instances` to confirm the child died, then respawn.
 
+## Interactive shell sessions (shell-session-mcp)
+
+`shell-session-mcp` is an MCP server that runs interactive programs inside a real PTY and keeps them alive across many tool calls. Use it whenever a task wants long-lived state in a `bash`, `gdb`, `radare2`, `python`, `node`, `psql`, or any other REPL/TUI — anything where one-shot `Bash` calls lose context between turns or where the program insists on `isatty(stdin)`. Output is held in a 1 MiB ring buffer per session with a monotonic cursor for incremental polling.
+
+### Configuring it as an MCP server
+
+```json
+{
+  "mcpServers": {
+    "shell": {
+      "command": "shell-session-mcp"
+    }
+  }
+}
+```
+
+To receive output/exit notifications the client must declare the `logging` capability and call `logging/setLevel` (any level — the server emits at `info`).
+
+### Tools
+
+- `spawn {command, args?, cwd?, env?, cols?, rows?, notify?}` → `{id, pid}`. Starts a PTY-backed process; record which `id` maps to which session in your notes.
+- `write {id, data}` → `{id, written}`. Raw bytes to stdin. **You** decide line endings — append `\n` for shells, `\r` for some REPLs. Control chars pass through (`\x03` Ctrl-C, `\x04` EOF).
+- `read {id, since?, wait_ms?, max_bytes?, force?}` → `{id, data, cursor, truncated, bytes, exited, exitInfo}`, or `{oversized: true, available, max_bytes, cursor, hint, …}` if the 32 KiB inline guard tripped (cursor not advanced — retry with `force: true`, raise `max_bytes`, or use `read_to_file`).
+- `read_to_file {id, path, since?, append?, wait_ms?}` → metadata only; bulk output goes to disk, not into context. Use it for build logs, gdb dumps, fuzzer output, etc.
+- `set_notifications {id, enabled}` — toggle push of new-output notifications. Exit notifications fire regardless.
+- `resize {id, cols, rows}` — propagates `SIGWINCH`, useful for full-screen TUIs.
+- `kill {id, signal?}` — default `SIGTERM`; the entry survives exit so you can still `read` final output and inspect `exitInfo`.
+- `list` / `info {id}` / `remove {id}` — registry inspection and cleanup.
+
+### Notification payloads
+
+`notifications/message` with `logger: "shell-session-mcp"`, level `info`, `params.data`:
+- `{type: "output", id, chunk, cursor}` — only if `notify`/`set_notifications` enabled it.
+- `{type: "exit", id, exitCode, signal}` — always sent.
+
+### Tips
+
+- **One process per session.** No auto-respawn on crash; `spawn` a fresh one if the child dies.
+- **Drain large output to disk.** Multi-megabyte build/fuzzer/debugger output should go through `read_to_file`, not `read` — keeps the conversation context small.
+- **Pick the right line ending.** Most shells want `\n`; some REPLs (notably ones that read line-buffered via readline on a raw tty) want `\r`. If a `write` seems to go nowhere, try the other.
+- **UTF-8 only.** Binary stdin/stdout isn't directly representable; base64 in your own protocol layer if you need hex-clean transport.
+
 ## Persistence
 
 Only `/work/project` (the host cwd) and `/work/.claude` (your config/memory) persist across container runs — both are host bind-mounts. Everything else (installed packages, asdf languages, `~/.config/*`, shell/editor configs, files written outside `/work/project`) is ephemeral and vanishes on container exit.

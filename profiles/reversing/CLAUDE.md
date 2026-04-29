@@ -48,6 +48,11 @@
 ## Android
 
 - **apktool** — APK decompilation and recompilation
+- **smalizator** — smali helper that generates Frida (and Xposed) method hooks from a smali invoke line, and grep-searches an apktool-extracted tree for `.implements`/`.super` declarations. Subcommands:
+  - `smalizator hook "<smali invoke line>"` — emits a ready-to-paste `Java.use(...).method.implementation = ...` hook for the targeted method (`--xposed` switches to an Xposed hook).
+  - `smalizator implements "L<iface>;"` — find every class declaring `.implements L<iface>;`.
+  - `smalizator extends "L<class>;"` — find every class declaring `.super L<class>;`.
+  - Run `smalizator` with no args for an interactive wizard. The search subcommands shell out to `ag` if present (else `grep -r`) over the **current working directory**, so `cd` into the apktool output (`./smali`, `./smali_classesN/...`) before invoking. Class/interface arguments must be in smali notation (`Lpkg/Cls;`).
 
 ## Crypto
 

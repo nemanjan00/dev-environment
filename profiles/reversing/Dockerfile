@@ -46,6 +46,10 @@ RUN pip install r2pipe pefile capstone keystone-engine unicorn \
 # Install .NET decompiler (ilspycmd)
 RUN dotnet tool install -g ilspycmd
 
+# Install smalizator (Frida hook generator + smali search helper)
+RUN npm install -g smalizator && \
+    ln -sf "$(asdf which smalizator)" /work/.local/bin/smalizator
+
 # Install radare2 MCP plugin
 RUN r2pm -U && r2pm -ci r2mcp
 ENV PATH="/work/.local/share/radare2/prefix/bin:${PATH}"

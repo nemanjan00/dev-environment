@@ -74,7 +74,6 @@ RUN cp ~/.tmux/.tmux.conf.local ~/
 # (PTY-backed interactive sessions; node-pty needs base-devel + python — both present)
 RUN npm install -g @anthropic-ai/claude-code muxmcp shell-session-mcp && \
     ln -sf "$(asdf which node)" /work/.local/bin/node && \
-    ln -sf "$(asdf which npm)" /work/.local/bin/npm && \
     ln -sf "$(asdf which claude)" /work/.local/bin/claude && \
     ln -sf "$(asdf which muxmcp)" /work/.local/bin/muxmcp && \
     ln -sf "$(asdf which shell-session-mcp)" /work/.local/bin/shell-session-mcp

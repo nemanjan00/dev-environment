@@ -75,6 +75,9 @@ if [ -x "$PROFILE_HOOK" ]; then
 fi
 
 # Run container (no exec — we need to copy config back after exit)
+# mcp.d/*.json expands inside tmux's child zsh (host bash + outer zsh -ic
+# both see it quoted). zsh's NOMATCH aborts launch if mcp.d/ is empty —
+# base image must always ship at least one .json file.
 docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions --mcp-config /work/.config/claude/mcp.d/*.json $CLAUDE_ARGS'"
 
 # Persist updated OAuth credentials back to host

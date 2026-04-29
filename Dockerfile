@@ -77,8 +77,9 @@ RUN npm install -g @anthropic-ai/claude-code muxmcp shell-session-mcp && \
     ln -sf "$(asdf which claude)" /work/.local/bin/claude && \
     ln -sf "$(asdf which muxmcp)" /work/.local/bin/muxmcp && \
     ln -sf "$(asdf which shell-session-mcp)" /work/.local/bin/shell-session-mcp
-RUN mkdir -p ~/.claude
+RUN mkdir -p ~/.claude ~/.config/claude/mcp.d
 COPY --chown=$UID:$GID templates/CLAUDE.md /work/CLAUDE.md
+COPY --chown=$UID:$GID templates/mcp.d/ /work/.config/claude/mcp.d/
 
 # Prepare work area
 USER $UID

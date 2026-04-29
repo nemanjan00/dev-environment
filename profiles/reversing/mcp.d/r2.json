@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "r2": {
+      "command": "muxmcp",
+      "args": ["--", "r2mcp"]
+    }
+  }
+}

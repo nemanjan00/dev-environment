@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "shell": {
+      "command": "shell-session-mcp"
+    }
+  }
+}

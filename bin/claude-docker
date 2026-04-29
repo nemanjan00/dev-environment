@@ -75,7 +75,7 @@ if [ -x "$PROFILE_HOOK" ]; then
 fi
 
 # Run container (no exec — we need to copy config back after exit)
-docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions $CLAUDE_ARGS'"
+docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions --mcp-config /work/.config/claude/mcp.d/*.json $CLAUDE_ARGS'"
 
 # Persist updated OAuth credentials back to host
 if [ -f "$TMPDIR_CONFIG/claude.json" ]; then

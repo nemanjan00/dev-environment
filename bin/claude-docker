@@ -37,6 +37,12 @@ DOCKER_ARGS="$DOCKER_ARGS -v $TMPDIR_CONFIG:/tmp/claude-config"
 # Claude config directory (settings, memory, commands)
 if [ -d "${HOME}/.claude" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude:/work/.claude"
+  # Per-host-path project bucket: each host project gets its own memory and
+  # sessions, while the container always sees -work-project.
+  HOST_SLUG="$(echo "$PROJECT_DIR" | tr / -)"
+  HOST_BUCKET="${HOME}/.claude/projects/${HOST_SLUG}"
+  mkdir -p "$HOST_BUCKET"
+  DOCKER_ARGS="$DOCKER_ARGS -v $HOST_BUCKET:/work/.claude/projects/-work-project"
 fi
 
 # Parse arguments

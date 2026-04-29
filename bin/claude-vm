@@ -65,6 +65,14 @@ fi
 
 if [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v /claude-config:/work/.claude"
+  # Per-host-path project bucket: each host project gets its own memory and
+  # sessions, while the container always sees -work-project. Slug is computed
+  # from the host PROJECT_DIR; the bucket is created host-side so the
+  # synced_folder of CLAUDE_CONFIG_DIR makes it visible inside the VM at
+  # /claude-config/projects/<slug>.
+  HOST_SLUG="$(echo "$PROJECT_DIR" | tr / -)"
+  mkdir -p "${CLAUDE_CONFIG_DIR}/projects/${HOST_SLUG}"
+  DOCKER_ARGS="$DOCKER_ARGS -v /claude-config/projects/${HOST_SLUG}:/work/.claude/projects/-work-project"
 fi
 
 if [ -n "$CLAUDE_AUTH" ] && [ -f "$CLAUDE_AUTH" ]; then

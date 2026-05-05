@@ -37,6 +37,12 @@ DOCKER_ARGS="$DOCKER_ARGS -v $TMPDIR_CONFIG:/tmp/claude-config"
 # Claude config directory (settings, memory, commands)
 if [ -d "${HOME}/.claude" ]; then
   DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude:/work/.claude"
+  # Also mount at the host's absolute path so plugin entries that record
+  # absolute paths (e.g. ${HOME}/.claude/plugins/...) resolve inside the
+  # container without rewriting.
+  if [ "${HOME}/.claude" != "/work/.claude" ]; then
+    DOCKER_ARGS="$DOCKER_ARGS -v ${HOME}/.claude:${HOME}/.claude"
+  fi
   # Per-host-path project bucket: each host project gets its own memory and
   # sessions, while the container always sees -work-project.
   HOST_SLUG="$(echo "$PROJECT_DIR" | tr / -)"

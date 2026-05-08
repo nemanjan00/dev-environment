@@ -13,17 +13,25 @@ RUN pacman -Syu --noconfirm \
     valkey \
     rabbitmq \
     duckdb \
+    dsq \
     rclone \
     mariadb-clients \
     protobuf \
     s3cmd \
     httpie \
+    websocat \
     lnav \
     sqlite \
     go-yq \
     bind
 
 USER 1000
+
+# MongoDB shell — not in Arch [extra]; install the official npm release and
+# symlink into ~/.local/bin so the binary survives asdf nodejs version switches
+# (asdf shims are per-version; the symlink pins the current resolution).
+RUN npm install -g mongosh && \
+    ln -sf "$(asdf which mongosh)" /work/.local/bin/mongosh
 
 # Append profile context to base CLAUDE.md
 COPY CLAUDE.md /tmp/profile-claude.md

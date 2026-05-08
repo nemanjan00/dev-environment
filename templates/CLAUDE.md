@@ -18,12 +18,26 @@ The following CLI tools are available for use in scripts and pipelines:
 - **jc** — Converts output of common commands (`ps`, `mount`, `ls`, `dig`, `git log`, etc.) to JSON. Use as `command | jc --command-name | jq ...`.
 - **miller** (`mlr`) — Like jq but for CSV, TSV, and tabular data. Use `mlr --csv filter '$col == "val"' file.csv`.
 - **ripgrep** (`rg`) — Fast recursive code search with regex support.
+- **the_silver_searcher** (`ag`) — Older code-search tool; honors `.gitignore`/`.agignore` and predates `rg`. Prefer `rg` for new scripts; `ag` is here for muscle memory and existing tooling that shells out to it.
 - **fzf** — Fuzzy finder, scriptable with `--filter` for non-interactive use.
 - **tree** — Directory structure listing. Use `tree -J` for JSON output.
 - **curl** / **wget** — HTTP requests (curl for APIs, wget for file downloads).
 - **socat** — Multipurpose network relay for socket operations, port forwarding, and proxying.
 - **strace** — Trace system calls for debugging process failures. Use `strace -e trace=open,read cmd` to diagnose issues.
 - **eza** — Modern `ls` replacement with `--json` output support.
+
+### Archive / compression
+
+`tar`, `gzip`, `xz` ship with the base image. Additionally installed:
+
+- **zip** / **unzip** — ZIP archive create/extract.
+- **7zip** (`7z`) — handles 7z, plus zip/tar/gz/xz/bz2/cab/iso and many others;
+  the most format-flexible CLI here. Use `7z x file.ext` to extract anything
+  it recognises, `7z l file.ext` to list.
+- **unrar** — RAR extraction only. RAR creation is non-free and not in the
+  official repos; use `zip` or `7z` if you need to *write* an archive.
+- **zstd** — Zstandard compress/decompress (`zstd file`, `unzstd file.zst`).
+  For tar streams: `tar --zstd -cf out.tar.zst dir/`.
 
 ## Package Management
 

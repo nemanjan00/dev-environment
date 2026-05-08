@@ -23,12 +23,33 @@ the `reversing` profile, so all binary/forensics tooling is also available.
 - **duckdb** — in-process analytical SQL engine. Queries CSV/Parquet/JSON
   directly: `duckdb -c "SELECT count(*) FROM 'data.parquet'"`. Great for
   ad-hoc analysis without loading into a real warehouse.
+- **dsq** — run SQL against JSON/CSV/TSV/Excel/Parquet/log files in one shot:
+  `dsq events.json 'SELECT user, COUNT(*) FROM {} GROUP BY user'`. Lower
+  ceremony than `duckdb` for quick one-liners; uses SQLite syntax under the
+  hood and auto-detects format from extension.
 
 ## Key-value / in-memory
 
 - **valkey** (`valkey-cli`) — Redis-compatible CLI. Arch replaced `redis` with
   `valkey` (BSD fork); `valkey-cli` speaks the same RESP protocol, so use it
   exactly like `redis-cli`: `valkey-cli -h host -p 6379 KEYS '*'`.
+
+## Document stores
+
+- **mongosh** — official MongoDB shell, installed via npm (no Arch package).
+  `mongosh "mongodb://host:27017/db"` for an interactive session, or
+  `mongosh --eval 'db.coll.find().limit(5)'` for one-shot queries.
+
+## Search / Elasticsearch
+
+No dedicated CLI is installed — Elasticsearch is REST-only, so use `curl` or
+`httpie` directly:
+
+```sh
+http GET es.example.com:9200/_cat/indices?v
+curl -s es.example.com:9200/idx/_search -H 'Content-Type: application/json' \
+  -d '{"query":{"match_all":{}}}' | jq
+```
 
 ## Message queues
 
@@ -43,6 +64,8 @@ the `reversing` profile, so all binary/forensics tooling is also available.
   `lnav /var/log/*.log`.
 - **httpie** (`http`, `https`) — human-friendly HTTP client. Cleaner than
   `curl` for API probing: `http POST api.example.com/v1/x name=foo`.
+- **websocat** — `curl`/`netcat` for WebSockets. `websocat ws://host/path`
+  for an interactive session, or pipe stdin for scripted send/receive.
 - **go-yq** (`yq`) — YAML processor with jq-like syntax. Use for reading /
   patching k8s manifests, CI config, etc. (Note: this is the Go implementation
   from mikefarah/yq — syntax differs from the Python `yq` wrapper.)

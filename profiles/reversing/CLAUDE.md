@@ -3,6 +3,7 @@
 ## Disassembly & Binary Analysis
 
 - **radare2** with **r2ghidra** decompiler and **r2mcp** plugin for AI integration
+- **gdb** — native x86_64 debugger for live debugging, core-dump analysis, and scripted inspection (`gdb -batch -ex 'disas main' ./bin`). For aarch64 targets use `aarch64-linux-gnu-gdb` (see cross-toolchain section).
 - **muxmcp** — generic stdio MCP multiplexer (documented in base `CLAUDE.md`). Useful here for running `muxmcp -- r2mcp` to analyze multiple binaries concurrently, since `r2mcp` is single-session.
 - **python-r2pipe** — script radare2 from Python
 - **capstone** / **python-capstone** — disassembly framework
@@ -29,11 +30,31 @@
 - **squashfs-tools**, **sasquatch** — squashfs extraction (including non-standard vendor formats)
 - **upx** — packed executable extraction
 
+## aarch64 cross toolchain
+
+For inspecting, patching, and (re)building ARM64 ELF objects / shared libraries
+without an actual aarch64 host. All binaries are prefixed `aarch64-linux-gnu-`:
+
+- **aarch64-linux-gnu-gcc** — cross-compiler. Pair with `-c` for objects,
+  `-shared` for `.so`, `-static` to avoid the runtime loader.
+- **aarch64-linux-gnu-binutils** — full binutils suite: `objdump` (use
+  `-d -M reg-names-std` for AArch64-aware disasm), `readelf`, `nm`, `strings`,
+  `strip`, `ar`, `ld`, `as`, `objcopy` (extract/replace sections, e.g.
+  `objcopy --dump-section .rodata=out.bin lib.so`), `addr2line`, `size`.
+- **aarch64-linux-gnu-gdb** — cross-debugger; attach to a remote `gdbserver`
+  on the target with `target remote host:port`.
+- **aarch64-linux-gnu-glibc** + **linux-api-headers** — sysroot bits so the
+  cross-gcc can actually link executables / shared libs against libc.
+
+For host-side disasm of arbitrary AArch64 blobs (no toolchain prefix needed),
+`radare2`, `r2ghidra`, `capstone`, and `lief` all handle ARM64 natively.
+
 ## .NET & Windows RE
 
-- **dotnet-sdk** with **ilspycmd** — .NET decompilation
+- **dotnet-sdk** with **ilspycmd** — .NET decompilation; runs modern .NET (Core/5+) assemblies.
+- **mono** — runs legacy .NET Framework 2.0–4.x EXEs that `dotnet` won't load (de4dot, older dnSpy CLIs, ConfuserEx unpackers, most pre-Core malware samples). Invoke as `mono Tool.exe`.
 - **msitools** — MSI package inspection
-- **wine** — run Windows binaries
+- **wine** — run Windows binaries (native PE that isn't .NET, or .NET tools that refuse mono)
 
 ## Hardware & Serial
 

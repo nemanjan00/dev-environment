@@ -5,6 +5,7 @@ USER 0
 # Install reversing tools from official repos and sudo for AUR builds
 RUN pacman -Syu --noconfirm \
     sudo \
+    gdb \
     radare2 \
     r2ghidra \
     binwalk \
@@ -18,6 +19,7 @@ RUN pacman -Syu --noconfirm \
     unshield \
     capstone \
     dotnet-sdk \
+    mono \
     msitools \
     wine \
     minicom \
@@ -27,7 +29,12 @@ RUN pacman -Syu --noconfirm \
     flashrom \
     openocd \
     sigrok-cli \
-    dtc && \
+    dtc \
+    aarch64-linux-gnu-gcc \
+    aarch64-linux-gnu-binutils \
+    aarch64-linux-gnu-gdb \
+    aarch64-linux-gnu-glibc \
+    aarch64-linux-gnu-linux-api-headers && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 
 # Install AUR packages

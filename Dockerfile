@@ -11,7 +11,8 @@ RUN pacman -Syu --noconfirm \
     git base-devel curl wget \
     zsh \
     clang cmake \
-    htop ripgrep eza fzf jq jc unzip \
+    htop ripgrep the_silver_searcher eza fzf jq jc \
+    zip unzip 7zip unrar zstd \
     ctags strace tree \
     python-pynvim neovim \
     tmux \

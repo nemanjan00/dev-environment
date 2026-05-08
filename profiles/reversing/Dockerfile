@@ -32,7 +32,7 @@ RUN pacman -Syu --noconfirm \
 
 # Install AUR packages
 USER 1000
-RUN for pkg in android-apktool tio magika sasquatch; do \
+RUN for pkg in android-apktool android-sdk-build-tools tio magika sasquatch; do \
     git clone https://aur.archlinux.org/$pkg.git /tmp/$pkg && \
     cd /tmp/$pkg && \
     makepkg -si --noconfirm && \

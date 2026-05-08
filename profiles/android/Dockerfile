@@ -53,7 +53,7 @@ RUN pacman -Syu --noconfirm \
 USER 1000
 
 # AUR packages: ncurses5-compat-libs is needed by old AOSP host prebuilts (libncurses.so.5)
-RUN for pkg in ncurses5-compat-libs; do \
+RUN for pkg in ncurses5-compat-libs android-sdk-build-tools; do \
     git clone https://aur.archlinux.org/$pkg.git /tmp/$pkg && \
     cd /tmp/$pkg && \
     makepkg -si --noconfirm --skippgpcheck && \

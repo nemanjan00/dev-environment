@@ -36,6 +36,7 @@ AOSP host tools still need some 32-bit libs. Enabled via `[multilib]` in `/etc/p
 ## Device interaction
 
 - **android-tools** — `adb`, `fastboot`, `mkbootimg` (pulling vendor blobs from a running device, flashing builds)
+- **zipalign** (from `android-sdk-build-tools`, AUR) — align APK uncompressed entries on 4-byte boundaries before signing
 - Note: `android-udev` rules and USB device passthrough are not applied inside the container. Flashing over USB is easier from the host; the container is best used for building.
 
 ## Typical flow inside the container

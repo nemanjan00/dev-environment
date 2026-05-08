@@ -48,6 +48,7 @@
 ## Android
 
 - **apktool** — APK decompilation and recompilation
+- **zipalign** (from `android-sdk-build-tools`) — align APK uncompressed entries on 4-byte boundaries before signing; required after `apktool b` and before `apksigner sign`
 - **smalizator** — smali helper that generates Frida (and Xposed) method hooks from a smali invoke line, and grep-searches an apktool-extracted tree for `.implements`/`.super` declarations. Subcommands:
   - `smalizator hook "<smali invoke line>"` — emits a ready-to-paste `Java.use(...).method.implementation = ...` hook for the targeted method (`--xposed` switches to an Xposed hook).
   - `smalizator implements "L<iface>;"` — find every class declaring `.implements L<iface>;`.

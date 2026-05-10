@@ -10,7 +10,7 @@ RUN pacman -Syu --noconfirm \
     nmap \
     openbsd-netcat \
     sslscan \
-    mtr \
+    traceroute \
     proxychains-ng \
     gdb \
     radare2 \

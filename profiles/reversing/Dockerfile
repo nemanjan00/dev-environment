@@ -6,8 +6,12 @@ USER 0
 RUN pacman -Syu --noconfirm \
     sudo \
     bind \
+    whois \
     nmap \
-    gnu-netcat \
+    openbsd-netcat \
+    sslscan \
+    mtr \
+    proxychains-ng \
     gdb \
     radare2 \
     r2ghidra \

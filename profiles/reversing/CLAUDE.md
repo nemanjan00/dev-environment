@@ -21,8 +21,12 @@
 - **volatility3** — memory forensics
 - **wireshark-cli** (`tshark`) — network packet analysis
 - **bind** (`dig`, `host`, `nslookup`) — DNS lookups for IOC/infra investigation; pairs with `jc --dig` for JSON output
+- **whois** — domain/IP registration lookup for attribution and infra mapping
 - **nmap** — port scanning and service/version detection. Use `-sV` for service probes, `-oX -` for XML output (pipe to `jc --xml`).
-- **gnu-netcat** (`nc`) — raw TCP/UDP connections for banner grabbing, manual protocol probing, and shoveling data over sockets. Pairs with `socat` (base) when you need TLS or more complex relays.
+- **openbsd-netcat** (`nc`) — raw TCP/UDP/Unix-socket connections for banner grabbing, manual protocol probing, and shoveling data over sockets. Supports `-U` (unix sockets), `-k` (keep listening), and proxy forwarding. Pairs with `socat` (base) when you need TLS or more complex relays.
+- **sslscan** — TLS/SSL cipher, protocol, and certificate enumeration for one host; faster than nmap's `ssl-*` scripts for a single-target question.
+- **mtr** — combined traceroute + continuous ping. Use `--report --json` for non-interactive output.
+- **proxychains-ng** (`proxychains4`) — force any tool through a SOCKS/HTTP proxy chain. Essential when pivoting through a SOCKS foothold (`ssh -D`, etc.); config at `/etc/proxychains.conf`.
 - **magika** — AI-powered file type identification
 - **yara** — pattern matching for malware classification
 - **perl-image-exiftool** — metadata extraction

@@ -33,7 +33,6 @@ RUN pacman -Syu --noconfirm \
     libxml2 \
     zip \
     unzip \
-    xxd \
     ccache \
     maven \
     ninja \

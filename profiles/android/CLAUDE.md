@@ -30,7 +30,6 @@ AOSP host tools still need some 32-bit libs. Enabled via `[multilib]` in `/etc/p
 
 - **imagemagick**, **pngcrush** — image processing for system images
 - **lzop**, **lz4**, **zip**, **unzip**, **squashfs-tools** — compression formats used in boot/recovery/system images
-- **xxd** — hex dump tool (used by build scripts)
 - **rsync**, **schedtool**
 
 ## Device interaction

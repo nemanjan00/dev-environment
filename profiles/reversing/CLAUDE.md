@@ -21,6 +21,8 @@
 - **volatility3** — memory forensics
 - **wireshark-cli** (`tshark`) — network packet analysis
 - **bind** (`dig`, `host`, `nslookup`) — DNS lookups for IOC/infra investigation; pairs with `jc --dig` for JSON output
+- **nmap** — port scanning and service/version detection. Use `-sV` for service probes, `-oX -` for XML output (pipe to `jc --xml`).
+- **gnu-netcat** (`nc`) — raw TCP/UDP connections for banner grabbing, manual protocol probing, and shoveling data over sockets. Pairs with `socat` (base) when you need TLS or more complex relays.
 - **magika** — AI-powered file type identification
 - **yara** — pattern matching for malware classification
 - **perl-image-exiftool** — metadata extraction

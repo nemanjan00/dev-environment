@@ -6,6 +6,8 @@ USER 0
 RUN pacman -Syu --noconfirm \
     sudo \
     bind \
+    nmap \
+    gnu-netcat \
     gdb \
     radare2 \
     r2ghidra \

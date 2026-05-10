@@ -13,7 +13,9 @@ RUN pacman -Syu --noconfirm \
     clang cmake \
     htop ripgrep the_silver_searcher eza fzf jq jc \
     zip unzip 7zip unrar zstd \
-    ctags strace tree xxd \
+    ctags strace tree xxd file \
+    diffutils patch \
+    man-db man-pages \
     python-pynvim neovim \
     tmux \
     docker \

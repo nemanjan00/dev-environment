@@ -25,6 +25,10 @@ The following CLI tools are available for use in scripts and pipelines:
 - **socat** — Multipurpose network relay for socket operations, port forwarding, and proxying.
 - **strace** — Trace system calls for debugging process failures. Use `strace -e trace=open,read cmd` to diagnose issues.
 - **eza** — Modern `ls` replacement with `--json` output support.
+- **file** — Identify file type from contents (magic-based). Use `file -b` for bare output, `file -i` for MIME types; works on unknown blobs, firmware dumps, stripped binaries.
+- **xxd** — Hex dump and reverse. `xxd file` to inspect bytes, `xxd -r` to patch back from edited hex, `xxd -s OFF -l LEN` for windowed dumps.
+- **diffutils** (`diff`, `cmp`) / **patch** — Generate and apply unified diffs outside of git (e.g. against extracted firmware trees, vendor drops, generated output).
+- **man** (`man-db` + `man-pages`) — Offline manpages. Use `man -k <keyword>` (apropos) to search, `man <n> <name>` for a specific section when names collide (e.g. `man 2 open`).
 
 ### Archive / compression
 

@@ -20,6 +20,7 @@
 - **sleuthkit** — disk image forensics
 - **volatility3** — memory forensics
 - **wireshark-cli** (`tshark`) — network packet analysis
+- **bind** (`dig`, `host`, `nslookup`) — DNS lookups for IOC/infra investigation; pairs with `jc --dig` for JSON output
 - **magika** — AI-powered file type identification
 - **yara** — pattern matching for malware classification
 - **perl-image-exiftool** — metadata extraction

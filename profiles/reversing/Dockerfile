@@ -5,6 +5,7 @@ USER 0
 # Install reversing tools from official repos and sudo for AUR builds
 RUN pacman -Syu --noconfirm \
     sudo \
+    bind \
     gdb \
     radare2 \
     r2ghidra \

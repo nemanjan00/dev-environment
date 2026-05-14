@@ -41,7 +41,9 @@ RUN asdf plugin add nodejs && asdf install nodejs latest && asdf set --home node
 RUN asdf plugin add python && asdf install python 3.14.4 && asdf set --home python 3.14.4
 
 # Python libraries available to scripts via asdf Python
-RUN pip install --no-cache-dir curl_cffi
+RUN pip install --no-cache-dir curl_cffi && \
+    asdf reshim python && \
+    ln -sf "$(asdf which curl-cffi)" /work/.local/bin/curl-cffi
 
 # Disable cache
 #ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/skipcache

@@ -22,6 +22,7 @@ The following CLI tools are available for use in scripts and pipelines:
 - **fzf** — Fuzzy finder, scriptable with `--filter` for non-interactive use.
 - **tree** — Directory structure listing. Use `tree -J` for JSON output.
 - **curl** / **wget** — HTTP requests (curl for APIs, wget for file downloads).
+- **curl_cffi** — Python HTTP client that impersonates browser TLS/JA3 fingerprints (Chrome, Firefox, Safari). Use from Python scripts (`from curl_cffi import requests; requests.get(url, impersonate="chrome")`) when a target blocks default `requests`/`httpx` fingerprints.
 - **socat** — Multipurpose network relay for socket operations, port forwarding, and proxying.
 - **strace** — Trace system calls for debugging process failures. Use `strace -e trace=open,read cmd` to diagnose issues.
 - **eza** — Modern `ls` replacement with `--json` output support.

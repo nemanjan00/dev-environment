@@ -40,6 +40,9 @@ ENV PATH="/work/.local/bin:/work/.asdf/shims:${PATH}"
 RUN asdf plugin add nodejs && asdf install nodejs latest && asdf set --home nodejs latest
 RUN asdf plugin add python && asdf install python 3.14.4 && asdf set --home python 3.14.4
 
+# Python libraries available to scripts via asdf Python
+RUN pip install --no-cache-dir curl_cffi
+
 # Disable cache
 #ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/skipcache
 

@@ -17,6 +17,7 @@ RUN pacman -Syu --noconfirm \
     r2ghidra \
     binwalk \
     p7zip \
+    cabextract \
     upx \
     perl-image-exiftool \
     yara \

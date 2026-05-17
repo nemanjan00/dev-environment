@@ -34,6 +34,7 @@
 ## Archive & Filesystem Extraction
 
 - **p7zip**, **unrar**, **unshield** — archive extraction
+- **cabextract** — Microsoft CAB archive extraction (drivers, legacy installers, `.msu`/`.cab` payloads)
 - **squashfs-tools**, **sasquatch** — squashfs extraction (including non-standard vendor formats)
 - **upx** — packed executable extraction
 

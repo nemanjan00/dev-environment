@@ -77,6 +77,12 @@ RUN cd ~/.config/coc/extensions && npm install
 RUN git clone https://github.com/gpakosz/.tmux.git ~/.tmux
 RUN ln -s -f .tmux/.tmux.conf ~/.tmux.conf
 RUN cp ~/.tmux/.tmux.conf.local ~/
+# Append host-project-path display to the gpakosz status line. Sourced
+# after the upstream defaults so the override wins. $HOST_PROJECT_DIR is
+# set by bin/claude-docker; outside that wrapper the shell escape returns
+# empty and the status line is unchanged.
+COPY --chown=$UID:$GID templates/tmux.conf.local.append /tmp/tmux.append
+RUN cat /tmp/tmux.append >> ~/.tmux.conf.local && rm /tmp/tmux.append
 
 # Install Claude Code, muxmcp (stdio MCP multiplexer), and shell-session-mcp
 # (PTY-backed interactive sessions; node-pty needs base-devel + python — both present)

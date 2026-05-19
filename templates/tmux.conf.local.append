@@ -1,0 +1,7 @@
+
+# --- claude-docker host project path -------------------------------------
+# bin/claude-docker passes $HOST_PROJECT_DIR into the container; surface it
+# in the status line so it's obvious which sandbox is which when several
+# are running. The shell escape returns empty if the var is unset, so this
+# is harmless outside the wrapper.
+tmux_conf_theme_status_left=" ❐ #S #(sh -c '[ -n \"$HOST_PROJECT_DIR\" ] && printf \"| %s \" \"$HOST_PROJECT_DIR\"') | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "

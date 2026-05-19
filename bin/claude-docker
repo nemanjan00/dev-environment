@@ -9,8 +9,15 @@ DOCKER_ARGS="-ti --pull always -e TERM=xterm-256color"
 DOCKER_ARGS="$DOCKER_ARGS -v $PROJECT_DIR:/work/project"
 
 # Expose host project path so the in-container tmux status line can show
-# which sandbox is which when several are running side by side.
-DOCKER_ARGS="$DOCKER_ARGS -e HOST_PROJECT_DIR=$PROJECT_DIR"
+# which sandbox is which when several are running side by side. Collapse
+# the host $HOME prefix to ~ here — inside the container $HOME is /work,
+# so the substitution has to happen on the host.
+HOST_PROJECT_DISPLAY="$PROJECT_DIR"
+case "$PROJECT_DIR" in
+  "$HOME") HOST_PROJECT_DISPLAY="~" ;;
+  "$HOME"/*) HOST_PROJECT_DISPLAY="~${PROJECT_DIR#$HOME}" ;;
+esac
+DOCKER_ARGS="$DOCKER_ARGS -e HOST_PROJECT_DIR=$HOST_PROJECT_DISPLAY"
 
 # Auth: API key
 if [ -n "${ANTHROPIC_API_KEY:-}" ]; then

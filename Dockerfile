@@ -16,6 +16,7 @@ RUN pacman -Syu --noconfirm \
     ctags strace tree xxd file \
     diffutils patch \
     man-db man-pages \
+    nss nspr \
     python-pynvim neovim \
     tmux \
     docker \

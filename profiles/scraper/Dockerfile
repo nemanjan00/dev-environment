@@ -8,8 +8,6 @@ USER 0
 # on first launch); these are the shared libraries that binary links
 # against on Arch.
 RUN pacman -Syu --noconfirm \
-    nss \
-    nspr \
     alsa-lib \
     atk \
     at-spi2-atk \

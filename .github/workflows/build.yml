@@ -29,7 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [default, android, embedded, librarian, maker, reversing, scraper]
+        profile: [default, android, embedded, librarian, maker, presenter, reversing, scraper]
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub

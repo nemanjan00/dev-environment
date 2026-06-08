@@ -76,6 +76,7 @@ For host-side disasm of arbitrary AArch64 blobs (no toolchain prefix needed),
 
 ## Android
 
+- **jadx** — Dex/APK to Java decompiler. `jadx -d out app.apk` produces readable Java source (best for understanding logic); `jadx-gui` for interactive browsing. Complements `apktool`, which gives smali rather than Java — use jadx to read, apktool to patch and rebuild.
 - **apktool** — APK decompilation and recompilation
 - **zipalign** (from `android-sdk-build-tools`) — align APK uncompressed entries on 4-byte boundaries before signing; required after `apktool b` and before `apksigner sign`
 - **smalizator** — smali helper that generates Frida (and Xposed) method hooks from a smali invoke line, and grep-searches an apktool-extracted tree for `.implements`/`.super` declarations. Subcommands:

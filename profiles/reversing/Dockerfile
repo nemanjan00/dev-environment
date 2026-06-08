@@ -15,6 +15,7 @@ RUN pacman -Syu --noconfirm \
     gdb \
     radare2 \
     r2ghidra \
+    jadx \
     binwalk \
     p7zip \
     cabextract \

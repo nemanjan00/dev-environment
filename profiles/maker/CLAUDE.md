@@ -19,7 +19,21 @@ For any electronics / PCB / schematic / circuit-board task in this profile, **us
 
 tscircuit requires **bun** — the `tsci` CLI has a `#!/usr/bin/env bun` shebang, and the runtime relies on bun's CJS-to-ESM interop (named imports from CJS packages like `circuit-json`). Running it under plain node/npm fails with `SyntaxError: The requested module 'circuit-json' does not provide an export named 'ms'`.
 
-Do **not** fall back to `npm` / `npx` for tscircuit. Use `bun` and the `tsci` CLI.
+Do **not** fall back to `npm` / `npx` for tscircuit. Use `bun` and the `tsci` CLI. (This rule is about *running* tscircuit — installing the skill below with `npx skills` is a separate, fine use of npx.)
+
+### Install the tscircuit skill first
+
+Before doing real tscircuit work, install the authoritative tscircuit Claude skill — it ships current syntax, workflow, and checklist docs straight from the tscircuit project:
+
+```sh
+npx skills add tscircuit/skill
+```
+
+This is the [vercel-labs `skills`](https://github.com/vercel-labs/skills) CLI; `tscircuit/skill` resolves to `github.com/tscircuit/skill`. Run it from `/work/project` to drop the skill into `.claude/skills/tscircuit/` (project-local). It needs network + `git`.
+
+**Picking it up in the running session:** Claude Code hot-reloads skills, so once `.claude/skills/` exists, adding the skill is live — no restart needed. The one caveat (per the [skills docs](https://code.claude.com/docs/en/skills#live-change-detection)) is that a `.claude/skills/` directory that did **not** exist when the session started isn't watched yet, so in a brand-new project with no skills dir you must restart Claude once after the first install. After `tsci init` (below) — which scaffolds `.claude/skills/tscircuit/` itself — the dir already exists, so this is a non-issue.
+
+`tsci init` also scaffolds a copy of this skill, but `npx skills add tscircuit/skill` is the way to add or refresh it in a project that wasn't created with `tsci init`. Always read `.claude/skills/tscircuit/` before authoring boards — it's more current than this CLAUDE.md.
 
 ### What's pre-installed
 

@@ -41,6 +41,7 @@ docker build -t nemanjan00/dev:android profiles/android/
 docker build -t nemanjan00/dev:maker profiles/maker/
 docker build -t nemanjan00/dev:analyst profiles/analyst/
 docker build -t nemanjan00/dev:librarian profiles/librarian/
+docker build -t nemanjan00/dev:presenter profiles/presenter/
 docker build -t nemanjan00/dev:scraper profiles/scraper/
 
 # With custom UID/GID (to match your host user) — apply to the base image
@@ -54,12 +55,13 @@ The image is split into a base layer and profile-specific layers. The base image
 | Profile | Tag | Description |
 |---------|-----|-------------|
 | `default` | `nemanjan00/dev:default` | Base environment, no extras |
-| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, binwalk, apktool, volatility3, unicorn, keystone, magika, wireshark-cli, foremost |
+| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, jadx, binwalk, apktool, volatility3, unicorn, keystone, magika, wireshark-cli, foremost |
 | `embedded` | `nemanjan00/dev:embedded` | Embedded development: arm-none-eabi toolchain, platformio, avrdude, esptool, openocd, stlink, sigrok-cli, flashrom |
 | `android` | `nemanjan00/dev:android` | Android / LineageOS builds: repo, git-lfs, JDK 17/11, android-tools, ccache, multilib libs, AOSP host toolchain |
 | `maker` | `nemanjan00/dev:maker` | Physical-world maker: OpenSCAD for 3D-printable parts, bun + pre-installed tscircuit CLI for PCB design |
 | `analyst` | `nemanjan00/dev:analyst` | Data / infra analyst (extends `reversing`): aws-cli, s3cmd, rclone, psql, mariadb, sqlite, duckdb, valkey-cli, rabbitmq admin, lnav, httpie, protoc, dig |
 | `librarian` | `nemanjan00/dev:librarian` | Document & ebook reading: pandoc, poppler (pdftotext), mupdf-tools, qpdf, pdfgrep, catdoc, djvulibre, unrtf, tesseract OCR, glow, w3m |
+| `presenter` | `nemanjan00/dev:presenter` | Slide decks from Markdown via pandoc → beamer → xelatex: pandoc-cli, texlive (xetex, latexextra, fontsextra, pictures), fontconfig, Hack Nerd Font |
 | `scraper` | `nemanjan00/dev:scraper` | Web scraping against anti-bot sites: CloakBrowser (stealth Chromium, Playwright/Puppeteer drop-in), Xvfb for headed mode, Chromium runtime libs, full font set |
 
 To use a profile with the CLI scripts:

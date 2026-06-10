@@ -87,6 +87,11 @@ do it — don't improvise per profile:
   `--add-dir` stays valid even for profiles that ship no skill. Open the
   sandbox and the skill is just *there*.
 
+- **Document it** in `profiles/<name>/CLAUDE.md` with a short "skill" callout
+  (what it does, that it's already loaded) — see `ctf`. The base
+  `templates/CLAUDE.md` already tells the running Claude that skills auto-load
+  from `/work/skills`; the profile section names the specific one.
+
 **Why this exact path** (the constraints that rule out the obvious spots):
 
 - `~/.claude/skills` — the host's `~/.claude` is bind-mounted over

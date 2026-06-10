@@ -2,6 +2,11 @@
 
 This is a Docker-based development environment running Arch Linux.
 
+It ships as a shared **base** image plus optional **profile** layers that add
+domain-specific tooling. If this is a profile build, that profile's tools and
+skills are documented in the section(s) appended to the end of this file — read
+them: they tell you what's installed and the canonical way to drive it.
+
 ## Environment
 
 - **Shell**: zsh with zplug plugins
@@ -9,6 +14,20 @@ This is a Docker-based development environment running Arch Linux.
 - **Multiplexer**: tmux
 - **User**: unprivileged user (uid 1000), home at `/work`
 - **Projects**: mount to `/work/project`
+
+## Skills
+
+This environment may bundle **Claude skills** — task playbooks that load
+automatically (the wrappers launch with `--add-dir /work/skills`, so every
+skill under `/work/skills/.claude/skills/` is live with no setup) and show up in
+your available-skills list.
+
+- **Check your skills before improvising.** When a task matches one — e.g. a
+  `pwn` binary-exploitation skill in the `ctf` profile — invoke it. The skill
+  encodes the intended workflow and assumes the exact tools installed here.
+- Skills are **profile-specific**: a profile bundles the ones relevant to its
+  domain, and documents them in its appended section below.
+- Run `ls /work/skills/.claude/skills/` to see what's bundled in this image.
 
 ## Scripting Tools
 

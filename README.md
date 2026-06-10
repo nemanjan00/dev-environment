@@ -53,6 +53,10 @@ claude-docker --profile ctf     # ...packing a full binary-exploitation kit
 Your project's mounted, your auth + git identity tag along, and Claude is live
 in a throwaway box. Close it and it's gone.
 
+> The wrappers **self-update** on launch (`git pull --ff-only` on `~/.dev`) so
+> you always run the latest profiles and tooling — set `DEV_NO_UPDATE=1` to
+> skip it.
+
 ## Why it slaps
 
 - 🧰 **Loadouts, not setup.** Ten ready-made [profiles](#profiles) —

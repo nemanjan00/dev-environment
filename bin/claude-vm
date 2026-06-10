@@ -3,6 +3,22 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
+# Self-update: fast-forward the wrappers/profiles on launch so everyone runs
+# the latest. Best-effort — a missing network, local commits, or a dirty tree
+# all just skip it; a launch is never blocked. Opt out with DEV_NO_UPDATE=1.
+# On an actual update we re-exec so this very launch uses the new version;
+# DEV_UPDATED guards against a re-exec loop. Runs before the cleanup trap and
+# before any VM is created, so re-exec is safe.
+if [ "${DEV_NO_UPDATE:-0}" != "1" ] && [ -z "${DEV_UPDATED:-}" ] && [ -d "$SCRIPT_DIR/.git" ]; then
+  before="$(git -C "$SCRIPT_DIR" rev-parse HEAD 2>/dev/null || true)"
+  git -C "$SCRIPT_DIR" pull --ff-only --quiet 2>/dev/null || true
+  after="$(git -C "$SCRIPT_DIR" rev-parse HEAD 2>/dev/null || true)"
+  if [ -n "$before" ] && [ "$before" != "$after" ]; then
+    echo "dev-environment: updated to $(git -C "$SCRIPT_DIR" rev-parse --short HEAD), relaunching..." >&2
+    exec env DEV_UPDATED=1 "${BASH_SOURCE[0]}" "$@"
+  fi
+fi
+
 # PROJECT_DIR: env var > current directory
 PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
 

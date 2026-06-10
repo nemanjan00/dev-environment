@@ -50,3 +50,15 @@ jobs:
         run: |
           docker build -t $IMAGE:analyst profiles/analyst
           docker push $IMAGE:analyst
+
+  ctf:
+    needs: profile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
+      - name: Build and push ctf
+        run: |
+          docker build -t $IMAGE:ctf profiles/ctf
+          docker push $IMAGE:ctf

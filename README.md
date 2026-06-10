@@ -4,9 +4,31 @@
 
 ![Screenshot](https://github.com/nemanjan00/dev-environment/blob/master/screenshot/nvim.png?raw=true)
 
-Docker-based dev environment for running Claude Code in a sandboxed container, with optional VM isolation via Vagrant/libvirt for safe Docker-in-Docker access.
+**Give Claude Code its own machine.** A batteries-included Docker sandbox that
+boots straight into Claude Code (or a full Neovim + tmux + zsh IDE), with
+one-flag **domain profiles** that swap in exactly the tooling a task needs —
+from reverse engineering to PCB design to binary exploitation.
 
-Also works as a standalone portable IDE with Neovim, tmux, zsh, and language tooling.
+```bash
+bin/claude-docker --profile ctf      # pick your loadout, get a shell + Claude
+```
+
+- 🧰 **Pick a loadout.** Ten ready-made [profiles](#profiles) — `reversing`,
+  `android`, `embedded`, `maker`, `analyst`, `librarian`, `presenter`,
+  `scraper`, `ctf`, or plain `default` — each layered on a shared base image so
+  pulls stay small.
+- 🔒 **Sandboxed by default.** Claude runs with `--dangerously-skip-permissions`
+  *because* it's boxed in — your host stays untouched. Need Docker-in-Docker?
+  [`bin/claude-vm`](#vm-isolation) drops the whole thing inside an ephemeral
+  Vagrant/libvirt VM.
+- 🧠 **Claude already knows the box.** Every image ships a `/work/CLAUDE.md`,
+  and profiles append their own tool docs — even bundled Claude **skills**
+  (the `ctf` profile drops a `pwn` exploitation playbook, `maker` a tscircuit
+  one).
+- ⚡ **Zero setup.** `claude login` on the host once; the wrapper mounts your
+  auth, config, and git identity automatically.
+- 🖥️ **Doubles as a portable IDE.** Neovim (LSP via coc.nvim), tmux, zsh, and
+  asdf-managed Node/Python — useful even with Claude turned off.
 
 ## Table of contents
 
@@ -43,6 +65,7 @@ docker build -t nemanjan00/dev:analyst profiles/analyst/
 docker build -t nemanjan00/dev:librarian profiles/librarian/
 docker build -t nemanjan00/dev:presenter profiles/presenter/
 docker build -t nemanjan00/dev:scraper profiles/scraper/
+docker build -t nemanjan00/dev:ctf profiles/ctf/
 
 # With custom UID/GID (to match your host user) — apply to the base image
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev:base .
@@ -63,6 +86,7 @@ The image is split into a base layer and profile-specific layers. The base image
 | `librarian` | `nemanjan00/dev:librarian` | Document & ebook reading: pandoc, poppler (pdftotext), mupdf-tools, qpdf, pdfgrep, catdoc, djvulibre, unrtf, tesseract OCR, glow, w3m |
 | `presenter` | `nemanjan00/dev:presenter` | Slide decks from Markdown via pandoc → beamer → xelatex: pandoc-cli, texlive (xetex, latexextra, fontsextra, pictures), fontconfig, Hack Nerd Font |
 | `scraper` | `nemanjan00/dev:scraper` | Web scraping against anti-bot sites: CloakBrowser (stealth Chromium, Playwright/Puppeteer drop-in), Xvfb for headed mode, Chromium runtime libs, full font set |
+| `ctf` | `nemanjan00/dev:ctf` | Binary exploitation / CTF (extends `reversing`): pwntools, GEF, ROPgadget, ropper, one_gadget, seccomp-tools, patchelf — plus an auto-loaded `pwn` exploitation skill |
 
 To use a profile with the CLI scripts:
 

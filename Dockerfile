@@ -92,7 +92,12 @@ RUN npm install -g @anthropic-ai/claude-code muxmcp shell-session-mcp && \
     ln -sf "$(asdf which claude)" /work/.local/bin/claude && \
     ln -sf "$(asdf which muxmcp)" /work/.local/bin/muxmcp && \
     ln -sf "$(asdf which shell-session-mcp)" /work/.local/bin/shell-session-mcp
-RUN mkdir -p ~/.claude ~/.config/claude/mcp.d
+# ~/.claude is bind-mounted from the host at runtime, so skills baked there
+# would be shadowed. /work/skills is left untouched by that mount; the
+# wrappers pass `--add-dir /work/skills`, and Claude Code auto-loads any
+# skill under <added-dir>/.claude/skills/. Profiles drop skills here; the
+# empty dir keeps --add-dir valid even for profiles that ship none.
+RUN mkdir -p ~/.claude ~/.config/claude/mcp.d ~/skills/.claude/skills
 COPY --chown=$UID:$GID templates/CLAUDE.md /work/CLAUDE.md
 COPY --chown=$UID:$GID templates/mcp.d/ /work/.config/claude/mcp.d/
 

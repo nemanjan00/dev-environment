@@ -58,11 +58,48 @@ matrix entry (see the `analyst` job in `build.yml`).
    - if it extends `base`, append `<name>` to the `profile` matrix;
    - if it extends another profile, add a dedicated job with `needs:` on that
      profile's build (mirror the `analyst` job).
-5. Optional: add `docker-args.sh` for runtime mounts/env, or `mcp.d/*.json`
-   for MCP servers.
+5. Optional: add `docker-args.sh` for runtime mounts/env, `mcp.d/*.json`
+   for MCP servers, or a bundled Claude skill (see "Shipping a Claude skill"
+   below).
 
 When you change a profile's tool set, also refresh that profile's row in the
 README table and its `profiles/<name>/CLAUDE.md`.
+
+## Shipping a Claude skill in a profile
+
+Some profiles bundle a Claude Code **skill** (a `SKILL.md`-based playbook the
+running Claude can invoke, e.g. `ctf`'s `/pwn`). There is one standard way to
+do it — don't improvise per profile:
+
+- **Author it at** `profiles/<name>/skills/<skill>/SKILL.md` (a directory per
+  skill, `SKILL.md` as the entry point, plus any supporting files).
+- **Install it at build time** by copying that tree into the standard
+  image-wide skills dir:
+  ```dockerfile
+  COPY --chown=1000:1000 skills/ /work/skills/.claude/skills/
+  ```
+  So `profiles/<name>/skills/pwn/` lands at
+  `/work/skills/.claude/skills/pwn/SKILL.md`.
+- **It auto-loads, no manual step.** Both wrappers (`bin/claude-docker`,
+  `bin/claude-vm`) always launch Claude with `--add-dir /work/skills`, and
+  Claude Code auto-discovers any skill under `<added-dir>/.claude/skills/`.
+  The base image pre-creates the (empty) `/work/skills/.claude/skills` dir so
+  `--add-dir` stays valid even for profiles that ship no skill. Open the
+  sandbox and the skill is just *there*.
+
+**Why this exact path** (the constraints that rule out the obvious spots):
+
+- `~/.claude/skills` — the host's `~/.claude` is bind-mounted over
+  `/work/.claude` at runtime, so anything baked there is shadowed.
+- the project's `.claude/skills` — that's the user's mounted project; writing
+  into it dirties their repo on the host. The sandbox must not write to the
+  host.
+- `/work/skills` is image-internal, untouched by either mount → the skill is
+  available with zero setup and nothing persisted to the host.
+
+`--add-dir` is the *only* discovery mechanism that surfaces a skills dir from
+outside `~/.claude`/the project; the `permissions.additionalDirectories`
+setting does **not** load skills. Keep the flag in both wrappers.
 
 ## Packaging conventions
 

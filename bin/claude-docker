@@ -95,7 +95,10 @@ fi
 # mcp.d/*.json expands inside tmux's child zsh (host bash + outer zsh -ic
 # both see it quoted). zsh's NOMATCH aborts launch if mcp.d/ is empty —
 # base image must always ship at least one .json file.
-docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions --mcp-config /work/.config/claude/mcp.d/*.json $CLAUDE_ARGS'"
+# --add-dir /work/skills: auto-load skills baked into the image at build time
+# (under /work/skills/.claude/skills/) without writing into the host-mounted
+# ~/.claude. Profiles populate it; base ships it empty. See root CLAUDE.md.
+docker run $DOCKER_ARGS "$IMAGE" zsh -ic "$INIT_CMDS cd project ; tmux new-session 'claude --dangerously-skip-permissions --add-dir /work/skills --mcp-config /work/.config/claude/mcp.d/*.json $CLAUDE_ARGS'"
 
 # Persist updated OAuth credentials back to host
 if [ -f "$TMPDIR_CONFIG/claude.json" ]; then

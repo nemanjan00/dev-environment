@@ -102,4 +102,5 @@ done
 
 IMAGE="nemanjan00/dev:${PROFILE}"
 
-vagrant ssh -c "docker run $DOCKER_ARGS $IMAGE zsh -ic 'cd project ; tmux new-session \"claude --dangerously-skip-permissions $CLAUDE_ARGS\"'"
+# --add-dir /work/skills auto-loads build-time skills; see bin/claude-docker.
+vagrant ssh -c "docker run $DOCKER_ARGS $IMAGE zsh -ic 'cd project ; tmux new-session \"claude --dangerously-skip-permissions --add-dir /work/skills $CLAUDE_ARGS\"'"

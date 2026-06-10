@@ -3,7 +3,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_DIR="$(pwd)"
-DOCKER_ARGS="-ti --pull always -e TERM=xterm-256color"
+# --rm: the container is throwaway — project, config and auth are bind mounts
+# (and updated OAuth is copied back from the temp dir after exit), so nothing
+# of value lives in the container itself. Removing it on exit keeps stopped
+# containers from piling up.
+DOCKER_ARGS="-ti --rm --pull always -e TERM=xterm-256color"
 
 # Mount project
 DOCKER_ARGS="$DOCKER_ARGS -v $PROJECT_DIR:/work/project"

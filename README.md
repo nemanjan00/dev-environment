@@ -15,7 +15,9 @@ pre-loaded with the exact toolchain your build needs, so you just vibe and ship.
 
 **[Get cooking](#get-cooking)** · **[Why it slaps](#why-it-slaps)** · **[Loadouts](#profiles)** · **[Lock it in a VM](#vm-isolation)**
 
-![Screenshot](https://github.com/nemanjan00/dev-environment/blob/master/screenshot/nvim.png?raw=true)
+<img src="screenshot/hero.svg" alt="dev-environment — sandboxed Claude Code with ten domain loadouts" width="840">
+
+<sub>Neovim + LSP, tmux and zsh under the hood — see it [below](#run-it).</sub>
 
 </div>
 
@@ -195,6 +197,8 @@ zsh in a throwaway container:
 ```bash
 docker run -ti nemanjan00/dev:default
 ```
+
+![Neovim with LSP, running inside the container](https://github.com/nemanjan00/dev-environment/blob/master/screenshot/nvim.png?raw=true)
 
 ## Opening project inside of it
 

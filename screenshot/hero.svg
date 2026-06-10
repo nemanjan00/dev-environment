@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 600" width="1100" height="600" xml:space="preserve" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,'Liberation Mono',monospace">
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="18" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0d1117"/>
+      <stop offset="1" stop-color="#0a0c10"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1100" height="600" fill="#010409"/>
+  <rect x="20" y="20" width="1060" height="560" rx="14" fill="url(#bg)" stroke="#30363d" stroke-width="1.5" filter="url(#shadow)"/>
+
+  <rect x="20" y="20" width="1060" height="46" rx="14" fill="#161b22"/>
+  <rect x="20" y="50" width="1060" height="16" fill="#161b22"/>
+  <line x1="20" y1="66" x2="1080" y2="66" stroke="#30363d" stroke-width="1"/>
+  <circle cx="48" cy="43" r="7" fill="#ff5f56"/>
+  <circle cx="72" cy="43" r="7" fill="#ffbd2e"/>
+  <circle cx="96" cy="43" r="7" fill="#27c93f"/>
+  <text x="550" y="49" text-anchor="middle" fill="#8b949e" font-size="17">dev-environment — sandboxed Claude Code</text>
+
+  <text x="56" y="120" font-size="20"><tspan fill="#3fb950">$ </tspan><tspan fill="#f0f6fc" font-weight="bold">claude-docker --profile ctf</tspan></text>
+  <text x="56" y="154" font-size="19"><tspan fill="#8b949e">→ pulling </tspan><tspan fill="#58a6ff">nemanjan00/dev:ctf</tspan><tspan fill="#8b949e"> … </tspan><tspan fill="#3fb950">ready</tspan></text>
+  <text x="56" y="188" font-size="19"><tspan fill="#3fb950">✓ </tspan><tspan fill="#c9d1d9">Claude is live, fully loaded — your host stays untouched, the box is throwaway</tspan></text>
+
+  <text x="56" y="266" font-size="34" font-weight="800" fill="#f0f6fc" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">Give Claude its own machine.</text>
+  <text x="56" y="312" font-size="34" font-weight="800" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif"><tspan fill="#f0f6fc">Let it cook. </tspan><tspan fill="#ff7b72">Nuke it on exit.</tspan></text>
+
+  <text x="56" y="372" font-size="18" fill="#8b949e" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">One base image, ten loadouts — swap with a single <tspan fill="#c9d1d9" font-family="ui-monospace,Menlo,Consolas,monospace">--profile</tspan> flag:</text>
+  <text x="56" y="414" font-size="19"><tspan fill="#c9d1d9">reversing</tspan><tspan fill="#484f58">   ·   </tspan><tspan fill="#c9d1d9">android</tspan><tspan fill="#484f58">   ·   </tspan><tspan fill="#c9d1d9">embedded</tspan><tspan fill="#484f58">   ·   </tspan><tspan fill="#c9d1d9">maker</tspan><tspan fill="#484f58">   ·   </tspan><tspan fill="#c9d1d9">analyst</tspan></text>
+  <text x="56" y="446" font-size="19"><tspan fill="#c9d1d9">librarian</tspan><tspan fill="#484f58">   ·   </tspan><tspan fill="#c9d1d9">presenter</tspan><tspan fill="#484f58">   ·   </tspan><tspan fill="#c9d1d9">scraper</tspan><tspan fill="#484f58">   ·   </tspan><tspan fill="#3fb950" font-weight="bold">ctf</tspan><tspan fill="#484f58">   ·   </tspan><tspan fill="#c9d1d9">default</tspan></text>
+
+  <line x1="56" y1="478" x2="1044" y2="478" stroke="#21262d" stroke-width="1"/>
+  <text x="56" y="514" font-size="18"><tspan fill="#58a6ff">› </tspan><tspan fill="#c9d1d9">here's an ELF and an nc host:port — grab the flag</tspan></text>
+  <text x="56" y="546" font-size="18"><tspan fill="#bc8cff">  /pwn   </tspan><tspan fill="#8b949e">checksec · one_gadget · ROP chain · cat flag.txt → </tspan><tspan fill="#3fb950" font-weight="bold">CTF{…}</tspan></text>
+</svg>

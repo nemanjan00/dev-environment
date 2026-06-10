@@ -10,6 +10,24 @@ extend it with domain-specific tooling.
 > If you change tooling, update the right one — see "Two different CLAUDE.md
 > files" below.
 
+## Why profiles exist (design intent)
+
+Profiles aren't just a convenience for bundling tools — they exist to
+**constrain the agent's action space** so it doesn't wander off in the wrong
+direction. A tool that isn't installed is a path the model never considers;
+absence is a stronger guardrail than a "don't use X" instruction. The profile
+narrows *what* the agent can do; a bundled skill (see "Shipping a Claude skill"
+below) narrows *how* it does it.
+
+This is the lens for maintaining profiles:
+
+- When adding a tool, ask **"does this open a door I want open?"** — not "might
+  this ever be useful?". Resist kitchen-sink images.
+- Prefer the **smallest profile** that covers a task; that's why profiles are
+  domain-scoped and chain (`analyst`/`ctf` off `reversing`) rather than merging.
+- The "what's deliberately *not* here" sections in each profile's CLAUDE.md are
+  intentional rails, not just notes — keep writing them.
+
 ## Layout
 
 - `Dockerfile` — the **base** image (`nemanjan00/dev:base`): zsh, Neovim,

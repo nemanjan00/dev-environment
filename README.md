@@ -1,32 +1,53 @@
 # dev-environment
 
+> **Hand Claude Code its own machine — sandboxed, disposable, and pre-loaded
+> with the exact toolchain the job needs.**
+
 [![Build](https://github.com/nemanjan00/dev-environment/actions/workflows/build.yml/badge.svg)](https://github.com/nemanjan00/dev-environment/actions/workflows/build.yml)
+[![Docker Pulls](https://img.shields.io/docker/pulls/nemanjan00/dev?logo=docker&label=pulls)](https://hub.docker.com/r/nemanjan00/dev)
+[![Base image size](https://img.shields.io/docker/image-size/nemanjan00/dev/base?logo=docker&label=base%20image)](https://hub.docker.com/r/nemanjan00/dev)
+![Profiles](https://img.shields.io/badge/profiles-10-blue)
+![Arch Linux](https://img.shields.io/badge/built%20on-Arch%20Linux-1793D1?logo=archlinux&logoColor=white)
 
 ![Screenshot](https://github.com/nemanjan00/dev-environment/blob/master/screenshot/nvim.png?raw=true)
 
-**Give Claude Code its own machine.** A batteries-included Docker sandbox that
-boots straight into Claude Code (or a full Neovim + tmux + zsh IDE), with
-one-flag **domain profiles** that swap in exactly the tooling a task needs —
-from reverse engineering to PCB design to binary exploitation.
+One command drops you into a containerized **Claude Code** session backed by a
+real IDE (Neovim + LSP, tmux, zsh) and a **profile** that pre-installs exactly
+the toolkit your task needs — reverse engineering, Android, embedded, data,
+binary exploitation, and more. Claude runs wide-open *because* it's boxed in:
+your laptop stays clean, the box is throwaway, and you just talk to Claude.
+
+## Quickstart
+
+No image building required — the wrapper pulls prebuilt images from Docker Hub.
 
 ```bash
-bin/claude-docker --profile ctf      # pick your loadout, get a shell + Claude
+git clone https://github.com/nemanjan00/dev-environment && cd dev-environment
+claude login                       # once, on the host (or use ANTHROPIC_API_KEY)
+
+bin/claude-docker                  # sandboxed Claude in your current project
+bin/claude-docker --profile ctf    # ...with a full binary-exploitation toolkit
 ```
+
+That's it — your project is mounted, your Claude auth/config/git identity come
+along automatically, and you're talking to Claude in a throwaway box.
+
+## Why devs reach for it
 
 - 🧰 **Pick a loadout.** Ten ready-made [profiles](#profiles) — `reversing`,
   `android`, `embedded`, `maker`, `analyst`, `librarian`, `presenter`,
   `scraper`, `ctf`, or plain `default` — each layered on a shared base image so
-  pulls stay small.
+  pulls stay small and switching is one flag.
 - 🔒 **Sandboxed by default.** Claude runs with `--dangerously-skip-permissions`
   *because* it's boxed in — your host stays untouched. Need Docker-in-Docker?
   [`bin/claude-vm`](#vm-isolation) drops the whole thing inside an ephemeral
   Vagrant/libvirt VM.
 - 🧠 **Claude already knows the box.** Every image ships a `/work/CLAUDE.md`,
-  and profiles append their own tool docs — even bundled Claude **skills**
-  (the `ctf` profile drops a `pwn` exploitation playbook, `maker` a tscircuit
-  one).
+  and profiles append their own tool docs — even bundled Claude **skills** that
+  auto-load (the `ctf` profile drops a `/pwn` exploitation playbook).
 - ⚡ **Zero setup.** `claude login` on the host once; the wrapper mounts your
-  auth, config, and git identity automatically.
+  auth, config, and git identity automatically. Nothing is written back to your
+  host beyond your project.
 - 🖥️ **Doubles as a portable IDE.** Neovim (LSP via coc.nvim), tmux, zsh, and
   asdf-managed Node/Python — useful even with Claude turned off.
 
@@ -34,6 +55,8 @@ bin/claude-docker --profile ctf      # pick your loadout, get a shell + Claude
 
 <!-- vim-markdown-toc GFM -->
 
+* [Quickstart](#quickstart)
+* [Why devs reach for it](#why-devs-reach-for-it)
 * [Build it](#build-it)
 * [Profiles](#profiles)
 * [Run it](#run-it)

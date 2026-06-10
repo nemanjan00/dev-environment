@@ -16,9 +16,11 @@ USER 1000
 
 # pwntools — the exploit-dev framework (`from pwn import *`): process/remote
 # I/O, cyclic patterns, ELF/ROP helpers, shellcraft, checksec.
-# ROPgadget / ropper — gadget finders for ROP/JOP chains.
+# ROPgadget — gadget finder for ROP/JOP chains. (ropper is deliberately not
+# here: its `filebytes` dependency fails to build on the base image's Python
+# 3.14 — filebytes' setup.py uses the removed `ast.Str`. ROPgadget covers it.)
 # (angr for symbolic execution already comes from the reversing layer.)
-RUN pip install --no-cache-dir pwntools ROPgadget ropper
+RUN pip install --no-cache-dir pwntools ROPgadget
 
 # Ruby gems install into a fixed GEM_HOME so their CLI entry points land on
 # PATH regardless of the active ruby version.
@@ -30,7 +32,7 @@ RUN gem install --no-document one_gadget seccomp-tools
 
 # GEF — GDB Enhanced Features. Pure-Python, sourced from ~/.gdbinit; the
 # canonical "just curl it" install. Turns gdb into a pwn-aware debugger
-# (heap visualisation, `checksec`, `pattern`, `ropper`/`got`/`vmmap`, etc).
+# (heap visualisation, `checksec`, `pattern`, `got`/`vmmap`/`telescope`, etc).
 RUN curl -fsSL https://raw.githubusercontent.com/hugsy/gef/main/gef.py \
         -o /work/.gef.py && \
     echo 'source /work/.gef.py' >> /work/.gdbinit

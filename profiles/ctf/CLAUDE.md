@@ -51,8 +51,8 @@ io.interactive()
   `checksec`, `vmmap`, `heap chunks`, `pattern create/search`, `got`,
   `telescope`, and registers/stack/code context on every stop. Just run
   `gdb ./chall`. (`gdb` itself comes from the reversing layer.)
-- **ROPgadget** & **ropper** — gadget finders. ROPgadget is fast for quick
-  greps; ropper has a richer query language and can build chains.
+- **ROPgadget** — gadget finder; fast for `--binary chall | grep ': pop rdi'`
+  style hunts, and pwntools' `ROP()` builder consumes the same gadgets.
 - **one_gadget** — scans a libc for the one-shot `execve("/bin/sh", 0, 0)`
   gadgets and prints their constraints. Indispensable for short ROP chains.
 - **seccomp-tools** — `seccomp-tools dump ./chall` disassembles the seccomp

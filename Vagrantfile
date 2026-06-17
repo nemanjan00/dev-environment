@@ -8,8 +8,8 @@ Vagrant.configure("2") do |config|
   config.vm.hostname = vm_id
 
   config.vm.provider :libvirt do |v|
-    v.memory = 4096
-    v.cpus = 2
+    v.memory = (ENV['VM_MEMORY'] || 16384).to_i
+    v.cpus = (ENV['VM_CPUS'] || 2).to_i
     v.memorybacking :access, :mode => "shared"
     v.default_prefix = vm_id
   end

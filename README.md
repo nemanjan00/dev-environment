@@ -298,6 +298,8 @@ By default, `claude-vm` auto-detects `~/.claude.json`, `~/.claude/`, and `~/.git
 | `CLAUDE_CONFIG_DIR` | `~/.claude` | Claude config (settings, memory) |
 | `CLAUDE_AUTH` | `~/.claude.json` | OAuth credentials file |
 | `ANTHROPIC_API_KEY` | (none) | API key authentication |
+| `VM_MEMORY` | `16384` | VM RAM in MB |
+| `VM_CPUS` | `2` | VM virtual CPU count |
 
 VMs are ephemeral — each `claude-vm` invocation gets a unique VM ID and cleans up on exit (including Ctrl-C). Multiple instances can run in parallel.
 

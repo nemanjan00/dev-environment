@@ -23,7 +23,8 @@ RUN pacman -Syu --noconfirm \
     lnav \
     sqlite \
     go-yq \
-    bind
+    bind \
+    ffmpeg
 
 USER 1000
 

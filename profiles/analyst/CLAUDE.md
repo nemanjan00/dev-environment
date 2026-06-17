@@ -78,6 +78,15 @@ curl -s es.example.com:9200/idx/_search -H 'Content-Type: application/json' \
 - **bind** — ships `dig`, `nslookup`, `host` for DNS debugging. `dig +short`
   is the fastest way to resolve a record from a script.
 
+## Media / audio-video
+
+- **ffmpeg** (`ffmpeg`, `ffprobe`) — transcode, mux/demux, and inspect
+  audio/video/image streams. `ffprobe -v quiet -print_format json -show_format
+  -show_streams file.mp4` dumps full container/codec metadata as JSON (pipe to
+  `jq`); `ffmpeg -i in.mkv -f null -` validates a file without writing output.
+  Useful for extracting frames, audio tracks, or embedded data from media
+  pulled out of buckets, captures, or forensic images.
+
 ## Base tools worth remembering
 
 From the base image (documented in the top-level `CLAUDE.md` — not repeated

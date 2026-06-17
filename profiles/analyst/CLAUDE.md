@@ -73,6 +73,28 @@ curl -s es.example.com:9200/idx/_search -H 'Content-Type: application/json' \
   --decode_raw < msg.bin` is the quickest way to peek at an unknown wire-format
   payload.
 
+## Media / video
+
+- **ffmpeg** — decode and inspect video (`.mp4`, `.mkv`, `.mov`, `.webm`,
+  `.avi`, …) and audio. Ships `ffprobe` for metadata and `ffmpeg` for
+  transcode/extract. There is no display here, so "viewing" a video means
+  **extracting frames to image files**, which you then open with the Read tool
+  (it renders PNG/JPG visually). Canonical workflows:
+  - **Probe first** (codec, duration, fps, resolution):
+    `ffprobe -v error -show_format -show_streams -of json in.mp4 | jq`.
+  - **Every frame to PNGs** (true frame-by-frame):
+    `ffmpeg -i in.mp4 -vsync 0 frames/%06d.png` — then Read the frames in
+    order. Mind the count: a few seconds of 30fps video is dozens of files.
+  - **A single frame at a timestamp:**
+    `ffmpeg -ss 00:00:12.500 -i in.mp4 -frames:v 1 frame.png`.
+  - **Thumbnail every N seconds** (cheap overview before going frame-exact):
+    `ffmpeg -i in.mp4 -vf fps=1 thumbs/%04d.png` (1 frame/sec).
+  - **Keyframes only** (scene-ish sampling, far fewer images):
+    `ffmpeg -skip_frame nokey -i in.mp4 -vsync 0 -frame_pts 1 key/%06d.png`.
+
+  Prefer probing + sparse sampling first; only dump every frame for the
+  specific span you actually need to eyeball.
+
 ## Network debugging
 
 - **bind** — ships `dig`, `nslookup`, `host` for DNS debugging. `dig +short`

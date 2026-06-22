@@ -65,6 +65,10 @@ in a throwaway box. Close it and it's gone.
   `reversing`, `android`, `embedded`, `maker`, `analyst`, `librarian`,
   `presenter`, `scraper`, `ctf`, or plain `default`. Each stacks on one shared
   base, so swapping toolchains is a single `--profile` flag, not an afternoon.
+- 🦙 **Not just Claude.** [opencode](#opencode) rides along in the same box as a
+  drop-in alternative agent (`opencode-docker`/`opencode-vm`) — and `dev-ollama`
+  points it at a model served by your host's **[Ollama](#ollama)**, local or
+  cloud, so you can swap the brain without rebuilding the box.
 - 🔒 **Send it — safely.** Claude runs unleashed *because* it's sandboxed; your
   host never feels it. Want it spinning up its own containers too?
   [`claude-vm`](#vm-isolation) wraps the whole thing in a throwaway VM.
@@ -111,7 +115,12 @@ Three moving parts, zero ceremony:
 * [Claude Code](#claude-code)
   * [Authentication](#authentication)
   * [What gets mounted](#what-gets-mounted)
+  * [Host network mode](#host-network-mode)
   * [Manual Docker usage](#manual-docker-usage)
+* [The generic runner (`dev-docker` / `dev-vm`)](#the-generic-runner-dev-docker--dev-vm)
+* [opencode](#opencode)
+  * [Ollama](#ollama)
+* [Per-project sandbox layout (`.dev/config.json`)](#per-project-sandbox-layout-devconfigjson)
 * [VM isolation](#vm-isolation)
 * [Components](#components)
 * [Supported languages](#supported-languages)

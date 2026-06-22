@@ -57,7 +57,10 @@ in a throwaway box. Close it and it's gone.
 
 > The wrappers **self-update** on launch (`git pull --ff-only` on `~/.dev`) so
 > you always run the latest profiles and tooling — set `DEV_NO_UPDATE=1` to
-> skip it.
+> skip it. This fetches and re-execs code from the install clone's git remote on
+> the host before any sandbox exists, so keep `~/.dev` out of any sandbox mount
+> (never `--mount ~/.dev`): an agent that could rewrite the launcher there would
+> have it run on your host at the next launch.
 
 ## Why it slaps
 
@@ -161,7 +164,7 @@ Think of a profile as a **loadout**. A shared `nemanjan00/dev:base` layer carrie
 | `embedded` | `nemanjan00/dev:embedded` | Embedded development: arm-none-eabi toolchain, platformio, avrdude, esptool, openocd, stlink, sigrok-cli, flashrom |
 | `android` | `nemanjan00/dev:android` | Android / LineageOS builds: repo, git-lfs, JDK 17/11, android-tools, ccache, multilib libs, AOSP host toolchain |
 | `maker` | `nemanjan00/dev:maker` | Physical-world maker: OpenSCAD for 3D-printable parts, bun + pre-installed tscircuit CLI for PCB design |
-| `analyst` | `nemanjan00/dev:analyst` | Data / infra analyst (extends `reversing`): aws-cli, s3cmd, rclone, psql, mariadb, sqlite, duckdb, valkey-cli, rabbitmq admin, lnav, httpie, protoc, dig, ffmpeg |
+| `analyst` | `nemanjan00/dev:analyst` | Data / infra analyst (extends `reversing`): aws-cli, s3cmd, rclone, psql, mariadb, sqlite, duckdb, dsq, mongosh, valkey-cli, rabbitmq admin, lnav, httpie, websocat, yq, protoc, dig, ffmpeg |
 | `librarian` | `nemanjan00/dev:librarian` | Document & ebook reading: pandoc, poppler (pdftotext), mupdf-tools, qpdf, pdfgrep, catdoc, djvulibre, unrtf, tesseract OCR, glow, w3m |
 | `presenter` | `nemanjan00/dev:presenter` | Slide decks from Markdown via pandoc → beamer → xelatex: pandoc-cli, texlive (xetex, latexextra, fontsextra, pictures), fontconfig, Hack Nerd Font |
 | `scraper` | `nemanjan00/dev:scraper` | Web scraping against anti-bot sites: CloakBrowser (stealth Chromium, Playwright/Puppeteer drop-in), Xvfb for headed mode, Chromium runtime libs, full font set |
@@ -247,7 +250,18 @@ claude-docker  # ~/.claude.json is mounted automatically
 |-----------|---------------|---------|
 | `~/.claude.json` | `/work/.claude.json` | OAuth credentials (from `claude login`) |
 | `~/.claude` | `/work/.claude` | Full Claude config (settings, memory, CLAUDE.md) |
-| `~/.gitconfig` | `/work/.gitconfig` | Git identity and settings (read-only) |
+| `~/.gitconfig` | `/work/.gitconfig` | Git identity and settings (copied in; host file untouched) |
+
+> **Trust boundary.** The sandbox is for keeping the agent off your *host
+> filesystem* — it is not a vault for the credentials you hand it. `~/.claude`
+> and `~/.claude.json` are mounted read-write so config and memory persist, which
+> means the unleashed agent can read everything in them (OAuth tokens, any MCP
+> secrets, every project's memory) and edit `~/.claude/settings.json` — whose
+> hooks run on your **host** the next time you launch Claude outside the sandbox.
+> The launcher neutralizes one escalation automatically (it refuses to persist an
+> agent-injected global `mcpServers` back to `~/.claude.json`), but treat
+> anything reachable from `~/.claude` as visible to whatever you run. Prefer a
+> scoped `ANTHROPIC_API_KEY` over mounting host OAuth if that matters to you.
 
 The container ships with a `/work/CLAUDE.md` that documents the environment for Claude. Profile images append profile-specific tool documentation to it. Since Claude Code walks up from the project directory, `/work/CLAUDE.md` is always loaded as an ancestor of `/work/project/`. Your project can still have its own `CLAUDE.md` — both will be read.
 
@@ -260,6 +274,12 @@ claude-docker --host-network
 ```
 
 This passes `--network host` to Docker, so any ports the container listens on are directly available on localhost.
+
+> **Heads up:** host networking also removes the network boundary in the *other*
+> direction — the unleashed agent can now reach every service bound to your
+> host's loopback/LAN (localhost-only databases, admin UIs, metadata endpoints).
+> For the dev-server use case, publishing specific ports (`-p 3000:3000` via a
+> `docker-args.sh` or `--mount`-style flag) is tighter than full host networking.
 
 ### Manual Docker usage
 
@@ -416,7 +436,7 @@ The container inside the VM has access to the VM's Docker socket (with correct g
 
 ```
 Host (your machine)
-└── Vagrant/libvirt VM (Alpine Linux, 4GB RAM, 2 vCPUs)
+└── Vagrant/libvirt VM (Alpine Linux, 16GB RAM, 2 vCPUs)  ← VM_MEMORY / VM_CPUS
     ├── Docker daemon
     └── dev container (this image)
         ├── Claude Code (--dangerously-skip-permissions)

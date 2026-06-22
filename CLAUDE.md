@@ -42,8 +42,12 @@ This is the lens for maintaining profiles:
     stdout (bind mounts, env) when the profile is selected. See `android`.
   - `mcp.d/*.json` (optional) — MCP server configs for the profile. See
     `reversing/mcp.d/r2.json`.
-- `.github/workflows/build.yml` — CI: builds and pushes base, then every
-  profile. The profile list is a **matrix** that must be kept in sync.
+- `.github/workflows/build.yml` — CI: builds base, then every profile. Base
+  profiles are a **matrix**; `reversing` is a dedicated job, and the profiles
+  that extend it (`analyst`, `ctf`) are a `chained` matrix that `needs:
+  reversing`. A `coverage` job fails the run if a `profiles/*` dir isn't wired
+  in. `pull_request` builds everything (no push); only `master` pushes. Builds
+  use `--pull` and also tag an immutable `:<name>-<sha>`.
 - `bin/` — host entrypoints. The real launchers are the generic `dev-docker`
   (local Docker) and `dev-vm` (Vagrant VM); `claude-docker`/`claude-vm` and
   `opencode-docker`/`opencode-vm` are **one-line shims** (`exec dev-* --claude`
@@ -63,14 +67,30 @@ This is the lens for maintaining profiles:
   smoke test pattern in the git history of this change — re-run it after editing
   `docker-common.sh`.
 - **`--add-dir /work/skills` must remain** in the launch command for every
-  agent (it auto-loads bundled skills). It now lives in the `dev_*_launch_cmd`
-  helpers.
+  agent (it auto-loads bundled skills). It lives in the `dev_*_launch_cmd`
+  helpers (`bin/lib/docker-common.sh` and `bin/lib/vm-common.sh`) — *not* in the
+  one-line `claude-docker`/`claude-vm` shims.
+- **`--mcp-config /work/.config/claude/mcp.d/*.json` must be passed for the
+  `claude` preset in BOTH `dev_docker_launch_cmd` and `dev_vm_launch_cmd`** —
+  it's how the baked MCP servers (base `shell-session-mcp`, plus any profile
+  `mcp.d/*.json` like reversing's r2) reach the agent. The two helpers must stay
+  in parity; the VM path silently dropped this once already.
+- **Launcher args are built as bash arrays**, expanded `"${DOCKER_ARGS[@]}"`,
+  and any value that crosses a shell layer (`zsh -ic` → tmux, or `vagrant ssh
+  -c`) is quoted with `dev_shq` / `dev_join_cmd` from `common.sh`. Don't go back
+  to space-joined `DOCKER_ARGS` strings or `${arr[*]}` passthrough — paths with
+  spaces and prompts with apostrophes depend on this. `dev_*_launch_cmd` must
+  return 0 even with no passthrough args (they're called in `CMD="$(...)"` under
+  `set -e`).
 - **`.dev/config.json` is optional and host-parsed.** Absent file (or absent
   `jq`) → no behavior change. It declares extra `mounts` and read-only
   `project.readonly` carve-outs; the whole `.dev/` dir is mounted `:ro` so the
   sandboxed agent can't edit its own sandbox config. Read-only carve-outs are
   **directory-granular** because macOS bind mounts don't enforce file-level
-  permissions — keep it that way.
+  permissions — keep it that way. Because the file ships in the repo and the
+  agent can write it, config-sourced `mounts:` are screened against a
+  sensitive-path denylist (`dev_docker_safe_mount_src`) and `readonly` entries
+  are rejected if absolute / containing `..` / whitespace — keep those guards.
 - **opencode** is installed in the base image (npm `opencode-ai`). Its Ollama
   provider config is baked at `/work/opencode-ollama.json` (outside every mount
   so a bind-mounted `~/.config/opencode` can't shadow it) and selected via
@@ -127,8 +147,9 @@ do it — don't improvise per profile:
   ```
   So `profiles/<name>/skills/pwn/` lands at
   `/work/skills/.claude/skills/pwn/SKILL.md`.
-- **It auto-loads, no manual step.** Both wrappers (`bin/claude-docker`,
-  `bin/claude-vm`) always launch Claude with `--add-dir /work/skills`, and
+- **It auto-loads, no manual step.** Both launch paths (`dev_docker_launch_cmd`
+  and `dev_vm_launch_cmd` in `bin/lib/`, used by `claude-docker`/`claude-vm`)
+  always launch Claude with `--add-dir /work/skills`, and
   Claude Code auto-discovers any skill under `<added-dir>/.claude/skills/`.
   The base image pre-creates the (empty) `/work/skills/.claude/skills` dir so
   `--add-dir` stays valid even for profiles that ship no skill. Open the
@@ -151,7 +172,8 @@ do it — don't improvise per profile:
 
 `--add-dir` is the *only* discovery mechanism that surfaces a skills dir from
 outside `~/.claude`/the project; the `permissions.additionalDirectories`
-setting does **not** load skills. Keep the flag in both wrappers.
+setting does **not** load skills. Keep the flag in both `dev_*_launch_cmd`
+helpers.
 
 ## Packaging conventions
 

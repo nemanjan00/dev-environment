@@ -1,0 +1,4 @@
+#!/bin/bash
+# Convenience shim: opencode-docker is `dev-docker --opencode`.
+# Pass --ollama to wire opencode to the host's Ollama (see README).
+exec "$(dirname "${BASH_SOURCE[0]}")/dev-docker" --opencode "$@"

@@ -267,9 +267,107 @@ docker run -ti -e ANTHROPIC_API_KEY \
   nemanjan00/dev:default zsh -ic "cd project ; claude"
 ```
 
+## The generic runner (`dev-docker` / `dev-vm`)
+
+`claude-docker` and `claude-vm` are thin shims over two generic launchers,
+`dev-docker` and `dev-vm`, that run **any** command in the sandbox and let you
+choose what to mount. `claude-docker` is exactly `dev-docker --claude`, so its
+behavior is unchanged — the generic form just exposes more.
+
+```bash
+dev-docker                               # bare tmux shell in the sandbox
+dev-docker --claude [claude args...]     # Claude Code (same as claude-docker)
+dev-docker --opencode [opencode args]    # opencode (see below)
+dev-docker --mount ~/.npmrc:/work/.npmrc -- npm run lint   # run a one-off command
+```
+
+| Option | Meaning |
+|--------|---------|
+| `--claude` / `--opencode` | Preset: mount that agent's auth and launch it. Trailing args pass through. |
+| `--mount SRC[:DST][:ro]` | Extra bind mount (repeatable). `~` allowed; no `DST` → same path; `:ro` → read-only. |
+| `--ollama` | opencode only: point it at the host's Ollama. |
+| `--profile NAME` | Image profile (default `default`). |
+| `--host-network` | Share the host network. |
+| `-- CMD...` | Run an arbitrary command instead of a preset/shell. |
+
+`dev-vm` mirrors this, except arbitrary `--mount` is docker-only (the VM only
+syncs the project); read-only project carve-outs from `.dev/config.json` still
+apply.
+
+## opencode
+
+The image ships [opencode](https://opencode.ai) alongside Claude Code.
+
+```bash
+opencode-docker            # == dev-docker --opencode
+opencode-vm                # == dev-vm --opencode
+opencode-docker --ollama   # use a model served by the host's Ollama
+```
+
+opencode reads `ANTHROPIC_API_KEY` like Claude does, and its auth/state
+(`~/.config/opencode`, `~/.local/share/opencode`) are mounted from the host so
+logins persist across throwaway containers.
+
+### Ollama
+
+opencode can use models served by your host's **Ollama**. The quickest way is
+`dev-ollama`, which takes the model and wires everything up:
+
+```bash
+dev-ollama opencode --model kimi-k2.7-code:cloud
+dev-ollama opencode --model qwen2.5-coder --profile reversing
+```
+
+It generates a one-off provider config registering that model and launches
+`dev-docker --opencode --ollama`. (Claude + Ollama isn't supported yet — Claude
+Code speaks only the Anthropic API, so it would need a translation router we
+don't bundle; `dev-ollama claude …` errors with that explanation.)
+
+For the **baked default** models without `dev-ollama`, use `--ollama` directly:
+
+```bash
+opencode-docker --ollama         # uses the models listed in /work/opencode-ollama.json
+```
+
+`--ollama` selects the baked provider config (`/work/opencode-ollama.json`,
+pointing at `http://host.docker.internal:11434/v1`); edit its `models` list for
+the models you've pulled. Under `dev-docker` the container reaches your host's
+Ollama directly. Under `dev-vm`, `host.docker.internal` resolves to the **VM**,
+not your real host — so Ollama must be reachable from inside the VM.
+
+## Per-project sandbox layout (`.dev/config.json`)
+
+Drop an **optional** `.dev/config.json` in a project to declare extra mounts and
+read-only carve-outs. Absent file → default behavior, so existing projects are
+unaffected. Parsed with `jq` on the host (ignored if `jq` is missing).
+
+```json
+{
+  "mounts": [
+    { "path": "~/work/shared-lib", "at": "/work/shared-lib", "mode": "ro" }
+  ],
+  "project": {
+    "readonly": ["tests", "migrations"]
+  }
+}
+```
+
+- **`mounts`** — extra paths to bring in (`mode` defaults to `rw`). Docker-only;
+  `dev-vm` warns and skips them.
+- **`project.readonly`** — sub-directories of *this* project to mount read-only.
+  Use it to stop the agent editing tests to make them pass: it physically cannot
+  write there. The whole `.dev/` directory is itself locked read-only so the
+  agent can't relax its own sandbox for the next launch.
+
+> **macOS:** bind-mount permissions hold for **directories only**, not
+> individual files. Read-only carve-outs are therefore directory-granular, and
+> the `.dev/` self-lock relies on `.dev/` being a directory (which is why the
+> config lives at `.dev/config.json` rather than a bare dotfile).
+
 ## VM isolation
 
-For full isolation (e.g. giving Claude access to Docker), use `claude-vm` to run the dev container inside a lightweight VM via Vagrant + libvirt. Each invocation creates an ephemeral VM that is destroyed on exit.
+For full isolation (e.g. giving Claude access to Docker), use `claude-vm` (or
+`dev-vm`) to run the dev container inside a lightweight VM via Vagrant + libvirt. Each invocation creates an ephemeral VM that is destroyed on exit.
 
 ### Prerequisites
 
@@ -331,6 +429,7 @@ The base image — what every profile and the standalone IDE are built on:
 * [Neovim](https://neovim.io/) with [my config](https://github.com/nemanjan00/vim) and [coc.nvim](https://github.com/neoclide/coc.nvim) for LSP
 * [zsh](https://www.zsh.org/) with [zplug](https://github.com/zplug/zplug) and [my config](https://github.com/nemanjan00/zsh)
 * [tmux](https://github.com/tmux/tmux) with [gpakosz/.tmux](https://github.com/gpakosz/.tmux)
+* [Claude Code](https://github.com/anthropics/claude-code) and [opencode](https://opencode.ai) coding agents
 * [asdf](https://asdf-vm.com/) version manager (Node.js, Python pre-installed)
 * [fzf](https://github.com/junegunn/fzf) fuzzy finder
 * [ripgrep](https://github.com/BurntSushi/ripgrep) fast search

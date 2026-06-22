@@ -31,7 +31,7 @@ This is the lens for maintaining profiles:
 ## Layout
 
 - `Dockerfile` — the **base** image (`nemanjan00/dev:base`): zsh, Neovim,
-  tmux, asdf (Node/Python), Claude Code, and the common CLI tools.
+  tmux, asdf (Node/Python), Claude Code, opencode, and the common CLI tools.
 - `templates/CLAUDE.md` — copied into the base image as `/work/CLAUDE.md`
   (the docs the running container presents to Claude).
 - `profiles/<name>/` — one directory per profile:
@@ -44,8 +44,37 @@ This is the lens for maintaining profiles:
     `reversing/mcp.d/r2.json`.
 - `.github/workflows/build.yml` — CI: builds and pushes base, then every
   profile. The profile list is a **matrix** that must be kept in sync.
-- `bin/` — host entrypoints: `claude-docker`, `claude-vm`, `claude-vm-setup`.
+- `bin/` — host entrypoints. The real launchers are the generic `dev-docker`
+  (local Docker) and `dev-vm` (Vagrant VM); `claude-docker`/`claude-vm` and
+  `opencode-docker`/`opencode-vm` are **one-line shims** (`exec dev-* --claude`
+  / `--opencode`). `dev-ollama` launches opencode against a host Ollama model
+  (`dev-ollama opencode --model …`; Claude+Ollama is rejected pending a router).
+  Plus `claude-vm-setup`. Shared logic lives in `bin/lib/`
+  (`common.sh` self-update, `docker-common.sh`, `vm-common.sh`), sourced by the
+  launchers — don't duplicate it back into the wrappers.
 - `README.md` — user-facing docs, including the profile table.
+
+## Launcher invariants (don't break these)
+
+- **`claude-docker` must stay behavior-identical.** It is the headline command;
+  a non-breaking update means running it after a `git pull` works exactly as
+  before. It is `dev-docker --claude`, so any change to the shared libs must
+  keep that path producing the same `docker run`. There is a stub-`docker`
+  smoke test pattern in the git history of this change — re-run it after editing
+  `docker-common.sh`.
+- **`--add-dir /work/skills` must remain** in the launch command for every
+  agent (it auto-loads bundled skills). It now lives in the `dev_*_launch_cmd`
+  helpers.
+- **`.dev/config.json` is optional and host-parsed.** Absent file (or absent
+  `jq`) → no behavior change. It declares extra `mounts` and read-only
+  `project.readonly` carve-outs; the whole `.dev/` dir is mounted `:ro` so the
+  sandboxed agent can't edit its own sandbox config. Read-only carve-outs are
+  **directory-granular** because macOS bind mounts don't enforce file-level
+  permissions — keep it that way.
+- **opencode** is installed in the base image (npm `opencode-ai`). Its Ollama
+  provider config is baked at `/work/opencode-ollama.json` (outside every mount
+  so a bind-mounted `~/.config/opencode` can't shadow it) and selected via
+  `OPENCODE_CONFIG` only when a launcher gets `--ollama`.
 
 ## Profile inheritance
 

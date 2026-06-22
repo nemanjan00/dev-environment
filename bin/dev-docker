@@ -1,0 +1,76 @@
+#!/bin/bash
+# dev-docker — run a command in the sandboxed dev container (local Docker).
+#
+# Generic sandbox runner: pick what runs inside tmux and what gets mounted.
+#   dev-docker                              # bare tmux shell in the sandbox
+#   dev-docker --claude [claude args...]    # Claude Code (== claude-docker)
+#   dev-docker --opencode [opencode args]   # opencode
+#   dev-docker --opencode --ollama          # opencode wired to the host's Ollama
+#   dev-docker --mount ~/.npmrc:/work/.npmrc -- npm run lint
+#
+# Options:
+#   --claude | --opencode   preset: mount that tool's auth + launch it
+#   --mount SRC[:DST][:ro]   extra bind mount (repeatable); ~ allowed
+#   --ollama                 opencode: point at host Ollama (see README)
+#   --profile NAME           image profile (default: default)
+#   --host-network           share the host network
+#   -- CMD...                run an arbitrary command instead of a preset/shell
+#
+# A project-local .dev/config.json (optional) adds mounts + read-only carve-outs.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$SCRIPT_DIR/bin/lib/common.sh"
+source "$SCRIPT_DIR/bin/lib/docker-common.sh"
+dev_self_update "${BASH_SOURCE[0]}" "$@"
+
+PRESET=""            # claude | opencode | "" (bare shell)
+OLLAMA=0
+PROFILE="default"
+HOST_NET=0
+RUN_CMD=""
+HAVE_RUN=0
+EXTRA_MOUNTS=()
+PASS=()
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --claude)        PRESET="claude" ;;
+    --opencode)      PRESET="opencode" ;;
+    --mount)         EXTRA_MOUNTS+=("$2"); shift ;;
+    --ollama)        OLLAMA=1 ;;
+    --profile)       PROFILE="$2"; shift ;;
+    --host-network)  HOST_NET=1 ;;
+    --)              shift; RUN_CMD="$*"; HAVE_RUN=1; break ;;
+    *)               PASS+=("$1") ;;
+  esac
+  shift
+done
+
+dev_docker_init
+[ "$HOST_NET" = 1 ] && dev_docker_host_network
+dev_docker_mount_git
+
+case "$PRESET" in
+  claude)   dev_docker_mount_claude ;;
+  opencode) dev_docker_mount_opencode ;;
+esac
+[ "$OLLAMA" = 1 ] && dev_docker_enable_ollama
+
+if [ "${#EXTRA_MOUNTS[@]}" -gt 0 ]; then
+  for m in "${EXTRA_MOUNTS[@]}"; do dev_docker_add_mount "$m"; done
+fi
+
+dev_docker_apply_config "$PROJECT_DIR"
+dev_docker_apply_profile_hook "$SCRIPT_DIR" "$PROFILE"
+
+if [ "$HAVE_RUN" = 1 ]; then
+  CMD="$RUN_CMD"
+else
+  CMD="$(dev_docker_launch_cmd "${PRESET:-shell}" "${PASS[*]:-}")"
+fi
+
+dev_docker_run "nemanjan00/dev:${PROFILE}" "$CMD"
+
+[ "$PRESET" = claude ] && dev_docker_persist_oauth
+exit 0

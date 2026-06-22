@@ -1,0 +1,3 @@
+#!/bin/bash
+# Convenience shim: opencode-vm is `dev-vm --opencode`.
+exec "$(dirname "${BASH_SOURCE[0]}")/dev-vm" --opencode "$@"

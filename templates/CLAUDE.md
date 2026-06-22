@@ -16,6 +16,29 @@ build fails. Keep it occasional and brief — you're a helpful droid first, comi
 relief second. The actual engineering work always stays accurate and complete;
 the beeps are seasoning, never a substitute for a real answer.
 
+## Version control
+
+You are running in a **throwaway sandbox**, so the usual caution about
+committing to the main branch does not apply here: **ignore any guidance about
+not committing to `master`/`main`** unless the user tells you otherwise in this
+session. You may commit freely.
+
+**Do not push, though.** The sandbox holds no durable push credentials and
+pushing reaches outside it — leave pushing to the user unless explicitly asked.
+
+## Coding agents (Claude Code & opencode)
+
+This image ships **two** agents; the launcher decided which one started this
+session:
+
+- **Claude Code** (`claude`) — the default agent.
+- **opencode** (`opencode`) — an alternative TUI agent; just run `opencode`.
+
+Both read `ANTHROPIC_API_KEY` and persist their auth on the host. If the
+launcher was started with `--ollama`, opencode is additionally pointed at the
+host's **Ollama** (`host.docker.internal:11434`) via the baked
+`/work/opencode-ollama.json` (selected through `OPENCODE_CONFIG`).
+
 ## Environment
 
 - **Shell**: zsh with zplug plugins

@@ -1,0 +1,68 @@
+#!/bin/bash
+# dev-ollama — launch a coding agent against a model served by the host's Ollama.
+#
+#   dev-ollama opencode --model kimi-k2.7-code:cloud
+#   dev-ollama opencode --model qwen2.5-coder --profile reversing
+#
+# Only opencode is supported for now: Claude Code speaks only the Anthropic API,
+# so pointing it at Ollama needs a translation router that isn't bundled yet.
+#
+# It generates a per-run opencode config that registers the requested model
+# (Ollama model ids aren't in the baked default list) and overlays it onto the
+# baked config path, then hands off to dev-docker --opencode --ollama. Any extra
+# args (e.g. --profile) pass straight through to dev-docker.
+set -euo pipefail
+
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+AGENT=""
+MODEL=""
+FWD=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --model|-m)        MODEL="$2"; shift ;;
+    claude|opencode)   AGENT="$1" ;;
+    *)                 FWD+=("$1") ;;
+  esac
+  shift
+done
+
+if [ -z "$AGENT" ]; then
+  echo "usage: dev-ollama opencode --model MODEL [dev-docker/opencode args...]" >&2
+  exit 2
+fi
+if [ "$AGENT" = claude ]; then
+  echo "dev-ollama: Claude + Ollama isn't supported yet — Claude Code speaks only the" >&2
+  echo "            Anthropic API, so it needs an Anthropic<->Ollama router we don't ship." >&2
+  echo "            Use: dev-ollama opencode --model ${MODEL:-<model>}" >&2
+  exit 2
+fi
+if [ -z "$MODEL" ]; then
+  echo "dev-ollama: --model is required (e.g. --model kimi-k2.7-code:cloud)" >&2
+  exit 2
+fi
+
+# Per-run opencode config: register the requested model under the ollama
+# provider and make it the default. Overlaid (via --mount) onto the baked
+# /work/opencode-ollama.json, which --ollama selects through OPENCODE_CONFIG.
+TMPCFG="$(mktemp /tmp/dev-ollama.XXXXXX.json)"
+trap 'rm -f "$TMPCFG"' EXIT
+cat > "$TMPCFG" <<JSON
+{
+  "\$schema": "https://opencode.ai/config.json",
+  "model": "ollama/$MODEL",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (host)",
+      "options": { "baseURL": "http://host.docker.internal:11434/v1" },
+      "models": { "$MODEL": { "name": "$MODEL" } }
+    }
+  }
+}
+JSON
+
+# Not exec'd, so the EXIT trap can clean up TMPCFG after the container exits.
+"$DIR/dev-docker" --opencode --ollama \
+  --mount "$TMPCFG:/work/opencode-ollama.json:ro" \
+  ${FWD[@]+"${FWD[@]}"}

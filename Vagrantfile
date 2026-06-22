@@ -35,6 +35,16 @@ Vagrant.configure("2") do |config|
     end
   end
 
+  # opencode config/state — only set by `dev-vm --opencode`, so the Claude path
+  # is unaffected. Synced into the VM and bind-mounted into the container so
+  # opencode logins persist across throwaway VMs.
+  if ENV['OPENCODE_CONFIG_DIR']
+    config.vm.synced_folder ENV['OPENCODE_CONFIG_DIR'], "/opencode-config", type: "virtiofs"
+  end
+  if ENV['OPENCODE_DATA_DIR']
+    config.vm.synced_folder ENV['OPENCODE_DATA_DIR'], "/opencode-data", type: "virtiofs"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
     # Use working Alpine mirrors
     echo "https://dl-cdn.alpinelinux.org/alpine/v3.19/main" > /etc/apk/repositories

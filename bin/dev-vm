@@ -1,0 +1,64 @@
+#!/bin/bash
+# dev-vm — run a command in the sandboxed dev container inside a throwaway VM
+# (Vagrant + libvirt), for full isolation (e.g. Docker-in-Docker).
+#
+#   dev-vm                          # bare tmux shell in the sandbox
+#   dev-vm --claude [claude args]   # Claude Code (== claude-vm)
+#   dev-vm --opencode               # opencode
+#
+# Options mirror dev-docker, except arbitrary --mount / .dev/config.json
+# `mounts:` are docker-only (the VM only syncs the project); read-only project
+# carve-outs from .dev/config.json DO apply.
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$SCRIPT_DIR/bin/lib/common.sh"
+source "$SCRIPT_DIR/bin/lib/vm-common.sh"
+dev_self_update "${BASH_SOURCE[0]}" "$@"
+
+cd "$SCRIPT_DIR"
+
+PRESET=""
+OLLAMA=0
+PROFILE="default"
+RUN_CMD=""
+HAVE_RUN=0
+PASS=()
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --claude)   PRESET="claude" ;;
+    --opencode) PRESET="opencode" ;;
+    --mount)    echo "dev-vm: --mount is docker-only; ignored under dev-vm" >&2; shift ;;
+    --ollama)   OLLAMA=1 ;;
+    --profile)  PROFILE="$2"; shift ;;
+    --)         shift; RUN_CMD="$*"; HAVE_RUN=1; break ;;
+    *)          PASS+=("$1") ;;
+  esac
+  shift
+done
+
+dev_vm_init
+dev_vm_resolve_claude
+[ "$PRESET" = opencode ] && dev_vm_resolve_opencode
+
+vagrant up
+
+dev_vm_push_auth
+
+dev_vm_mount_project "$SCRIPT_DIR"
+dev_vm_mount_git
+case "$PRESET" in
+  claude)   dev_vm_mount_claude ;;
+  opencode) dev_vm_mount_opencode ;;
+esac
+[ "$OLLAMA" = 1 ] && dev_vm_enable_ollama
+dev_vm_apply_config "$PROJECT_DIR"
+
+if [ "$HAVE_RUN" = 1 ]; then
+  CMD="$RUN_CMD"
+else
+  CMD="$(dev_vm_launch_cmd "${PRESET:-shell}" "${PASS[*]:-}")"
+fi
+
+dev_vm_run "nemanjan00/dev:${PROFILE}" "$CMD"

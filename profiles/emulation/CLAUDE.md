@@ -9,30 +9,27 @@ extract with reversing, *run* with this.
 
 ## User-mode emulation (run a single foreign binary)
 
-Two flavours of `qemu-<arch>` are installed:
+The `qemu-<arch>` user-mode emulators (from the official `qemu-user` package,
+pulled in by `qemu-emulators-full`) run one foreign-arch userland binary on
+this x86_64 host. Point `-L` at the sysroot that owns the binary's interpreter
+/ shared libs (e.g. the rootfs binwalk just carved out):
 
-- **`qemu-<arch>-static`** (from `qemu-user-static`) — statically linked, no
-  host libraries needed. This is the one to reach for. Point `-L` at the
-  sysroot that owns the binary's interpreter / shared libs (e.g. the rootfs
-  binwalk just carved out):
-  ```sh
-  qemu-aarch64-static -L ./extracted-rootfs ./extracted-rootfs/usr/bin/foo --help
-  ```
-- **`qemu-<arch>`** (from `qemu-emulators-full`) — dynamically linked; same
-  invocation, but it needs matching host libs, so prefer the `-static` build
-  unless you specifically want it.
+```sh
+qemu-aarch64 -L ./extracted-rootfs ./extracted-rootfs/usr/bin/foo --help
+```
+
+The emulator binary itself links against the host's libs (present), while `-L`
+resolves the *guest* binary's libs from the extracted sysroot.
 
 Common targets: `qemu-arm`, `qemu-aarch64`, `qemu-mips`, `qemu-mipsel`,
 `qemu-mips64`, `qemu-ppc`, `qemu-ppc64`, `qemu-riscv64`, `qemu-sparc`,
-`qemu-i386`, `qemu-x86_64` (each with a `-static` twin).
+`qemu-i386`, `qemu-x86_64`.
 
 **binfmt_misc is NOT pre-registered.** Transparent `./foo` execution of a
 foreign binary needs a kernel binfmt handler, which requires registering it
 under `/proc/sys/fs/binfmt_misc` — a privileged, host-level operation this
 unprivileged sandbox can't perform. Inside the container, always invoke the
-`qemu-<arch>-static` binary **explicitly** as above. (`qemu-user-static-binfmt`
-ships the registration files for completeness / for use on a privileged host;
-they are not active here.)
+`qemu-<arch>` binary **explicitly** as above.
 
 ## Full-system emulation (boot a firmware image / disk)
 
@@ -85,7 +82,7 @@ QEMU exposes a GDB stub for both modes — `-s` opens it on `tcp::1234`, `-S`
 freezes the guest at start so you can connect before the first instruction:
 
 ```sh
-qemu-aarch64-static -g 1234 -L ./rootfs ./rootfs/bin/foo   # user mode
+qemu-aarch64 -g 1234 -L ./rootfs ./rootfs/bin/foo          # user mode
 qemu-system-aarch64 -M virt ... -S -s                      # system mode
 ```
 
@@ -108,4 +105,4 @@ for stub-level debugging from r2 instead.
   This profile is for *analysis-scale* emulation, not running fast VMs (that's
   what the host-side `dev-vm` Vagrant launcher is for).
 - **No active binfmt registration** — see the user-mode note above; invoke the
-  `-static` emulators explicitly.
+  `qemu-<arch>` emulators explicitly.

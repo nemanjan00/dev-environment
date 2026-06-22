@@ -16,6 +16,13 @@ source "$SCRIPT_DIR/bin/lib/common.sh"
 source "$SCRIPT_DIR/bin/lib/vm-common.sh"
 dev_self_update "${BASH_SOURCE[0]}" "$@"
 
+# Capture the user's project dir from the CWD *before* cd'ing to the repo root
+# (vagrant must run where the Vagrantfile lives). Capturing it after the cd would
+# default PROJECT_DIR to the repo itself, so the VM would mount the
+# dev-environment repo instead of the user's project — guard against that here.
+PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
+export PROJECT_DIR
+
 cd "$SCRIPT_DIR"
 
 PRESET=""
@@ -32,7 +39,7 @@ while [ $# -gt 0 ]; do
     --mount)    echo "dev-vm: --mount is docker-only; ignored under dev-vm" >&2; shift ;;
     --ollama)   OLLAMA=1 ;;
     --profile)  PROFILE="$2"; shift ;;
-    --)         shift; RUN_CMD="$*"; HAVE_RUN=1; break ;;
+    --)         shift; RUN_CMD="$(dev_join_cmd "$@")"; HAVE_RUN=1; break ;;
     *)          PASS+=("$1") ;;
   esac
   shift
@@ -44,6 +51,7 @@ dev_vm_resolve_claude
 
 vagrant up
 
+dev_vm_resolve_docker_gid
 dev_vm_push_auth
 
 dev_vm_mount_project "$SCRIPT_DIR"
@@ -58,7 +66,7 @@ dev_vm_apply_config "$PROJECT_DIR"
 if [ "$HAVE_RUN" = 1 ]; then
   CMD="$RUN_CMD"
 else
-  CMD="$(dev_vm_launch_cmd "${PRESET:-shell}" "${PASS[*]:-}")"
+  CMD="$(dev_vm_launch_cmd "${PRESET:-shell}" ${PASS[@]+"${PASS[@]}"})"
 fi
 
 dev_vm_run "nemanjan00/dev:${PROFILE}" "$CMD"

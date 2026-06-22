@@ -41,7 +41,7 @@ while [ $# -gt 0 ]; do
     --ollama)        OLLAMA=1 ;;
     --profile)       PROFILE="$2"; shift ;;
     --host-network)  HOST_NET=1 ;;
-    --)              shift; RUN_CMD="$*"; HAVE_RUN=1; break ;;
+    --)              shift; RUN_CMD="$(dev_join_cmd "$@")"; HAVE_RUN=1; break ;;
     *)               PASS+=("$1") ;;
   esac
   shift
@@ -67,7 +67,7 @@ dev_docker_apply_profile_hook "$SCRIPT_DIR" "$PROFILE"
 if [ "$HAVE_RUN" = 1 ]; then
   CMD="$RUN_CMD"
 else
-  CMD="$(dev_docker_launch_cmd "${PRESET:-shell}" "${PASS[*]:-}")"
+  CMD="$(dev_docker_launch_cmd "${PRESET:-shell}" ${PASS[@]+"${PASS[@]}"})"
 fi
 
 dev_docker_run "nemanjan00/dev:${PROFILE}" "$CMD"

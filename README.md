@@ -10,7 +10,7 @@ pre-loaded with the exact toolchain your build needs, so you just vibe and ship.
 [![Build](https://github.com/nemanjan00/dev-environment/actions/workflows/build.yml/badge.svg)](https://github.com/nemanjan00/dev-environment/actions/workflows/build.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/nemanjan00/dev?logo=docker&label=pulls)](https://hub.docker.com/r/nemanjan00/dev)
 [![Base image size](https://img.shields.io/docker/image-size/nemanjan00/dev/base?logo=docker&label=base%20image)](https://hub.docker.com/r/nemanjan00/dev)
-![Profiles](https://img.shields.io/badge/profiles-10-blue)
+![Profiles](https://img.shields.io/badge/profiles-11-blue)
 ![Arch Linux](https://img.shields.io/badge/built%20on-Arch%20Linux-1793D1?logo=archlinux&logoColor=white)
 
 **[Get cooking](#get-cooking)** · **[Why it slaps](#why-it-slaps)** · **[Loadouts](#profiles)** · **[Lock it in a VM](#vm-isolation)**
@@ -148,6 +148,7 @@ docker build -t nemanjan00/dev:librarian profiles/librarian/
 docker build -t nemanjan00/dev:presenter profiles/presenter/
 docker build -t nemanjan00/dev:scraper profiles/scraper/
 docker build -t nemanjan00/dev:ctf profiles/ctf/
+docker build -t nemanjan00/dev:emulation profiles/emulation/
 
 # With custom UID/GID (to match your host user) — apply to the base image
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev:base .
@@ -169,6 +170,7 @@ Think of a profile as a **loadout**. A shared `nemanjan00/dev:base` layer carrie
 | `presenter` | `nemanjan00/dev:presenter` | Slide decks from Markdown via pandoc → beamer → xelatex: pandoc-cli, texlive (xetex, latexextra, fontsextra, pictures), fontconfig, Hack Nerd Font |
 | `scraper` | `nemanjan00/dev:scraper` | Web scraping against anti-bot sites: CloakBrowser (stealth Chromium, Playwright/Puppeteer drop-in), Xvfb for headed mode, Chromium runtime libs, full font set |
 | `ctf` | `nemanjan00/dev:ctf` | Binary exploitation / CTF (extends `reversing`): pwntools, GEF, ROPgadget, one_gadget, seccomp-tools, patchelf — plus an auto-loaded `pwn` exploitation skill |
+| `emulation` | `nemanjan00/dev:emulation` | Run/boot foreign-arch binaries & firmware (extends `reversing`): qemu-emulators-full + qemu-user-static (system & user-mode emulation, all arches), edk2 OVMF/AAVMF UEFI firmware, dosfstools/mtools for ESP images |
 
 To use a profile with the CLI scripts:
 

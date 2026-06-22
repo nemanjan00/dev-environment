@@ -108,7 +108,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        profile: [analyst, ctf]
+        profile: [analyst, ctf, emulation]
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub

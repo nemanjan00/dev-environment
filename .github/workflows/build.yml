@@ -3,62 +3,124 @@ name: Build
 on:
   push:
     branches: [master]
+  pull_request:
 
 concurrency:
-  group: build
+  # Per-ref: master and PR runs don't serialize against each other, but two
+  # pushes to the same ref do (avoids interleaved writes to the mutable tags).
+  group: build-${{ github.ref }}
   cancel-in-progress: false
 
 env:
   IMAGE: nemanjan00/dev
 
+# Push only from master; pull_request runs build every image (catching breakage
+# and new-profile drift pre-merge) but never push, so a PR can't poison a tag.
 jobs:
+  # Fail the run if a profiles/* dir was added without being wired into this
+  # workflow (otherwise it would silently never build).
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Every profile must be referenced in this workflow
+        run: |
+          missing=0
+          for d in profiles/*/; do
+            name="$(basename "$d")"
+            grep -qE "(^|[^[:alnum:]_-])${name}([^[:alnum:]_-]|$)" .github/workflows/build.yml \
+              || { echo "::error::profile '$name' is not wired into build.yml"; missing=1; }
+          done
+          exit "$missing"
+
   base:
+    needs: coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
-      - name: Build and push base
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: nemanjan00
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build base
+        run: docker build --pull -t "$IMAGE:base" -t "$IMAGE:base-$GITHUB_SHA" .
+      - name: Push base
+        if: github.event_name == 'push'
         run: |
-          docker build -t $IMAGE:base .
-          docker push $IMAGE:base
+          docker push "$IMAGE:base"
+          docker push "$IMAGE:base-$GITHUB_SHA"
 
+  # Base-derived profiles. --pull makes every build resolve the freshest :base
+  # from the registry (the base job pushed it first). reversing is deliberately
+  # NOT in this matrix — it has its own job so the profiles that extend it can
+  # depend on it specifically rather than on this whole matrix.
   profile:
     needs: base
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        profile: [default, android, embedded, librarian, maker, presenter, reversing, scraper]
+        profile: [default, android, embedded, librarian, maker, presenter, scraper]
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
-      - name: Build and push profile
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: nemanjan00
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build ${{ matrix.profile }}
+        run: docker build --pull -t "$IMAGE:${{ matrix.profile }}" -t "$IMAGE:${{ matrix.profile }}-$GITHUB_SHA" "profiles/${{ matrix.profile }}"
+      - name: Push ${{ matrix.profile }}
+        if: github.event_name == 'push'
         run: |
-          docker build -t $IMAGE:${{ matrix.profile }} profiles/${{ matrix.profile }}
-          docker push $IMAGE:${{ matrix.profile }}
+          docker push "$IMAGE:${{ matrix.profile }}"
+          docker push "$IMAGE:${{ matrix.profile }}-$GITHUB_SHA"
 
-  analyst:
-    needs: profile
+  # reversing is the parent of analyst and ctf, so it gets a dedicated job they
+  # can depend on directly — an unrelated matrix-leg failure must not block them.
+  reversing:
+    needs: base
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
-      - name: Build and push analyst
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: nemanjan00
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build reversing
+        run: docker build --pull -t "$IMAGE:reversing" -t "$IMAGE:reversing-$GITHUB_SHA" profiles/reversing
+      - name: Push reversing
+        if: github.event_name == 'push'
         run: |
-          docker build -t $IMAGE:analyst profiles/analyst
-          docker push $IMAGE:analyst
+          docker push "$IMAGE:reversing"
+          docker push "$IMAGE:reversing-$GITHUB_SHA"
 
-  ctf:
-    needs: profile
+  # Profiles that extend reversing (FROM nemanjan00/dev:reversing) — depend on
+  # the reversing job specifically, not the base-profile matrix.
+  chained:
+    needs: reversing
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [analyst, ctf]
     steps:
       - uses: actions/checkout@v4
       - name: Login to Docker Hub
-        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u nemanjan00 --password-stdin
-      - name: Build and push ctf
+        if: github.event_name == 'push'
+        uses: docker/login-action@v3
+        with:
+          username: nemanjan00
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build ${{ matrix.profile }}
+        run: docker build --pull -t "$IMAGE:${{ matrix.profile }}" -t "$IMAGE:${{ matrix.profile }}-$GITHUB_SHA" "profiles/${{ matrix.profile }}"
+      - name: Push ${{ matrix.profile }}
+        if: github.event_name == 'push'
         run: |
-          docker build -t $IMAGE:ctf profiles/ctf
-          docker push $IMAGE:ctf
+          docker push "$IMAGE:${{ matrix.profile }}"
+          docker push "$IMAGE:${{ matrix.profile }}-$GITHUB_SHA"

@@ -76,6 +76,7 @@ For host-side disasm of arbitrary AArch64 blobs (no toolchain prefix needed),
 
 ## Android
 
+- **android-tools** (`adb`, `fastboot`) — talk to devices/emulators: `adb devices`, `adb pull`/`adb push` to grab an installed APK or drop files, `adb logcat` for runtime traces, `adb shell` for on-device inspection, and `fastboot` for bootloader-level flashing. Pairs with jadx/apktool for the full pull-decompile-patch-reinstall loop. Needs a reachable device — connect over USB (host `adb` server) or TCP/IP (`adb connect host:port`).
 - **jadx** — Dex/APK to Java decompiler. `jadx -d out app.apk` produces readable Java source (best for understanding logic); `jadx-gui` for interactive browsing. Complements `apktool`, which gives smali rather than Java — use jadx to read, apktool to patch and rebuild.
 - **apktool** — APK decompilation and recompilation
 - **zipalign** (from `android-sdk-build-tools`) — align APK uncompressed entries on 4-byte boundaries before signing; required after `apktool b` and before `apksigner sign`

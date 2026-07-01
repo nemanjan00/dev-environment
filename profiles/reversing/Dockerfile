@@ -13,6 +13,7 @@ RUN pacman -Syu --noconfirm \
     traceroute \
     proxychains-ng \
     gdb \
+    android-tools \
     radare2 \
     r2ghidra \
     jadx \

@@ -11,6 +11,8 @@
 # Options:
 #   --claude | --opencode   preset: mount that tool's auth + launch it
 #   --mount SRC[:DST][:ro]   extra bind mount (repeatable); ~ allowed
+#   --home DIR               read Claude config (.claude/.claude.json) from DIR
+#                            instead of $HOME (--claude preset)
 #   --ollama                 opencode: point at host Ollama (see README)
 #   --profile NAME           image profile (default: default)
 #   --host-network           share the host network
@@ -25,6 +27,7 @@ source "$SCRIPT_DIR/bin/lib/docker-common.sh"
 dev_self_update "${BASH_SOURCE[0]}" "$@"
 
 PRESET=""            # claude | opencode | "" (bare shell)
+CLAUDE_HOME="${CLAUDE_HOME:-$HOME}"  # base dir for .claude/.claude.json; --home overrides
 OLLAMA=0
 PROFILE="default"
 HOST_NET=0
@@ -38,6 +41,7 @@ while [ $# -gt 0 ]; do
     --claude)        PRESET="claude" ;;
     --opencode)      PRESET="opencode" ;;
     --mount)         EXTRA_MOUNTS+=("$2"); shift ;;
+    --home)          CLAUDE_HOME="$2"; shift ;;
     --ollama)        OLLAMA=1 ;;
     --profile)       PROFILE="$2"; shift ;;
     --host-network)  HOST_NET=1 ;;

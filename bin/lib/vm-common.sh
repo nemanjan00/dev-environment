@@ -54,14 +54,18 @@ dev_vm_mount_project() {
 # The Vagrantfile turns CLAUDE_CONFIG_DIR / OPENCODE_*_DIR into synced folders,
 # so these must be exported *before* `vagrant up`.
 dev_vm_resolve_claude() {
-  if [ -z "${CLAUDE_CONFIG_DIR:-}" ] && [ -d "${HOME}/.claude" ]; then
-    CLAUDE_CONFIG_DIR="${HOME}/.claude"
+  # CLAUDE_HOME is the base dir the Claude config is discovered under; defaults
+  # to $HOME, --home points it elsewhere. An explicit CLAUDE_CONFIG_DIR /
+  # CLAUDE_AUTH in the env still wins over the derived paths.
+  local home="${CLAUDE_HOME:-$HOME}"
+  if [ -z "${CLAUDE_CONFIG_DIR:-}" ] && [ -d "${home}/.claude" ]; then
+    CLAUDE_CONFIG_DIR="${home}/.claude"
   fi
   [ -n "${CLAUDE_CONFIG_DIR:-}" ] && [ -d "$CLAUDE_CONFIG_DIR" ] && export CLAUDE_CONFIG_DIR
 
   CLAUDE_AUTH="${CLAUDE_AUTH:-}"
-  if [ -z "$CLAUDE_AUTH" ] && [ -f "${HOME}/.claude.json" ]; then
-    CLAUDE_AUTH="${HOME}/.claude.json"
+  if [ -z "$CLAUDE_AUTH" ] && [ -f "${home}/.claude.json" ]; then
+    CLAUDE_AUTH="${home}/.claude.json"
   fi
 }
 

@@ -10,7 +10,7 @@ USER 0
 RUN pacman -Syu --noconfirm \
     git base-devel curl wget \
     zsh \
-    clang cmake re2c \
+    clang cmake re2c protobuf \
     htop ripgrep the_silver_searcher eza fzf jq jc \
     zip unzip 7zip unrar zstd \
     ctags strace tree xxd file \

@@ -26,6 +26,7 @@ export PROJECT_DIR
 cd "$SCRIPT_DIR"
 
 PRESET=""
+CLAUDE_HOME="${CLAUDE_HOME:-$HOME}"  # base dir for .claude/.claude.json; --home overrides
 OLLAMA=0
 PROFILE="default"
 RUN_CMD=""
@@ -37,6 +38,7 @@ while [ $# -gt 0 ]; do
     --claude)   PRESET="claude" ;;
     --opencode) PRESET="opencode" ;;
     --mount)    echo "dev-vm: --mount is docker-only; ignored under dev-vm" >&2; shift ;;
+    --home)     CLAUDE_HOME="$2"; shift ;;
     --ollama)   OLLAMA=1 ;;
     --profile)  PROFILE="$2"; shift ;;
     --)         shift; RUN_CMD="$(dev_join_cmd "$@")"; HAVE_RUN=1; break ;;

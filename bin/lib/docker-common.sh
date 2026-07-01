@@ -62,20 +62,24 @@ dev_docker_mount_git() {
 # vector we DO neutralize is global mcpServers injection via ~/.claude.json — see
 # dev_docker_persist_oauth.
 dev_docker_mount_claude() {
-  if [ -f "${HOME}/.claude.json" ]; then
-    cp "${HOME}/.claude.json" "$TMPDIR_CONFIG/claude.json"
+  # CLAUDE_HOME is the base dir the Claude config is read from (and written back
+  # to on exit). Defaults to $HOME; --home on the launcher points it at another
+  # dir so a non-default ~/.claude / ~/.claude.json can be mounted instead.
+  local home="${CLAUDE_HOME:-$HOME}"
+  if [ -f "${home}/.claude.json" ]; then
+    cp "${home}/.claude.json" "$TMPDIR_CONFIG/claude.json"
     INIT_CMDS="$INIT_CMDS ln -sf /tmp/claude-config/claude.json /work/.claude.json ;"
   fi
-  if [ -d "${HOME}/.claude" ]; then
-    DOCKER_ARGS+=(-v "${HOME}/.claude:/work/.claude")
+  if [ -d "${home}/.claude" ]; then
+    DOCKER_ARGS+=(-v "${home}/.claude:/work/.claude")
     # Also mount at the host's absolute path so plugin entries that record
     # absolute paths resolve inside the container without rewriting.
-    if [ "${HOME}/.claude" != "/work/.claude" ]; then
-      DOCKER_ARGS+=(-v "${HOME}/.claude:${HOME}/.claude")
+    if [ "${home}/.claude" != "/work/.claude" ]; then
+      DOCKER_ARGS+=(-v "${home}/.claude:${home}/.claude")
     fi
     local slug bucket
     slug="$(echo "$PROJECT_DIR" | tr / -)"
-    bucket="${HOME}/.claude/projects/${slug}"
+    bucket="${home}/.claude/projects/${slug}"
     mkdir -p "$bucket"
     DOCKER_ARGS+=(-v "$bucket:/work/.claude/projects/-work-project")
   fi
@@ -254,7 +258,7 @@ dev_docker_run() {
 # launches Claude outside the sandbox. Falls back to a full copy when jq is
 # missing or either file isn't valid JSON, so token refresh never regresses.
 dev_docker_persist_oauth() {
-  local updated="$TMPDIR_CONFIG/claude.json" orig="${HOME}/.claude.json"
+  local updated="$TMPDIR_CONFIG/claude.json" orig="${CLAUDE_HOME:-$HOME}/.claude.json"
   [ -f "$updated" ] || return 0
   if command -v jq >/dev/null 2>&1 && [ -f "$orig" ] \
      && jq -e . "$updated" >/dev/null 2>&1 && jq -e . "$orig" >/dev/null 2>&1; then

@@ -316,6 +316,7 @@ dev-docker --mount ~/.npmrc:/work/.npmrc -- npm run lint   # run a one-off comma
 |--------|---------|
 | `--claude` / `--opencode` | Preset: mount that agent's auth and launch it. Trailing args pass through. |
 | `--mount SRC[:DST][:ro]` | Extra bind mount (repeatable). `~` allowed; no `DST` → same path; `:ro` → read-only. |
+| `--home DIR` | Read Claude config (`.claude` / `.claude.json`) from `DIR` instead of `$HOME`. |
 | `--ollama` | opencode only: point it at the host's Ollama. |
 | `--profile NAME` | Image profile (default `default`). |
 | `--host-network` | Share the host network. |

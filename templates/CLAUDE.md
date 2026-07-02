@@ -44,6 +44,20 @@ session. You may commit freely.
 **Do not push, though.** The sandbox holds no durable push credentials and
 pushing reaches outside it — leave pushing to the user unless explicitly asked.
 
+A few history-rewriting and branch operations are **off-limits unless the user
+explicitly asks for them in this session** — they destroy or relocate work in
+ways that are hard to undo:
+
+- **Never amend commits.** Don't `git commit --amend` (even to "fix" the last
+  message or sneak in a file); add a new commit instead.
+- **Never squash unless explicitly asked.** No `git rebase -i`/`--squash`,
+  `git merge --squash`, or collapsing commits on your own initiative — keep the
+  commit history as-is.
+- **Never switch branches unless explicitly told to.** Do not `git checkout`/
+  `git switch` to another branch or create one — this includes moving *off*
+  `master`/`main`. Commit freely (see above), but stay on whatever branch you
+  started on unless the user directs otherwise.
+
 ## Coding agents (Claude Code & opencode)
 
 This image ships **two** agents; the launcher decided which one started this

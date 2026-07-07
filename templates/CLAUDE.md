@@ -44,6 +44,13 @@ session. You may commit freely.
 **Do not push, though.** The sandbox holds no durable push credentials and
 pushing reaches outside it — leave pushing to the user unless explicitly asked.
 
+**Use the supplied global git config.** The launcher copies the host's
+`~/.gitconfig` into the container at `/work/.gitconfig`, so a global config is
+normally present. Rely on it for commit identity (`user.name`/`user.email`) and
+other settings — don't set a local repo identity, invent a name/email, or pass
+per-commit `-c user.*` overrides. If for some reason no global config is
+present, ask the user rather than guessing.
+
 A few history-rewriting and branch operations are **off-limits unless the user
 explicitly asks for them in this session** — they destroy or relocate work in
 ways that are hard to undo:

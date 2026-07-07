@@ -10,7 +10,7 @@ pre-loaded with the exact toolchain your build needs, so you just vibe and ship.
 [![Build](https://github.com/nemanjan00/dev-environment/actions/workflows/build.yml/badge.svg)](https://github.com/nemanjan00/dev-environment/actions/workflows/build.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/nemanjan00/dev?logo=docker&label=pulls)](https://hub.docker.com/r/nemanjan00/dev)
 [![Base image size](https://img.shields.io/docker/image-size/nemanjan00/dev/base?logo=docker&label=base%20image)](https://hub.docker.com/r/nemanjan00/dev)
-![Profiles](https://img.shields.io/badge/profiles-11-blue)
+![Profiles](https://img.shields.io/badge/profiles-12-blue)
 ![Arch Linux](https://img.shields.io/badge/built%20on-Arch%20Linux-1793D1?logo=archlinux&logoColor=white)
 
 **[Get cooking](#get-cooking)** · **[Why it slaps](#why-it-slaps)** · **[Loadouts](#profiles)** · **[Lock it in a VM](#vm-isolation)**
@@ -65,7 +65,7 @@ in a throwaway box. Close it and it's gone.
 ## Why it slaps
 
 - 🧰 **Loadouts, not setup.** Ten ready-made [profiles](#profiles) —
-  `reversing`, `android`, `embedded`, `maker`, `analyst`, `librarian`,
+  `reversing`, `android`, `android-app`, `embedded`, `maker`, `analyst`, `librarian`,
   `presenter`, `scraper`, `ctf`, or plain `default`. Each stacks on one shared
   base, so swapping toolchains is a single `--profile` flag, not an afternoon.
 - 🦙 **Not just Claude.** [opencode](#opencode) rides along in the same box as a
@@ -142,6 +142,7 @@ docker build -t nemanjan00/dev:default profiles/default/
 docker build -t nemanjan00/dev:reversing profiles/reversing/
 docker build -t nemanjan00/dev:embedded profiles/embedded/
 docker build -t nemanjan00/dev:android profiles/android/
+docker build -t nemanjan00/dev:android-app profiles/android-app/
 docker build -t nemanjan00/dev:maker profiles/maker/
 docker build -t nemanjan00/dev:analyst profiles/analyst/
 docker build -t nemanjan00/dev:librarian profiles/librarian/
@@ -165,6 +166,7 @@ Think of a profile as a **loadout**. A shared `nemanjan00/dev:base` layer carrie
 | `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, jadx, binwalk, apktool, adb, volatility3, unicorn, keystone, magika, wireshark-cli, foremost |
 | `embedded` | `nemanjan00/dev:embedded` | Embedded development: arm-none-eabi toolchain, platformio, avrdude, esptool, openocd, stlink, sigrok-cli, flashrom |
 | `android` | `nemanjan00/dev:android` | Android / LineageOS builds: repo, git-lfs, JDK 17/11, android-tools, ccache, multilib libs, AOSP host toolchain |
+| `android-app` | `nemanjan00/dev:android-app` | Android app development: Android SDK (platform-tools, build-tools, API 36) via Google cmdline-tools, JDK 17, Gradle 9.2.1, adb — no emulator (connect adb to host/device) |
 | `maker` | `nemanjan00/dev:maker` | Physical-world maker: OpenSCAD for 3D-printable parts, bun + pre-installed tscircuit CLI for PCB design |
 | `analyst` | `nemanjan00/dev:analyst` | Data / infra analyst (extends `reversing`): aws-cli, s3cmd, rclone, psql, mariadb, sqlite, duckdb, dsq, mongosh, valkey-cli, rabbitmq admin, lnav, httpie, websocat, yq, protoc, dig, ffmpeg |
 | `librarian` | `nemanjan00/dev:librarian` | Document & ebook reading: pandoc, poppler (pdftotext), mupdf-tools, qpdf, pdfgrep, catdoc, djvulibre, unrtf, tesseract OCR, glow, w3m |

@@ -20,7 +20,16 @@ RUN pacman -Syu --noconfirm \
     python-pynvim neovim \
     tmux \
     docker \
-    miller socat
+    miller socat \
+    xorg-server-xvfb xorg-xauth \
+    scrot xdotool xorg-xwininfo \
+    wqy-microhei
+
+# Generate Chinese locales. Some GUI apps (e.g. Wine apps that assume a
+# non-Unicode Chinese environment) need zh_CN.GB18030 to launch — Wine
+# derives codepage 936 from LANG — while zh_CN.UTF-8 covers modern apps.
+RUN sed -i -e 's/^#\(zh_CN.GB18030\)/\1/' -e 's/^#\(zh_CN.UTF-8\)/\1/' /etc/locale.gen && \
+    locale-gen
 
 # Create user with home at /work
 RUN groupadd -g $GID user && \

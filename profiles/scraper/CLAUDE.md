@@ -59,8 +59,8 @@ python my_scraper.py
 In code, request headed mode via the standard Playwright option:
 `launch(headless=False)`.
 
-Installed for this: `xorg-server-xvfb` (provides `Xvfb`, `xvfb-run`)
-and `xorg-xauth`.
+`Xvfb` and `xvfb-run` (from `xorg-server-xvfb` + `xorg-xauth`) ship in
+the base image, so they're available here.
 
 ## Seeing the page from a Claude session
 

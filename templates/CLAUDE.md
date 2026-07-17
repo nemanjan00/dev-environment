@@ -93,6 +93,15 @@ The following CLI tools are available for use in scripts and pipelines:
 - **xxd** — Hex dump and reverse. `xxd file` to inspect bytes, `xxd -r` to patch back from edited hex, `xxd -s OFF -l LEN` for windowed dumps.
 - **diffutils** (`diff`, `cmp`) / **patch** — Generate and apply unified diffs outside of git (e.g. against extracted firmware trees, vendor drops, generated output).
 - **man** (`man-db` + `man-pages`) — Offline manpages. Use `man -k <keyword>` (apropos) to search, `man <n> <name>` for a specific section when names collide (e.g. `man 2 open`).
+### Headless GUI (Xvfb)
+
+Run and drive GUI programs with no attached display:
+
+- **Xvfb** (`xorg-server-xvfb` + `xorg-xauth`) — Virtual framebuffer X server. `xvfb-run -a <cmd>` wraps a command in a throwaway `:99` display; or bring one up yourself (`Xvfb :99 -screen 0 1920x1080x24 &` then `export DISPLAY=:99`).
+- **scrot** — Screenshot the current display to a PNG (`scrot /tmp/shot.png`). Nothing renders back to you automatically, so this is how you *see* the GUI: capture, then `Read /tmp/shot.png`.
+- **xdotool** + **xorg-xwininfo** (`xwininfo`) — Locate windows and drive them headlessly: find/activate a window, then click, type, or move the mouse (`xdotool search --name <title>`, `xdotool click 1`, `xdotool type ...`).
+- **wqy-microhei** — CJK font so Chinese/Japanese/Korean UI text is legible in screenshots (empty CJK glyphs otherwise render as boxes).
+- **Chinese locales** — `zh_CN.GB18030` and `zh_CN.UTF-8` are generated. Some apps require a non-Unicode Chinese environment to launch (e.g. Wine derives codepage 936 from `LANG=zh_CN.GB18030`); set `LANG`/`LC_ALL` accordingly for those.
 
 ### Archive / compression
 

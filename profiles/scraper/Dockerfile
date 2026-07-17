@@ -2,8 +2,9 @@ FROM nemanjan00/dev:base
 
 USER 0
 
-# Chromium runtime libs + Xvfb for headed-mode stealth + fonts so the
-# fingerprint surface (font enumeration) matches a real desktop.
+# Chromium runtime libs + fonts so the fingerprint surface (font
+# enumeration) matches a real desktop. Xvfb/xauth for headed-mode
+# stealth live in the base image.
 # CloakBrowser ships its own patched Chromium binary (auto-downloaded
 # on first launch); these are the shared libraries that binary links
 # against on Arch.
@@ -29,8 +30,6 @@ RUN pacman -Syu --noconfirm \
     libxcursor \
     libxss \
     libxshmfence \
-    xorg-server-xvfb \
-    xorg-xauth \
     ttf-liberation \
     noto-fonts \
     noto-fonts-emoji \

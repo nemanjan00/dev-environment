@@ -57,6 +57,26 @@ without an actual aarch64 host. All binaries are prefixed `aarch64-linux-gnu-`:
 For host-side disasm of arbitrary AArch64 blobs (no toolchain prefix needed),
 `radare2`, `r2ghidra`, `capstone`, and `lief` all handle ARM64 natively.
 
+## Windows (MinGW-w64) cross toolchain
+
+For building and inspecting native Windows PE binaries (x86_64) from Linux —
+compile a reproduction of a sample, build a test DLL/shim, or patch and relink
+Windows objects. Binaries are prefixed `x86_64-w64-mingw32-`:
+
+- **mingw-w64-gcc** — cross-compiler producing Windows PE. `-o out.exe` for an
+  executable, `-shared -o out.dll` for a DLL, `-static` to fold in libgcc/
+  libstdc++ so the PE runs without the MinGW runtime DLLs. Pairs with **wine**
+  (see below) to actually *run* what you build.
+- **mingw-w64-binutils** — PE-aware binutils: `objdump -d` for PE disasm,
+  `readelf`/`nm`/`strings`, `objcopy` (extract/replace PE sections),
+  `dlltool` (generate import libs / `.def` stubs), `windres` (compile
+  `.rc` resource scripts).
+- The CRT, headers, and winpthreads come in as dependencies, so linking
+  against the Win32 API and libc works out of the box.
+
+Only the **x86_64** target ships. For 32-bit (`i686`) PEs, disassemble with
+`radare2`/`capstone`/`lief` (all handle x86 natively) rather than rebuilding.
+
 ## .NET & Windows RE
 
 - **dotnet-sdk** with **ilspycmd** — .NET decompilation; runs modern .NET (Core/5+) assemblies.

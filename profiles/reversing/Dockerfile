@@ -44,7 +44,9 @@ RUN pacman -Syu --noconfirm \
     aarch64-linux-gnu-binutils \
     aarch64-linux-gnu-gdb \
     aarch64-linux-gnu-glibc \
-    aarch64-linux-gnu-linux-api-headers && \
+    aarch64-linux-gnu-linux-api-headers \
+    mingw-w64-gcc \
+    mingw-w64-binutils && \
     echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
 
 # Install AUR packages

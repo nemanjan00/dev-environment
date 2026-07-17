@@ -28,8 +28,16 @@ RUN pacman -Syu --noconfirm \
 # Generate Chinese locales. Some GUI apps (e.g. Wine apps that assume a
 # non-Unicode Chinese environment) need zh_CN.GB18030 to launch — Wine
 # derives codepage 936 from LANG — while zh_CN.UTF-8 covers modern apps.
-RUN sed -i -e 's/^#\(zh_CN.GB18030\)/\1/' -e 's/^#\(zh_CN.UTF-8\)/\1/' /etc/locale.gen && \
-    locale-gen
+# The base Arch image NoExtracts glibc's i18n source (usr/share/i18n/*),
+# keeping only en/UTF-8/C — so locale-gen has nothing to compile zh_CN
+# from. Re-include the zh_CN locale source + GB18030 charmap, reinstall
+# glibc to extract them, then generate.
+RUN printf '\nNoExtract = !usr/share/i18n/locales/zh_CN !usr/share/i18n/charmaps/GB18030.gz\n' \
+        >> /etc/pacman.conf && \
+    pacman -S --noconfirm glibc && \
+    sed -i -e 's/^#\(zh_CN.GB18030\)/\1/' -e 's/^#\(zh_CN.UTF-8\)/\1/' /etc/locale.gen && \
+    locale-gen && \
+    locale -a | grep -i zh_CN
 
 # Create user with home at /work
 RUN groupadd -g $GID user && \

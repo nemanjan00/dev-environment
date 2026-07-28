@@ -10,7 +10,7 @@ pre-loaded with the exact toolchain your build needs, so you just vibe and ship.
 [![Build](https://github.com/nemanjan00/dev-environment/actions/workflows/build.yml/badge.svg)](https://github.com/nemanjan00/dev-environment/actions/workflows/build.yml)
 [![Docker Pulls](https://img.shields.io/docker/pulls/nemanjan00/dev?logo=docker&label=pulls)](https://hub.docker.com/r/nemanjan00/dev)
 [![Base image size](https://img.shields.io/docker/image-size/nemanjan00/dev/base?logo=docker&label=base%20image)](https://hub.docker.com/r/nemanjan00/dev)
-![Profiles](https://img.shields.io/badge/profiles-12-blue)
+![Profiles](https://img.shields.io/badge/profiles-13-blue)
 ![Arch Linux](https://img.shields.io/badge/built%20on-Arch%20Linux-1793D1?logo=archlinux&logoColor=white)
 
 **[Get cooking](#get-cooking)** · **[Why it slaps](#why-it-slaps)** · **[Loadouts](#profiles)** · **[Lock it in a VM](#vm-isolation)**
@@ -151,6 +151,7 @@ docker build -t nemanjan00/dev:scraper profiles/scraper/
 docker build -t nemanjan00/dev:ctf profiles/ctf/
 docker build -t nemanjan00/dev:emulation profiles/emulation/
 docker build -t nemanjan00/dev:multimedia profiles/multimedia/
+docker build -t nemanjan00/dev:php profiles/php/
 
 # With custom UID/GID (to match your host user) — apply to the base image
 docker build --build-arg UID=$(id -u) --build-arg GID=$(id -g) -t nemanjan00/dev:base .
@@ -175,6 +176,7 @@ Think of a profile as a **loadout**. A shared `nemanjan00/dev:base` layer carrie
 | `ctf` | `nemanjan00/dev:ctf` | Binary exploitation / CTF (extends `reversing`): pwntools, GEF, ROPgadget, one_gadget, seccomp-tools, patchelf — plus an auto-loaded `pwn` exploitation skill |
 | `emulation` | `nemanjan00/dev:emulation` | Run/boot foreign-arch binaries & firmware (extends `reversing`): qemu-emulators-full (system & user-mode emulation for all arches — qemu-system-arm/mips/…, qemu-user), edk2 OVMF/AAVMF UEFI firmware, dosfstools/mtools for ESP images |
 | `multimedia` | `nemanjan00/dev:multimedia` | Audio/video/image manipulation: ffmpeg, imagemagick, graphicsmagick, sox, libwebp, libavif, mediainfo, exiftool, jpegoptim/optipng/gifsicle, potrace, ghostscript |
+| `php` | `nemanjan00/dev:php` | PHP 8 + Composer for async/CLI projects: php, php-gd, gmp, with curl/mbstring/exif/bcmath/gmp/gd/zlib extensions enabled (Composer installs the userland libs per project) |
 
 To use a profile with the CLI scripts:
 

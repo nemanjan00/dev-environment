@@ -22,9 +22,9 @@ The required extensions are turned on via a drop-in at
 
 | Extension  | How it's provided                              |
 |------------|------------------------------------------------|
-| `curl`     | bundled shared module, enabled here            |
-| `mbstring` | bundled shared module, enabled here            |
-| `exif`     | bundled shared module, enabled here (needs mbstring) |
+| `curl`     | bundled shared module, enabled by stock php.ini |
+| `mbstring` | **compiled in statically** — always on, no toggle |
+| `exif`     | bundled shared module, enabled here            |
 | `bcmath`   | bundled shared module, enabled here            |
 | `gmp`      | bundled shared module + system `gmp` lib        |
 | `gd`       | `php-gd` package, enabled here                 |

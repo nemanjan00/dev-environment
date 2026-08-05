@@ -464,8 +464,8 @@ If `vagrant up` fails with `dnsmasq: failed to create listening socket ... Addre
 
 The base image — what every profile and the standalone IDE are built on:
 
-* [Neovim](https://neovim.io/) with [my config](https://github.com/nemanjan00/vim) and [coc.nvim](https://github.com/neoclide/coc.nvim) for LSP
-* [zsh](https://www.zsh.org/) with [zplug](https://github.com/zplug/zplug) and [my config](https://github.com/nemanjan00/zsh)
+* [Neovim](https://neovim.io/) with [my config](https://github.com/nemanjan00/vim) and native LSP via [mason](https://github.com/mason-org/mason.nvim)
+* [zsh](https://www.zsh.org/) with [antidote](https://github.com/mattmc3/antidote) and [my config](https://github.com/nemanjan00/zsh)
 * [tmux](https://github.com/tmux/tmux) with [gpakosz/.tmux](https://github.com/gpakosz/.tmux)
 * [Claude Code](https://github.com/anthropics/claude-code) and [opencode](https://opencode.ai) coding agents
 * [asdf](https://asdf-vm.com/) version manager (Node.js, Python pre-installed)
@@ -488,7 +488,7 @@ The base image — what every profile and the standalone IDE are built on:
 * VimL
 * XML
 * YAML
-* Much more (via coc.nvim extensions)
+* Much more (via mason-installed language servers)
 
 ## Ready to let it cook?
 

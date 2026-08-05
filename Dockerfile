@@ -17,7 +17,7 @@ RUN pacman -Syu --noconfirm \
     diffutils patch \
     man-db man-pages \
     nss nspr \
-    python-pynvim neovim \
+    python-pynvim neovim tree-sitter-cli \
     tmux \
     docker \
     miller socat \
@@ -66,16 +66,11 @@ RUN pip install --no-cache-dir curl_cffi && \
 # Disable cache
 #ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" /tmp/skipcache
 
-# Setup zsh and plugins
-RUN git clone https://github.com/zplug/zplug.git ~/.zplug
-
-COPY ./zplug /tmp/zplug
-RUN patch ~/.zplug/base/core/add.zsh /tmp/zplug/patch/pipe_fix.diff
-
+# Setup zsh and plugins (antidote bootstraps itself on first shell init)
 RUN git clone https://github.com/nemanjan00/zsh.git ~/.zsh
 RUN echo "source ~/.zsh/index.zsh" > ~/.zshrc
 
-RUN timeout 30 zsh -ic "TERM=xterm-256color ZPLUG_PIPE_FIX=true zplug install"
+RUN timeout 120 zsh -ic "TERM=xterm-256color exit"
 
 # Download my dotfiles
 USER $UID
@@ -87,9 +82,10 @@ RUN curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubu
 # Install plugins inside of vim
 RUN nvim +PlugInstall +qall
 
-# Coc
-RUN ln -s ~/.config/nvim/coc ~/.config/coc
-RUN cd ~/.config/coc/extensions && npm install
+# Pre-bake treesitter parsers so fresh containers don't re-download them.
+# Keep the list in sync with the install{} call in the vim repo's init.vim;
+# parsers missing here still auto-install at runtime, just not pre-baked.
+RUN nvim --headless "+lua require('nvim-treesitter').install({'bash','c','css','dockerfile','gitignore','go','html','javascript','json','kotlin','lua','markdown','markdown_inline','nginx','php','python','scss','sql','tsx','typescript','vim','vimdoc','vue','yaml'}):wait(600000); vim.cmd('qall!')"
 
 # Install .tmux
 RUN git clone https://github.com/gpakosz/.tmux.git ~/.tmux

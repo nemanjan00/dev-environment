@@ -53,8 +53,8 @@ host's **Ollama** (`host.docker.internal:11434`) via the baked
 
 ## Environment
 
-- **Shell**: zsh with zplug plugins
-- **Editor**: Neovim with coc.nvim LSP support
+- **Shell**: zsh with antidote plugins
+- **Editor**: Neovim with native LSP (mason + nvim-lspconfig + nvim-cmp)
 - **Multiplexer**: tmux
 - **User**: unprivileged user (uid 1000), home at `/work`
 - **Projects**: mount to `/work/project`
@@ -212,12 +212,12 @@ To receive output/exit notifications the client must declare the `logging` capab
 
 Only `/work/project` (the host cwd) and `/work/.claude` (your config/memory) persist across container runs — both are host bind-mounts. Everything else (installed packages, asdf languages, `~/.config/*`, shell/editor configs, files written outside `/work/project`) is ephemeral and vanishes on container exit.
 
-You own everything ephemeral — install, switch, or reconfigure asdf languages, npm globals, Neovim/coc extensions, or any other tooling without asking. If something needs to survive the container, keep it inside `/work/project`.
+You own everything ephemeral — install, switch, or reconfigure asdf languages, npm globals, Neovim plugins/LSP servers, or any other tooling without asking. If something needs to survive the container, keep it inside `/work/project`.
 
 ## Key Paths
 
 - `~/.config/nvim` — Neovim configuration
-- `~/.config/coc` — coc.nvim extensions
+- `~/.local/share/nvim/mason` — mason-installed LSP servers
 - `~/.local/bin` — user binaries (asdf)
 - `~/.asdf` — asdf data (plugins, installs, shims)
 - `~/.zsh/index.zsh` — zsh configuration entrypoint

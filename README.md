@@ -389,10 +389,10 @@ kimi-vm                # == dev-vm --kimi
 Kimi Code runs with `--yolo` (its permission-skip flag) since the environment
 is sandboxed, same rationale as Claude's `--dangerously-skip-permissions`.
 Everything — `config.toml`, `mcp.json`, OAuth credentials
-(`credentials/`), and session state — lives under one `~/.kimi`, which is
+(`credentials/`), and session state — lives under one `~/.kimi-code`, which is
 mounted read-write from the host so a `/login` (OAuth or a Moonshot AI
 Platform API key) persists across throwaway containers. Same trust boundary
-as `~/.claude`: treat anything reachable from `~/.kimi` as visible to the
+as `~/.claude`: treat anything reachable from `~/.kimi-code` as visible to the
 sandboxed agent.
 
 ## Per-project sandbox layout (`.dev/config.json`)

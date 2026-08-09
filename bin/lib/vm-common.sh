@@ -82,7 +82,7 @@ dev_vm_resolve_opencode() {
 # KIMI_CONFIG_DIR into a synced folder, so it must be exported before
 # `vagrant up`.
 dev_vm_resolve_kimi() {
-  export KIMI_CONFIG_DIR="${KIMI_CONFIG_DIR:-${HOME}/.kimi}"
+  export KIMI_CONFIG_DIR="${KIMI_CONFIG_DIR:-${HOME}/.kimi-code}"
   mkdir -p "$KIMI_CONFIG_DIR"
 }
 
@@ -124,7 +124,7 @@ dev_vm_mount_opencode() {
 
 # Kimi Code CLI config, synced into the VM at /kimi-config.
 dev_vm_mount_kimi() {
-  DOCKER_ARGS+=(-v /kimi-config:/work/.kimi)
+  DOCKER_ARGS+=(-v /kimi-config:/work/.kimi-code)
 }
 
 # Optional Ollama. NOTE: inside the VM, host.docker.internal resolves to the VM

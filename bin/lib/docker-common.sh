@@ -96,17 +96,17 @@ dev_docker_mount_opencode() {
 
 # Kimi Code CLI auth + config. Everything (config.toml, mcp.json, OAuth
 # credentials under credentials/, and per-project session state hashed off the
-# working dir) lives under a single ~/.kimi, so one bind mount covers it —
+# working dir) lives under a single ~/.kimi-code, so one bind mount covers it —
 # same shape as opencode's dirs, simpler than Claude's split config/.claude.json.
 #
 # SECURITY / TRUST BOUNDARY: mounted read-write (Kimi writes session/state data
 # there), so the same caveat as dev_docker_mount_claude applies — the unleashed
 # agent can read OAuth credentials and every other project's session history
-# under ~/.kimi/sessions/*. See README "What gets mounted".
+# under ~/.kimi-code/sessions/*. See README "What gets mounted".
 dev_docker_mount_kimi() {
-  local dir="${HOME}/.kimi"
+  local dir="${HOME}/.kimi-code"
   mkdir -p "$dir"
-  DOCKER_ARGS+=(-v "$dir:/work/.kimi")
+  DOCKER_ARGS+=(-v "$dir:/work/.kimi-code")
 }
 
 # Optional: point opencode at the host's Ollama. The container reaches the host

@@ -113,11 +113,11 @@ RUN npm install -g @anthropic-ai/claude-code opencode-ai @moonshot-ai/kimi-code 
 # wrappers pass `--add-dir /work/skills`, and Claude Code auto-loads any
 # skill under <added-dir>/.claude/skills/. Profiles drop skills here; the
 # empty dir keeps --add-dir valid even for profiles that ship none.
-# opencode dirs and ~/.kimi are pre-created (owned by uid 1000) so the
+# opencode dirs and ~/.kimi-code are pre-created (owned by uid 1000) so the
 # wrappers can bind host config/state over them without docker creating
 # root-owned mount points.
 RUN mkdir -p ~/.claude ~/.config/claude/mcp.d ~/skills/.claude/skills \
-        ~/.config/opencode ~/.local/share/opencode ~/.kimi
+        ~/.config/opencode ~/.local/share/opencode ~/.kimi-code
 COPY --chown=$UID:$GID templates/CLAUDE.md /work/CLAUDE.md
 COPY --chown=$UID:$GID templates/mcp.d/ /work/.config/claude/mcp.d/
 # Baked Ollama provider config for opencode, selected only when a wrapper is run

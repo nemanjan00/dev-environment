@@ -395,6 +395,13 @@ Platform API key) persists across throwaway containers. Same trust boundary
 as `~/.claude`: treat anything reachable from `~/.kimi-code` as visible to the
 sandboxed agent.
 
+> **Heads up:** Kimi Code also vendors and self-updates its own binary into
+> `~/.kimi-code/bin/` (via its `updates/` machinery). Because that whole
+> directory is host-mounted, a sandboxed agent that can write there can plant
+> or modify a binary that *your host's* `kimi` may end up running later — the
+> same shape as the `~/.claude/settings.json` hooks caveat above, just via an
+> executable instead of a hook. Treat it as part of the same trust boundary.
+
 ## Per-project sandbox layout (`.dev/config.json`)
 
 Drop an **optional** `.dev/config.json` in a project to declare extra mounts and

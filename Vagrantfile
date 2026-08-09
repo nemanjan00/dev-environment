@@ -45,6 +45,13 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ENV['OPENCODE_DATA_DIR'], "/opencode-data", type: "virtiofs"
   end
 
+  # Kimi Code CLI config — only set by `dev-vm --kimi`, so other presets are
+  # unaffected. Synced into the VM and bind-mounted into the container so
+  # Kimi logins/session state persist across throwaway VMs.
+  if ENV['KIMI_CONFIG_DIR']
+    config.vm.synced_folder ENV['KIMI_CONFIG_DIR'], "/kimi-config", type: "virtiofs"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
     # Use working Alpine mirrors
     echo "https://dl-cdn.alpinelinux.org/alpine/v3.19/main" > /etc/apk/repositories

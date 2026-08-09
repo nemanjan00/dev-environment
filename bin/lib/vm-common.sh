@@ -78,6 +78,14 @@ dev_vm_resolve_opencode() {
   mkdir -p "$OPENCODE_CONFIG_DIR" "$OPENCODE_DATA_DIR"
 }
 
+# Resolve + export the Kimi Code CLI config dir. The Vagrantfile turns
+# KIMI_CONFIG_DIR into a synced folder, so it must be exported before
+# `vagrant up`.
+dev_vm_resolve_kimi() {
+  export KIMI_CONFIG_DIR="${KIMI_CONFIG_DIR:-${HOME}/.kimi}"
+  mkdir -p "$KIMI_CONFIG_DIR"
+}
+
 # Copy host credentials into the running VM (after `vagrant up`).
 dev_vm_push_auth() {
   if [ -n "${CLAUDE_AUTH:-}" ] && [ -f "$CLAUDE_AUTH" ]; then
@@ -114,6 +122,11 @@ dev_vm_mount_opencode() {
   DOCKER_ARGS+=(-v /opencode-data:/work/.local/share/opencode)
 }
 
+# Kimi Code CLI config, synced into the VM at /kimi-config.
+dev_vm_mount_kimi() {
+  DOCKER_ARGS+=(-v /kimi-config:/work/.kimi)
+}
+
 # Optional Ollama. NOTE: inside the VM, host.docker.internal resolves to the VM
 # guest, not your real host — so Ollama must be reachable from the VM (running
 # in it, or forwarded). See README. The baked config is still selected here.
@@ -135,6 +148,10 @@ dev_vm_launch_cmd() {
       ;;
     opencode)
       printf 'opencode'
+      if [ "$#" -gt 0 ]; then printf ' %s' "$(dev_join_cmd "$@")"; fi
+      ;;
+    kimi)
+      printf 'kimi --yolo'
       if [ "$#" -gt 0 ]; then printf ' %s' "$(dev_join_cmd "$@")"; fi
       ;;
     shell) : ;;

@@ -1,0 +1,3 @@
+#!/bin/bash
+# Convenience shim: kimi-docker is `dev-docker --kimi`.
+exec "$(dirname "${BASH_SOURCE[0]}")/dev-docker" --kimi "$@"

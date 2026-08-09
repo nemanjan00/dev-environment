@@ -94,6 +94,21 @@ dev_docker_mount_opencode() {
   DOCKER_ARGS+=(-v "$cfg:/work/.config/opencode" -v "$data:/work/.local/share/opencode")
 }
 
+# Kimi Code CLI auth + config. Everything (config.toml, mcp.json, OAuth
+# credentials under credentials/, and per-project session state hashed off the
+# working dir) lives under a single ~/.kimi, so one bind mount covers it —
+# same shape as opencode's dirs, simpler than Claude's split config/.claude.json.
+#
+# SECURITY / TRUST BOUNDARY: mounted read-write (Kimi writes session/state data
+# there), so the same caveat as dev_docker_mount_claude applies — the unleashed
+# agent can read OAuth credentials and every other project's session history
+# under ~/.kimi/sessions/*. See README "What gets mounted".
+dev_docker_mount_kimi() {
+  local dir="${HOME}/.kimi"
+  mkdir -p "$dir"
+  DOCKER_ARGS+=(-v "$dir:/work/.kimi")
+}
+
 # Optional: point opencode at the host's Ollama. The container reaches the host
 # over host.docker.internal (mapped explicitly for Linux, where it is not
 # automatic). The provider config is baked at /work/opencode-ollama.json —
@@ -229,6 +244,10 @@ dev_docker_launch_cmd() {
       ;;
     opencode)
       printf 'opencode'
+      if [ "$#" -gt 0 ]; then printf ' %s' "$(dev_join_cmd "$@")"; fi
+      ;;
+    kimi)
+      printf 'kimi --yolo'
       if [ "$#" -gt 0 ]; then printf ' %s' "$(dev_join_cmd "$@")"; fi
       ;;
     shell) : ;;

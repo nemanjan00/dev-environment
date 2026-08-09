@@ -98,12 +98,14 @@ RUN cp ~/.tmux/.tmux.conf.local ~/
 COPY --chown=$UID:$GID templates/tmux.conf.local.append /tmp/tmux.append
 RUN cat /tmp/tmux.append >> ~/.tmux.conf.local && rm /tmp/tmux.append
 
-# Install Claude Code, muxmcp (stdio MCP multiplexer), and shell-session-mcp
-# (PTY-backed interactive sessions; node-pty needs base-devel + python — both present)
-RUN npm install -g @anthropic-ai/claude-code opencode-ai muxmcp shell-session-mcp && \
+# Install Claude Code, opencode, Kimi Code CLI, muxmcp (stdio MCP multiplexer),
+# and shell-session-mcp (PTY-backed interactive sessions; node-pty needs
+# base-devel + python — both present)
+RUN npm install -g @anthropic-ai/claude-code opencode-ai @moonshot-ai/kimi-code muxmcp shell-session-mcp && \
     ln -sf "$(asdf which node)" /work/.local/bin/node && \
     ln -sf "$(asdf which claude)" /work/.local/bin/claude && \
     ln -sf "$(asdf which opencode)" /work/.local/bin/opencode && \
+    ln -sf "$(asdf which kimi)" /work/.local/bin/kimi && \
     ln -sf "$(asdf which muxmcp)" /work/.local/bin/muxmcp && \
     ln -sf "$(asdf which shell-session-mcp)" /work/.local/bin/shell-session-mcp
 # ~/.claude is bind-mounted from the host at runtime, so skills baked there
@@ -111,10 +113,11 @@ RUN npm install -g @anthropic-ai/claude-code opencode-ai muxmcp shell-session-mc
 # wrappers pass `--add-dir /work/skills`, and Claude Code auto-loads any
 # skill under <added-dir>/.claude/skills/. Profiles drop skills here; the
 # empty dir keeps --add-dir valid even for profiles that ship none.
-# opencode dirs are pre-created (owned by uid 1000) so the wrappers can bind
-# host config/state over them without docker creating root-owned mount points.
+# opencode dirs and ~/.kimi are pre-created (owned by uid 1000) so the
+# wrappers can bind host config/state over them without docker creating
+# root-owned mount points.
 RUN mkdir -p ~/.claude ~/.config/claude/mcp.d ~/skills/.claude/skills \
-        ~/.config/opencode ~/.local/share/opencode
+        ~/.config/opencode ~/.local/share/opencode ~/.kimi
 COPY --chown=$UID:$GID templates/CLAUDE.md /work/CLAUDE.md
 COPY --chown=$UID:$GID templates/mcp.d/ /work/.config/claude/mcp.d/
 # Baked Ollama provider config for opencode, selected only when a wrapper is run

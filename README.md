@@ -68,10 +68,11 @@ in a throwaway box. Close it and it's gone.
   `reversing`, `android`, `android-app`, `embedded`, `maker`, `analyst`, `librarian`,
   `presenter`, `scraper`, `ctf`, or plain `default`. Each stacks on one shared
   base, so swapping toolchains is a single `--profile` flag, not an afternoon.
-- 🦙 **Not just Claude.** [opencode](#opencode) rides along in the same box as a
-  drop-in alternative agent (`opencode-docker`/`opencode-vm`) — and `dev-ollama`
-  points it at a model served by your host's **[Ollama](#ollama)**, local or
-  cloud, so you can swap the brain without rebuilding the box.
+- 🦙 **Not just Claude.** [opencode](#opencode) and [Kimi Code](#kimi-code)
+  ride along in the same box as drop-in alternative agents
+  (`opencode-docker`/`opencode-vm`, `kimi-docker`/`kimi-vm`) — and `dev-ollama`
+  points opencode at a model served by your host's **[Ollama](#ollama)**, local
+  or cloud, so you can swap the brain without rebuilding the box.
 - 🔒 **Send it — safely.** Claude runs unleashed *because* it's sandboxed; your
   host never feels it. Want it spinning up its own containers too?
   [`claude-vm`](#vm-isolation) wraps the whole thing in a throwaway VM.
@@ -123,6 +124,7 @@ Three moving parts, zero ceremony:
 * [The generic runner (`dev-docker` / `dev-vm`)](#the-generic-runner-dev-docker--dev-vm)
 * [opencode](#opencode)
   * [Ollama](#ollama)
+* [Kimi Code](#kimi-code)
 * [Per-project sandbox layout (`.dev/config.json`)](#per-project-sandbox-layout-devconfigjson)
 * [VM isolation](#vm-isolation)
 * [Components](#components)
@@ -315,12 +317,13 @@ behavior is unchanged — the generic form just exposes more.
 dev-docker                               # bare tmux shell in the sandbox
 dev-docker --claude [claude args...]     # Claude Code (same as claude-docker)
 dev-docker --opencode [opencode args]    # opencode (see below)
+dev-docker --kimi [kimi args...]         # Kimi Code CLI (see below)
 dev-docker --mount ~/.npmrc:/work/.npmrc -- npm run lint   # run a one-off command
 ```
 
 | Option | Meaning |
 |--------|---------|
-| `--claude` / `--opencode` | Preset: mount that agent's auth and launch it. Trailing args pass through. |
+| `--claude` / `--opencode` / `--kimi` | Preset: mount that agent's auth and launch it. Trailing args pass through. |
 | `--mount SRC[:DST][:ro]` | Extra bind mount (repeatable). `~` allowed; no `DST` → same path; `:ro` → read-only. |
 | `--home DIR` | Read Claude config (`.claude` / `.claude.json`) from `DIR` instead of `$HOME`. |
 | `--ollama` | opencode only: point it at the host's Ollama. |
@@ -372,6 +375,25 @@ pointing at `http://host.docker.internal:11434/v1`); edit its `models` list for
 the models you've pulled. Under `dev-docker` the container reaches your host's
 Ollama directly. Under `dev-vm`, `host.docker.internal` resolves to the **VM**,
 not your real host — so Ollama must be reachable from inside the VM.
+
+## Kimi Code
+
+The image ships [Kimi Code CLI](https://github.com/MoonshotAI/kimi-code),
+Moonshot AI's terminal coding agent, alongside Claude Code and opencode.
+
+```bash
+kimi-docker            # == dev-docker --kimi
+kimi-vm                # == dev-vm --kimi
+```
+
+Kimi Code runs with `--yolo` (its permission-skip flag) since the environment
+is sandboxed, same rationale as Claude's `--dangerously-skip-permissions`.
+Everything — `config.toml`, `mcp.json`, OAuth credentials
+(`credentials/`), and session state — lives under one `~/.kimi`, which is
+mounted read-write from the host so a `/login` (OAuth or a Moonshot AI
+Platform API key) persists across throwaway containers. Same trust boundary
+as `~/.claude`: treat anything reachable from `~/.kimi` as visible to the
+sandboxed agent.
 
 ## Per-project sandbox layout (`.dev/config.json`)
 
@@ -467,7 +489,7 @@ The base image — what every profile and the standalone IDE are built on:
 * [Neovim](https://neovim.io/) with [my config](https://github.com/nemanjan00/vim) and native LSP via [mason](https://github.com/mason-org/mason.nvim)
 * [zsh](https://www.zsh.org/) with [antidote](https://github.com/mattmc3/antidote) and [my config](https://github.com/nemanjan00/zsh)
 * [tmux](https://github.com/tmux/tmux) with [gpakosz/.tmux](https://github.com/gpakosz/.tmux)
-* [Claude Code](https://github.com/anthropics/claude-code) and [opencode](https://opencode.ai) coding agents
+* [Claude Code](https://github.com/anthropics/claude-code), [opencode](https://opencode.ai), and [Kimi Code CLI](https://github.com/MoonshotAI/kimi-code) coding agents
 * [asdf](https://asdf-vm.com/) version manager (Node.js, Python pre-installed)
 * [fzf](https://github.com/junegunn/fzf) fuzzy finder
 * [ripgrep](https://github.com/BurntSushi/ripgrep) fast search

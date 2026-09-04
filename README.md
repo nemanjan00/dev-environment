@@ -68,11 +68,12 @@ in a throwaway box. Close it and it's gone.
   `reversing`, `android`, `android-app`, `embedded`, `maker`, `analyst`, `librarian`,
   `presenter`, `scraper`, `ctf`, or plain `default`. Each stacks on one shared
   base, so swapping toolchains is a single `--profile` flag, not an afternoon.
-- 🦙 **Not just Claude.** [opencode](#opencode) and [Kimi Code](#kimi-code)
-  ride along in the same box as drop-in alternative agents
-  (`opencode-docker`/`opencode-vm`, `kimi-docker`/`kimi-vm`) — and `dev-ollama`
-  points opencode at a model served by your host's **[Ollama](#ollama)**, local
-  or cloud, so you can swap the brain without rebuilding the box.
+- 🦙 **Not just Claude.** [opencode](#opencode), [Kimi Code](#kimi-code), and
+  [Pi](#pi) ride along in the same box as drop-in alternative agents
+  (`opencode-docker`/`opencode-vm`, `kimi-docker`/`kimi-vm`,
+  `pi-docker`/`pi-vm`) — and `dev-ollama` points opencode at a model served by
+  your host's **[Ollama](#ollama)**, local or cloud, so you can swap the brain
+  without rebuilding the box.
 - 🔒 **Send it — safely.** Claude runs unleashed *because* it's sandboxed; your
   host never feels it. Want it spinning up its own containers too?
   [`claude-vm`](#vm-isolation) wraps the whole thing in a throwaway VM.
@@ -125,6 +126,7 @@ Three moving parts, zero ceremony:
 * [opencode](#opencode)
   * [Ollama](#ollama)
 * [Kimi Code](#kimi-code)
+* [Pi](#pi)
 * [Per-project sandbox layout (`.dev/config.json`)](#per-project-sandbox-layout-devconfigjson)
 * [VM isolation](#vm-isolation)
 * [Components](#components)
@@ -318,12 +320,13 @@ dev-docker                               # bare tmux shell in the sandbox
 dev-docker --claude [claude args...]     # Claude Code (same as claude-docker)
 dev-docker --opencode [opencode args]    # opencode (see below)
 dev-docker --kimi [kimi args...]         # Kimi Code CLI (see below)
+dev-docker --pi [pi args...]             # Pi coding agent (see below)
 dev-docker --mount ~/.npmrc:/work/.npmrc -- npm run lint   # run a one-off command
 ```
 
 | Option | Meaning |
 |--------|---------|
-| `--claude` / `--opencode` / `--kimi` | Preset: mount that agent's auth and launch it. Trailing args pass through. |
+| `--claude` / `--opencode` / `--kimi` / `--pi` | Preset: mount that agent's auth and launch it. Trailing args pass through. |
 | `--mount SRC[:DST][:ro]` | Extra bind mount (repeatable). `~` allowed; no `DST` → same path; `:ro` → read-only. |
 | `--home DIR` | Read Claude config (`.claude` / `.claude.json`) from `DIR` instead of `$HOME`. |
 | `--ollama` | opencode only: point it at the host's Ollama. |
@@ -401,6 +404,31 @@ sandboxed agent.
 > or modify a binary that *your host's* `kimi` may end up running later — the
 > same shape as the `~/.claude/settings.json` hooks caveat above, just via an
 > executable instead of a hook. Treat it as part of the same trust boundary.
+
+## Pi
+
+The image ships [Pi](https://pi.dev), a minimal agent harness, alongside the
+other agents.
+
+```bash
+pi-docker            # == dev-docker --pi
+pi-vm                # == dev-vm --pi
+```
+
+Pi has **no permission system at all** — it's trust-based by design, running
+tools with the launching user's permissions — so there's no skip-permissions
+flag to pass; the sandbox *is* the permission boundary. Everything —
+`auth.json` (API keys / OAuth from `/login`), `models.json`, settings, and
+session state — lives under one `~/.pi`, which is mounted read-write from the
+host so logins persist across throwaway containers. Same trust boundary as
+`~/.claude`: treat anything reachable from `~/.pi` as visible to the sandboxed
+agent.
+
+> **Heads up:** like Kimi Code, Pi keeps self-managed binaries under
+> `~/.pi/agent/bin/`. Because that directory is host-mounted read-write, a
+> sandboxed agent that can write there can plant or modify a binary that *your
+> host's* `pi` may end up running later — treat it as part of the same trust
+> boundary as the Kimi caveat above.
 
 ## Per-project sandbox layout (`.dev/config.json`)
 
@@ -496,7 +524,7 @@ The base image — what every profile and the standalone IDE are built on:
 * [Neovim](https://neovim.io/) with [my config](https://github.com/nemanjan00/vim) and native LSP via [mason](https://github.com/mason-org/mason.nvim)
 * [zsh](https://www.zsh.org/) with [antidote](https://github.com/mattmc3/antidote) and [my config](https://github.com/nemanjan00/zsh)
 * [tmux](https://github.com/tmux/tmux) with [gpakosz/.tmux](https://github.com/gpakosz/.tmux)
-* [Claude Code](https://github.com/anthropics/claude-code), [opencode](https://opencode.ai), and [Kimi Code CLI](https://github.com/MoonshotAI/kimi-code) coding agents
+* [Claude Code](https://github.com/anthropics/claude-code), [opencode](https://opencode.ai), [Kimi Code CLI](https://github.com/MoonshotAI/kimi-code), and [Pi](https://pi.dev) coding agents
 * [asdf](https://asdf-vm.com/) version manager (Node.js, Python pre-installed)
 * [fzf](https://github.com/junegunn/fzf) fuzzy finder
 * [ripgrep](https://github.com/BurntSushi/ripgrep) fast search

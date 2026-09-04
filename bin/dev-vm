@@ -6,6 +6,7 @@
 #   dev-vm --claude [claude args]   # Claude Code (== claude-vm)
 #   dev-vm --opencode               # opencode
 #   dev-vm --kimi                   # Kimi Code CLI (== kimi-vm)
+#   dev-vm --pi                     # Pi coding agent (== pi-vm)
 #
 # Options mirror dev-docker, except arbitrary --mount / .dev/config.json
 # `mounts:` are docker-only (the VM only syncs the project); read-only project
@@ -39,6 +40,7 @@ while [ $# -gt 0 ]; do
     --claude)   PRESET="claude" ;;
     --opencode) PRESET="opencode" ;;
     --kimi)     PRESET="kimi" ;;
+    --pi)       PRESET="pi" ;;
     --mount)    echo "dev-vm: --mount is docker-only; ignored under dev-vm" >&2; shift ;;
     --home)     CLAUDE_HOME="$2"; shift ;;
     --ollama)   OLLAMA=1 ;;
@@ -53,6 +55,7 @@ dev_vm_init
 dev_vm_resolve_claude
 [ "$PRESET" = opencode ] && dev_vm_resolve_opencode
 [ "$PRESET" = kimi ] && dev_vm_resolve_kimi
+[ "$PRESET" = pi ] && dev_vm_resolve_pi
 
 vagrant up
 
@@ -65,6 +68,7 @@ case "$PRESET" in
   claude)   dev_vm_mount_claude ;;
   opencode) dev_vm_mount_opencode ;;
   kimi)     dev_vm_mount_kimi ;;
+  pi)       dev_vm_mount_pi ;;
 esac
 [ "$OLLAMA" = 1 ] && dev_vm_enable_ollama
 dev_vm_apply_config "$PROJECT_DIR"

@@ -109,6 +109,21 @@ dev_docker_mount_kimi() {
   DOCKER_ARGS+=(-v "$dir:/work/.kimi-code")
 }
 
+# Pi coding agent auth + state. Everything (auth.json, models.json, settings,
+# sessions, and a self-managed agent/bin/) lives under a single ~/.pi, so one
+# bind mount covers it — same shape as ~/.kimi-code.
+#
+# SECURITY / TRUST BOUNDARY: mounted read-write (Pi writes auth/session state
+# there), so the same caveats as Claude/Kimi apply — the unleashed agent can
+# read API keys under ~/.pi/agent/auth.json and other projects' sessions, and
+# ~/.pi/agent/bin/ holds binaries the host's own pi may execute later (same
+# shape as Kimi's self-updating bin/). See README "What gets mounted".
+dev_docker_mount_pi() {
+  local dir="${HOME}/.pi"
+  mkdir -p "$dir"
+  DOCKER_ARGS+=(-v "$dir:/work/.pi")
+}
+
 # Optional: point opencode at the host's Ollama. The container reaches the host
 # over host.docker.internal (mapped explicitly for Linux, where it is not
 # automatic). The provider config is baked at /work/opencode-ollama.json —
@@ -248,6 +263,12 @@ dev_docker_launch_cmd() {
       ;;
     kimi)
       printf 'kimi --yolo'
+      if [ "$#" -gt 0 ]; then printf ' %s' "$(dev_join_cmd "$@")"; fi
+      ;;
+    pi)
+      # Pi has no permission system at all (trust-based by design), so unlike
+      # claude/kimi there is no skip-permissions flag to pass.
+      printf 'pi'
       if [ "$#" -gt 0 ]; then printf ' %s' "$(dev_join_cmd "$@")"; fi
       ;;
     shell) : ;;

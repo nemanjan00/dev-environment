@@ -86,6 +86,14 @@ dev_vm_resolve_kimi() {
   mkdir -p "$KIMI_CONFIG_DIR"
 }
 
+# Resolve + export the Pi coding agent config dir. The Vagrantfile turns
+# PI_CONFIG_DIR into a synced folder, so it must be exported before
+# `vagrant up`.
+dev_vm_resolve_pi() {
+  export PI_CONFIG_DIR="${PI_CONFIG_DIR:-${HOME}/.pi}"
+  mkdir -p "$PI_CONFIG_DIR"
+}
+
 # Copy host credentials into the running VM (after `vagrant up`).
 dev_vm_push_auth() {
   if [ -n "${CLAUDE_AUTH:-}" ] && [ -f "$CLAUDE_AUTH" ]; then
@@ -127,6 +135,11 @@ dev_vm_mount_kimi() {
   DOCKER_ARGS+=(-v /kimi-config:/work/.kimi-code)
 }
 
+# Pi coding agent config, synced into the VM at /pi-config.
+dev_vm_mount_pi() {
+  DOCKER_ARGS+=(-v /pi-config:/work/.pi)
+}
+
 # Optional Ollama. NOTE: inside the VM, host.docker.internal resolves to the VM
 # guest, not your real host — so Ollama must be reachable from the VM (running
 # in it, or forwarded). See README. The baked config is still selected here.
@@ -152,6 +165,12 @@ dev_vm_launch_cmd() {
       ;;
     kimi)
       printf 'kimi --yolo'
+      if [ "$#" -gt 0 ]; then printf ' %s' "$(dev_join_cmd "$@")"; fi
+      ;;
+    pi)
+      # Pi has no permission system at all (trust-based by design), so unlike
+      # claude/kimi there is no skip-permissions flag to pass.
+      printf 'pi'
       if [ "$#" -gt 0 ]; then printf ' %s' "$(dev_join_cmd "$@")"; fi
       ;;
     shell) : ;;

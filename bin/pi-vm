@@ -1,0 +1,3 @@
+#!/bin/bash
+# Convenience shim: pi-vm is `dev-vm --pi`.
+exec "$(dirname "${BASH_SOURCE[0]}")/dev-vm" --pi "$@"

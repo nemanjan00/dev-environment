@@ -52,6 +52,13 @@ Vagrant.configure("2") do |config|
     config.vm.synced_folder ENV['KIMI_CONFIG_DIR'], "/kimi-config", type: "virtiofs"
   end
 
+  # Pi coding agent config — only set by `dev-vm --pi`, so other presets are
+  # unaffected. Synced into the VM and bind-mounted into the container so
+  # Pi auth/session state persists across throwaway VMs.
+  if ENV['PI_CONFIG_DIR']
+    config.vm.synced_folder ENV['PI_CONFIG_DIR'], "/pi-config", type: "virtiofs"
+  end
+
   config.vm.provision "shell", inline: <<-SHELL
     # Use working Alpine mirrors
     echo "https://dl-cdn.alpinelinux.org/alpine/v3.19/main" > /etc/apk/repositories

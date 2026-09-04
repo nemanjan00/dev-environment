@@ -7,10 +7,11 @@
 #   dev-docker --opencode [opencode args]   # opencode
 #   dev-docker --opencode --ollama          # opencode wired to the host's Ollama
 #   dev-docker --kimi [kimi args...]        # Kimi Code CLI (== kimi-docker)
+#   dev-docker --pi [pi args...]            # Pi coding agent (== pi-docker)
 #   dev-docker --mount ~/.npmrc:/work/.npmrc -- npm run lint
 #
 # Options:
-#   --claude | --opencode | --kimi   preset: mount that tool's auth + launch it
+#   --claude | --opencode | --kimi | --pi   preset: mount that tool's auth + launch it
 #   --mount SRC[:DST][:ro]   extra bind mount (repeatable); ~ allowed
 #   --home DIR               read Claude config (.claude/.claude.json) from DIR
 #                            instead of $HOME (--claude preset)
@@ -27,7 +28,7 @@ source "$SCRIPT_DIR/bin/lib/common.sh"
 source "$SCRIPT_DIR/bin/lib/docker-common.sh"
 dev_self_update "${BASH_SOURCE[0]}" "$@"
 
-PRESET=""            # claude | opencode | kimi | "" (bare shell)
+PRESET=""            # claude | opencode | kimi | pi | "" (bare shell)
 CLAUDE_HOME="${CLAUDE_HOME:-$HOME}"  # base dir for .claude/.claude.json; --home overrides
 OLLAMA=0
 PROFILE="default"
@@ -42,6 +43,7 @@ while [ $# -gt 0 ]; do
     --claude)        PRESET="claude" ;;
     --opencode)      PRESET="opencode" ;;
     --kimi)          PRESET="kimi" ;;
+    --pi)            PRESET="pi" ;;
     --mount)         EXTRA_MOUNTS+=("$2"); shift ;;
     --home)          CLAUDE_HOME="$2"; shift ;;
     --ollama)        OLLAMA=1 ;;
@@ -61,6 +63,7 @@ case "$PRESET" in
   claude)   dev_docker_mount_claude ;;
   opencode) dev_docker_mount_opencode ;;
   kimi)     dev_docker_mount_kimi ;;
+  pi)       dev_docker_mount_pi ;;
 esac
 [ "$OLLAMA" = 1 ] && dev_docker_enable_ollama
 

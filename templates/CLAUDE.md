@@ -38,15 +38,17 @@ ways that are hard to undo:
   `master`/`main`. Commit freely (see above), but stay on whatever branch you
   started on unless the user directs otherwise.
 
-## Coding agents (Claude Code, opencode & Kimi Code)
+## Coding agents (Claude Code, opencode, Kimi Code & Pi)
 
-This image ships **three** agents; the launcher decided which one started this
+This image ships **four** agents; the launcher decided which one started this
 session:
 
 - **Claude Code** (`claude`) — the default agent.
 - **opencode** (`opencode`) — an alternative TUI agent; just run `opencode`.
 - **Kimi Code CLI** (`kimi`) — Moonshot AI's terminal coding agent; just run
   `kimi`. Config, MCP servers, and OAuth credentials all live under `~/.kimi-code`.
+- **Pi** (`pi`) — a minimal agent harness ([pi.dev](https://pi.dev)); just run
+  `pi`. Auth, models, settings, and sessions all live under `~/.pi`.
 
 Claude Code and opencode read `ANTHROPIC_API_KEY` and persist their auth on
 the host. If the launcher was started with `--ollama`, opencode is
@@ -54,7 +56,8 @@ additionally pointed at the host's **Ollama** (`host.docker.internal:11434`)
 via the baked `/work/opencode-ollama.json` (selected through
 `OPENCODE_CONFIG`). Kimi Code authenticates separately (`/login` inside the
 CLI, OAuth or a Moonshot AI Platform API key) and persists that under
-`~/.kimi-code/credentials/`.
+`~/.kimi-code/credentials/`. Pi authenticates via provider API keys or OAuth
+(`/login` inside the CLI) and persists that under `~/.pi/agent/auth.json`.
 
 ## Environment
 

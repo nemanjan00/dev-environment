@@ -25,6 +25,22 @@ dev_vm_init() {
   DOCKER_ARGS+=(-v /var/run/docker.sock:/var/run/docker.sock)
 }
 
+# Forward host env vars into the container. Mirrors dev_docker_pass_env, but
+# the value must cross `vagrant ssh -c`, so it is embedded into DOCKER_ARGS as
+# NAME=VALUE (dev_vm_run shq-quotes every element, so the value survives the
+# remote shell intact) — same as the existing ANTHROPIC_API_KEY handling.
+# Unset names are skipped silently.
+dev_vm_pass_env() {
+  local v
+  for v in "$@"; do
+    case "$v" in
+      *=*) DOCKER_ARGS+=(-e "$v") ;;
+      *)   [ -n "${!v:-}" ] && DOCKER_ARGS+=(-e "$v=${!v}") ;;
+    esac
+  done
+  return 0
+}
+
 # Resolve the docker group id from inside the booted VM and grant it, so the
 # unprivileged container user can talk to the VM's docker socket. Runs AFTER
 # `vagrant up` (the socket only exists once the VM is up); the literal gid is

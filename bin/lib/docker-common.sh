@@ -30,6 +30,21 @@ dev_docker_init() {
   INIT_CMDS=""
 }
 
+# Forward host env vars into the container. Each arg is either a NAME (passed
+# as bare `-e NAME` so docker reads the value from the launcher's environment —
+# the secret never appears in argv or `ps`) or a literal NAME=VALUE. Unset
+# names are skipped silently, so a preset's declared vars are optional.
+dev_docker_pass_env() {
+  local v
+  for v in "$@"; do
+    case "$v" in
+      *=*) DOCKER_ARGS+=(-e "$v") ;;
+      *)   [ -n "${!v:-}" ] && DOCKER_ARGS+=(-e "$v") ;;
+    esac
+  done
+  return 0
+}
+
 dev_docker_host_network() {
   # SECURITY: --network host removes network isolation — the unleashed agent can
   # then reach every service bound to the host's loopback/LAN (localhost-only

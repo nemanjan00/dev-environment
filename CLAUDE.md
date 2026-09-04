@@ -91,6 +91,13 @@ This is the lens for maintaining profiles:
   agent can write it, config-sourced `mounts:` are screened against a
   sensitive-path denylist (`dev_docker_safe_mount_src`) and `readonly` entries
   are rejected if absolute / containing `..` / whitespace — keep those guards.
+- **Env passthrough is host-controlled only.** Per-agent vars are declared in
+  `dev_preset_env_vars` (`bin/lib/common.sh`, e.g. `pi` → `ABL_KEY`) and
+  one-offs via the `--env` flag; never add env passthrough to
+  `.dev/config.json` — the agent can write that file, so naming host vars
+  there would exfiltrate secrets. The docker path forwards bare `-e NAME`
+  (value stays out of argv); the VM path must embed `NAME=VALUE` (it crosses
+  `vagrant ssh -c`), shq-quoted like everything else.
 - **opencode** is installed in the base image (npm `opencode-ai`). Its Ollama
   provider config is baked at `/work/opencode-ollama.json` (outside every mount
   so a bind-mounted `~/.config/opencode` can't shadow it) and selected via

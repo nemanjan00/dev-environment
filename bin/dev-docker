@@ -13,6 +13,11 @@
 # Options:
 #   --claude | --opencode | --kimi | --pi   preset: mount that tool's auth + launch it
 #   --mount SRC[:DST][:ro]   extra bind mount (repeatable); ~ allowed
+#   --env VAR[=VALUE]        pass a host env var into the container (repeatable);
+#                            bare VAR forwards the host's value when set.
+#                            Presets forward their declared vars automatically
+#                            (see dev_preset_env_vars in lib/common.sh, e.g.
+#                            pi -> ABL_KEY)
 #   --home DIR               read Claude config (.claude/.claude.json) from DIR
 #                            instead of $HOME (--claude preset)
 #   --ollama                 opencode: point at host Ollama (see README)
@@ -36,6 +41,7 @@ HOST_NET=0
 RUN_CMD=""
 HAVE_RUN=0
 EXTRA_MOUNTS=()
+EXTRA_ENV=()
 PASS=()
 
 while [ $# -gt 0 ]; do
@@ -45,6 +51,7 @@ while [ $# -gt 0 ]; do
     --kimi)          PRESET="kimi" ;;
     --pi)            PRESET="pi" ;;
     --mount)         EXTRA_MOUNTS+=("$2"); shift ;;
+    --env)           EXTRA_ENV+=("$2"); shift ;;
     --home)          CLAUDE_HOME="$2"; shift ;;
     --ollama)        OLLAMA=1 ;;
     --profile)       PROFILE="$2"; shift ;;
@@ -65,6 +72,11 @@ case "$PRESET" in
   kimi)     dev_docker_mount_kimi ;;
   pi)       dev_docker_mount_pi ;;
 esac
+# Preset-declared env vars (dev_preset_env_vars emits space-free names, so the
+# unquoted expansion is an intentional split), then explicit --env flags.
+# shellcheck disable=SC2046
+dev_docker_pass_env $(dev_preset_env_vars "${PRESET:-shell}")
+if [ "${#EXTRA_ENV[@]}" -gt 0 ]; then dev_docker_pass_env "${EXTRA_ENV[@]}"; fi
 [ "$OLLAMA" = 1 ] && dev_docker_enable_ollama
 
 if [ "${#EXTRA_MOUNTS[@]}" -gt 0 ]; then

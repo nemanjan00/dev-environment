@@ -57,7 +57,8 @@ via the baked `/work/opencode-ollama.json` (selected through
 `OPENCODE_CONFIG`). Kimi Code authenticates separately (`/login` inside the
 CLI, OAuth or a Moonshot AI Platform API key) and persists that under
 `~/.kimi-code/credentials/`. Pi authenticates via provider API keys or OAuth
-(`/login` inside the CLI) and persists that under `~/.pi/agent/auth.json`.
+(`/login` inside the CLI) and persists that under `~/.pi/agent/auth.json`; a
+host `ABL_KEY` is forwarded into the environment when set.
 
 ## Environment
 

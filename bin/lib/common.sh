@@ -23,6 +23,22 @@ dev_join_cmd() {
   printf '%s' "$out"
 }
 
+# Per-preset env passthrough: the ONE place to declare "agent X needs host var
+# Y". Echoes the names of host env vars a preset forwards into the container
+# (only when set on the host; unset names are skipped by the pass_env helpers).
+# ANTHROPIC_API_KEY is forwarded unconditionally by both launchers (Claude and
+# opencode read it) — list only preset-specific extras here.
+#
+# SECURITY: this list and the launchers' --env flag are the only env
+# passthrough mechanisms, both host-controlled. Deliberately NOT sourced from
+# .dev/config.json — that file ships in the repo and the agent can write it, so
+# letting it name host env vars would hand any repo your secrets.
+dev_preset_env_vars() {
+  case "$1" in
+    pi) echo "ABL_KEY" ;;
+  esac
+}
+
 # Self-update: fast-forward the wrappers/profiles on launch so everyone runs the
 # latest, then re-exec so this very launch uses the new version. Best-effort — a
 # missing network, local commits, or a dirty tree all just skip it; a launch is

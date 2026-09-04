@@ -328,6 +328,7 @@ dev-docker --mount ~/.npmrc:/work/.npmrc -- npm run lint   # run a one-off comma
 |--------|---------|
 | `--claude` / `--opencode` / `--kimi` / `--pi` | Preset: mount that agent's auth and launch it. Trailing args pass through. |
 | `--mount SRC[:DST][:ro]` | Extra bind mount (repeatable). `~` allowed; no `DST` → same path; `:ro` → read-only. |
+| `--env VAR[=VALUE]` | Pass a host env var into the container (repeatable). Bare `VAR` forwards the host's value when set; skipped when unset. |
 | `--home DIR` | Read Claude config (`.claude` / `.claude.json`) from `DIR` instead of `$HOME`. |
 | `--ollama` | opencode only: point it at the host's Ollama. |
 | `--profile NAME` | Image profile (default `default`). |
@@ -337,6 +338,15 @@ dev-docker --mount ~/.npmrc:/work/.npmrc -- npm run lint   # run a one-off comma
 `dev-vm` mirrors this, except arbitrary `--mount` is docker-only (the VM only
 syncs the project); read-only project carve-outs from `.dev/config.json` still
 apply.
+
+Each preset also forwards the env vars its agent needs automatically —
+`ANTHROPIC_API_KEY` always (Claude and opencode read it), plus per-preset
+extras declared in `dev_preset_env_vars` in `bin/lib/common.sh` (e.g. the `pi`
+preset forwards `ABL_KEY`). That function is the one place to add "agent X
+needs var Y"; `--env` covers one-off cases. Env passthrough is deliberately
+**not** configurable from `.dev/config.json` — that file ships in the repo and
+the sandboxed agent can write it, so letting it name host env vars would hand
+any repo your secrets.
 
 ## opencode
 
@@ -420,7 +430,9 @@ tools with the launching user's permissions — so there's no skip-permissions
 flag to pass; the sandbox *is* the permission boundary. Everything —
 `auth.json` (API keys / OAuth from `/login`), `models.json`, settings, and
 session state — lives under one `~/.pi`, which is mounted read-write from the
-host so logins persist across throwaway containers. Same trust boundary as
+host so logins persist across throwaway containers. An `ABL_KEY` set on the
+host is forwarded into the container automatically (declared in
+`dev_preset_env_vars`; add more there or pass one-offs with `--env`). Same trust boundary as
 `~/.claude`: treat anything reachable from `~/.pi` as visible to the sandboxed
 agent.
 

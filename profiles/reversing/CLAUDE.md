@@ -106,6 +106,28 @@ Only the **x86_64** target ships. For 32-bit (`i686`) PEs, disassemble with
   - `smalizator extends "L<class>;"` — find every class declaring `.super L<class>;`.
   - Run `smalizator` with no args for an interactive wizard. The search subcommands shell out to `ag` if present (else `grep -r`) over the **current working directory**, so `cd` into the apktool output (`./smali`, `./smali_classesN/...`) before invoking. Class/interface arguments must be in smali notation (`Lpkg/Cls;`).
 
+### React Native / Hermes
+
+React Native apps often ship their JS as compiled **Hermes bytecode** (HBC)
+rather than plain JavaScript — `assets/index.android.bundle` inside the APK.
+Check first: `file index.android.bundle` reports "Hermes JavaScript bytecode"
+(with its HBC version) for compiled bundles; a plain-JS bundle just needs
+`js-beautify` (see Crypto section).
+
+- **hermes-dec** — disassemble and decompile Hermes bytecode back to readable
+  pseudo-JS. Works across HBC versions; the read-side default.
+  - `hbc-disassembler index.android.bundle out.hasm` — disassembly
+  - `hbc-decompiler index.android.bundle out.js` — pseudo-JS decompilation
+  - `hbc-file-parser index.android.bundle` — header/section dump
+- **hbctool** — disassemble **and reassemble** Hermes bytecode, for patching a
+  bundle and repacking it into the APK (`hbctool disasm bundle out/`, edit the
+  `.hasm`, `hbctool asm out/ bundle`). Only supports HBC versions 59, 62, 74,
+  and 76 — newer bundles can still be *read* with hermes-dec, but patching them
+  needs a runtime approach (Frida) instead.
+
+After patching a bundle: repack with `apktool b`, then `zipalign` and re-sign
+(see the apktool/zipalign entries above).
+
 ## Crypto
 
 - **python-pycryptodome** — cryptographic analysis

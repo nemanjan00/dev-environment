@@ -168,7 +168,7 @@ Think of a profile as a **loadout**. A shared `nemanjan00/dev:base` layer carrie
 | Profile | Tag | Description |
 |---------|-----|-------------|
 | `default` | `nemanjan00/dev:default` | Base environment, no extras |
-| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, jadx, binwalk, apktool, adb, volatility3, unicorn, keystone, magika, wireshark-cli, foremost |
+| `reversing` | `nemanjan00/dev:reversing` | Reverse engineering & forensics: radare2, r2ghidra, r2mcp, jadx, binwalk, apktool, adb, hermes-dec, hbctool, volatility3, unicorn, keystone, magika, wireshark-cli, foremost |
 | `embedded` | `nemanjan00/dev:embedded` | Embedded development: arm-none-eabi toolchain, platformio, avrdude, esptool, openocd, stlink, sigrok-cli, flashrom |
 | `android` | `nemanjan00/dev:android` | Android / LineageOS builds: repo, git-lfs, JDK 17/11, android-tools, ccache, multilib libs, AOSP host toolchain |
 | `android-app` | `nemanjan00/dev:android-app` | Android app development: Android SDK (platform-tools, build-tools, API 36) via Google cmdline-tools, JDK 17, Gradle 9.2.1, adb — no emulator (connect adb to host/device) |

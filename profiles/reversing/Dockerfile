@@ -60,7 +60,8 @@ RUN for pkg in android-apktool android-sdk-build-tools tio magika sasquatch; do 
 
 # Install Python packages via pip (asdf Python)
 RUN pip install r2pipe pefile capstone keystone-engine unicorn \
-    pyserial pycryptodome jsbeautifier lief angr
+    pyserial pycryptodome jsbeautifier lief angr \
+    hermes-dec hbctool
 
 # Install .NET decompiler (ilspycmd)
 RUN dotnet tool install -g ilspycmd

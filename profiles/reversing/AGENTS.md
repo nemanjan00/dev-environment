@@ -4,7 +4,7 @@
 
 - **radare2** with **r2ghidra** decompiler and **r2mcp** plugin for AI integration
 - **gdb** — native x86_64 debugger for live debugging, core-dump analysis, and scripted inspection (`gdb -batch -ex 'disas main' ./bin`). For aarch64 targets use `aarch64-linux-gnu-gdb` (see cross-toolchain section).
-- **muxmcp** — generic stdio MCP multiplexer (documented in base `CLAUDE.md`). Useful here for running `muxmcp -- r2mcp` to analyze multiple binaries concurrently, since `r2mcp` is single-session.
+- **muxmcp** — generic stdio MCP multiplexer (documented in base `AGENTS.md`). Useful here for running `muxmcp -- r2mcp` to analyze multiple binaries concurrently, since `r2mcp` is single-session.
 - **python-r2pipe** — script radare2 from Python
 - **capstone** / **python-capstone** — disassembly framework
 - **python-keystone** — assembler framework for patching binaries

@@ -58,8 +58,8 @@ RUN curl -fsSL "https://services.gradle.org/distributions/gradle-${GRADLE_VERSIO
 # docker-args.sh hook bind-mounts a host dir over it so they survive restarts.
 ENV GRADLE_USER_HOME=/work/.gradle
 
-# Append profile context to base CLAUDE.md
-COPY CLAUDE.md /tmp/profile-claude.md
-RUN cat /tmp/profile-claude.md >> /work/CLAUDE.md
+# Append profile context to base AGENTS.md
+COPY AGENTS.md /tmp/profile-agents.md
+RUN cat /tmp/profile-agents.md >> /work/AGENTS.md
 
 USER 1000

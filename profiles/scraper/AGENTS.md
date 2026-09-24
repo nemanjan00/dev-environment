@@ -122,6 +122,6 @@ image already ships `curl_cffi` (browser-TLS-fingerprint Python client)
 
 - `jq` / `miller` (`mlr`) — post-process scraped JSON/CSV.
 - `curl_cffi` — Python HTTP client with Chrome/Firefox/Safari TLS
-  fingerprints (see base `CLAUDE.md`).
+  fingerprints (see base `AGENTS.md`).
 - `socat` — quick SOCKS/TCP relays when chaining proxies.
 - `rg` — grep over large scraped corpora.

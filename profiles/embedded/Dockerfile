@@ -24,6 +24,6 @@ USER 1000
 # Install Python packages via pip (asdf Python)
 RUN pip install pyserial
 
-# Append profile context to base CLAUDE.md
-COPY CLAUDE.md /tmp/profile-claude.md
-RUN cat /tmp/profile-claude.md >> /work/CLAUDE.md
+# Append profile context to base AGENTS.md
+COPY AGENTS.md /tmp/profile-agents.md
+RUN cat /tmp/profile-agents.md >> /work/AGENTS.md

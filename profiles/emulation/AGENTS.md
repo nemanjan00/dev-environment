@@ -53,7 +53,7 @@ qemu-system-x86_64 -M q35 -m 2G -nographic \
 - **Run headless.** This is a CLI sandbox with no display — always use
   `-nographic` (or `-display none -serial mon:stdio`) and talk to the guest
   over the serial console. Drive long-running boots through the
-  `shell-session-mcp` PTY server (see base `CLAUDE.md`) so the console stays
+  `shell-session-mcp` PTY server (see base `AGENTS.md`) so the console stays
   live across tool calls.
 - **No KVM.** Hardware acceleration isn't available in the sandbox; emulation
   runs under TCG (pure software). Fine for analysis, just slower — keep `-m`

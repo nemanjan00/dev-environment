@@ -77,7 +77,7 @@ in a throwaway box. Close it and it's gone.
 - 🔒 **Send it — safely.** Claude runs unleashed *because* it's sandboxed; your
   host never feels it. Want it spinning up its own containers too?
   [`claude-vm`](#vm-isolation) wraps the whole thing in a throwaway VM.
-- 🧠 **The box explains itself.** Every image ships a `/work/CLAUDE.md` and each
+- 🧠 **The box explains itself.** Every image ships a `/work/AGENTS.md` and each
   profile appends its own playbook — some even auto-load Claude **skills** (the
   `ctf` profile hands Claude a ready-to-go `/pwn` workflow). Less prompting,
   more shipping.
@@ -98,8 +98,8 @@ Three moving parts, zero ceremony:
    image first, so you're always current.
 2. **The image** is Arch-based: a shared `base` layer (Neovim, tmux, zsh, asdf
    Node/Python, Claude Code) plus a thin **profile** layer that adds the
-   domain tools. Each profile also appends its own docs to `/work/CLAUDE.md`,
-   so Claude knows what's installed and how to drive it.
+   domain tools. Each profile also appends its own docs to `/work/AGENTS.md`,
+   so the agent knows what's installed and how to drive it.
 3. **Nothing leaks.** No toolchains land on your host, and the container is
    `--rm`'d on exit — the only things written back are your project and Claude's
    own config dir (so your sessions and memory persist). Need harder isolation —
@@ -275,7 +275,9 @@ claude-docker  # ~/.claude.json is mounted automatically
 > anything reachable from `~/.claude` as visible to whatever you run. Prefer a
 > scoped `ANTHROPIC_API_KEY` over mounting host OAuth if that matters to you.
 
-The container ships with a `/work/CLAUDE.md` that documents the environment for Claude. Profile images append profile-specific tool documentation to it. Since Claude Code walks up from the project directory, `/work/CLAUDE.md` is always loaded as an ancestor of `/work/project/`. Your project can still have its own `CLAUDE.md` — both will be read.
+The container ships with a `/work/AGENTS.md` that documents the environment. Profile images append profile-specific tool documentation to it. `AGENTS.md` is the cross-tool convention, so **every** agent in the image — Claude Code, opencode, kimi, pi — reads the same file.
+
+Next to it sits a one-line `/work/CLAUDE.md` containing `@AGENTS.md`. That shim is load-bearing: Claude Code reads an `AGENTS.md` only when there is no `CLAUDE.md` in the working directory *or above it*, so a project of yours that has its own `CLAUDE.md` would otherwise suppress `/work/AGENTS.md` entirely. With the shim, both are always read (and never twice). Your project can still have its own `CLAUDE.md` and/or `AGENTS.md`.
 
 ### Host network mode
 

@@ -89,7 +89,7 @@ curl -s es.example.com:9200/idx/_search -H 'Content-Type: application/json' \
 
 ## Base tools worth remembering
 
-From the base image (documented in the top-level `CLAUDE.md` — not repeated
+From the base image (documented in the top-level `AGENTS.md` — not repeated
 here): `jq`, `jc`, `miller` (`mlr`), `ripgrep`, `fzf`, `curl`, `wget`,
 `socat`. Combine with the analyst tools above for log/data pipelines, e.g.
 `aws s3 cp s3://bucket/data.jsonl - | jq '.event' | sort | uniq -c`.
@@ -99,5 +99,5 @@ here): `jq`, `jc`, `miller` (`mlr`), `ripgrep`, `fzf`, `curl`, `wget`,
 This profile extends `nemanjan00/dev:reversing`, so all the RE / forensics
 tools (radare2, binwalk, volatility3, wireshark-cli / `tshark`, yara, angr,
 lief, etc.) are also on PATH. See the Reversing & Forensics section of this
-`CLAUDE.md` for details. Useful for analysts who need to pivot from "what's
+`AGENTS.md` for details. Useful for analysts who need to pivot from "what's
 in this log" into "what's in this binary / pcap / memory dump".

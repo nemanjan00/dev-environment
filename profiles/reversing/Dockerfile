@@ -75,12 +75,12 @@ RUN r2pm -U && r2pm -ci r2mcp
 ENV PATH="/work/.local/share/radare2/prefix/bin:${PATH}"
 
 # Multiplex r2mcp via muxmcp so multiple binaries can be analyzed concurrently
-# in one Claude session (r2mcp itself is single-session — see base CLAUDE.md).
+# in one Claude session (r2mcp itself is single-session — see base AGENTS.md).
 COPY mcp.d/ /work/.config/claude/mcp.d/
 
-# Append profile context to base CLAUDE.md
-COPY CLAUDE.md /tmp/profile-claude.md
-RUN cat /tmp/profile-claude.md >> /work/CLAUDE.md
+# Append profile context to base AGENTS.md
+COPY AGENTS.md /tmp/profile-agents.md
+RUN cat /tmp/profile-agents.md >> /work/AGENTS.md
 
 # Remove passwordless sudo after build
 USER 0

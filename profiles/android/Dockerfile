@@ -64,9 +64,9 @@ ENV USE_CCACHE=1
 ENV CCACHE_EXEC=/usr/bin/ccache
 ENV CCACHE_DIR=/work/.ccache
 
-# Append profile context to base CLAUDE.md
-COPY CLAUDE.md /tmp/profile-claude.md
-RUN cat /tmp/profile-claude.md >> /work/CLAUDE.md
+# Append profile context to base AGENTS.md
+COPY AGENTS.md /tmp/profile-agents.md
+RUN cat /tmp/profile-agents.md >> /work/AGENTS.md
 
 # Remove passwordless sudo after build
 USER 0

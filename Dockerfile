@@ -119,6 +119,7 @@ RUN npm install -g @anthropic-ai/claude-code opencode-ai @moonshot-ai/kimi-code 
 # root-owned mount points.
 RUN mkdir -p ~/.claude ~/.config/claude/mcp.d ~/skills/.claude/skills \
         ~/.config/opencode ~/.local/share/opencode ~/.kimi-code ~/.pi
+COPY --chown=$UID:$GID templates/AGENTS.md /work/AGENTS.md
 COPY --chown=$UID:$GID templates/CLAUDE.md /work/CLAUDE.md
 COPY --chown=$UID:$GID templates/mcp.d/ /work/.config/claude/mcp.d/
 # Baked Ollama provider config for opencode, selected only when a wrapper is run

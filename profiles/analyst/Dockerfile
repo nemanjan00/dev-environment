@@ -34,6 +34,6 @@ USER 1000
 RUN npm install -g mongosh && \
     ln -sf "$(asdf which mongosh)" /work/.local/bin/mongosh
 
-# Append profile context to base CLAUDE.md
-COPY CLAUDE.md /tmp/profile-claude.md
-RUN cat /tmp/profile-claude.md >> /work/CLAUDE.md
+# Append profile context to base AGENTS.md
+COPY AGENTS.md /tmp/profile-agents.md
+RUN cat /tmp/profile-agents.md >> /work/AGENTS.md

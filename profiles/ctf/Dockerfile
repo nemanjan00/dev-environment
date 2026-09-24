@@ -39,11 +39,11 @@ RUN curl -fsSL https://raw.githubusercontent.com/hugsy/gef/main/gef.py \
 
 # Bundle the `pwn` Claude skill. It lands in /work/skills/.claude/skills/,
 # the build-time skills dir the wrappers auto-load with `--add-dir /work/skills`
-# (see root CLAUDE.md → "Shipping a Claude skill in a profile"). This path is
+# (see root AGENTS.md → "Shipping a Claude skill in a profile"). This path is
 # outside the bind-mounted ~/.claude, so the skill is always available with
 # zero setup and nothing written to the host.
 COPY --chown=1000:1000 skills/ /work/skills/.claude/skills/
 
-# Append profile context to base CLAUDE.md
-COPY CLAUDE.md /tmp/profile-claude.md
-RUN cat /tmp/profile-claude.md >> /work/CLAUDE.md
+# Append profile context to base AGENTS.md
+COPY AGENTS.md /tmp/profile-agents.md
+RUN cat /tmp/profile-agents.md >> /work/AGENTS.md

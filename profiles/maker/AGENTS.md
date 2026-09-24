@@ -33,7 +33,7 @@ This is the [vercel-labs `skills`](https://github.com/vercel-labs/skills) CLI; `
 
 **Picking it up in the running session:** Claude Code hot-reloads skills, so once `.claude/skills/` exists, adding the skill is live — no restart needed. The one caveat (per the [skills docs](https://code.claude.com/docs/en/skills#live-change-detection)) is that a `.claude/skills/` directory that did **not** exist when the session started isn't watched yet, so in a brand-new project with no skills dir you must restart Claude once after the first install. After `tsci init` (below) — which scaffolds `.claude/skills/tscircuit/` itself — the dir already exists, so this is a non-issue.
 
-`tsci init` also scaffolds a copy of this skill, but `npx skills add tscircuit/skill` is the way to add or refresh it in a project that wasn't created with `tsci init`. Always read `.claude/skills/tscircuit/` before authoring boards — it's more current than this CLAUDE.md.
+`tsci init` also scaffolds a copy of this skill, but `npx skills add tscircuit/skill` is the way to add or refresh it in a project that wasn't created with `tsci init`. Always read `.claude/skills/tscircuit/` before authoring boards — it's more current than this AGENTS.md.
 
 ### What's pre-installed
 
@@ -54,7 +54,7 @@ This scaffolds:
 - `package.json` with local tscircuit deps (needed for bun to resolve `tscircuit` / `react` from the project)
 - `index.circuit.tsx` — starter circuit
 - `tscircuit.config.json`, `tsconfig.json`
-- **`.claude/skills/tscircuit/`** — a tscircuit-authored Claude skill with detailed syntax/workflow docs. Read the files in that directory when doing real work — they're more current than this CLAUDE.md.
+- **`.claude/skills/tscircuit/`** — a tscircuit-authored Claude skill with detailed syntax/workflow docs. Read the files in that directory when doing real work — they're more current than this AGENTS.md.
 
 ### Common commands
 
